@@ -33,7 +33,7 @@ export default class DestinantionButton extends Component{
     </View>
     
     <View style = {styles.rightCol}>
-            <Ionicons name = 'md-car' color = "#000000" size ={24} style ={{alignSelf:'center'}} />
+            <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} />
     </View>
             </TouchableOpacity>
     
