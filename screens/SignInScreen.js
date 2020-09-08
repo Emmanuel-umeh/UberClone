@@ -39,13 +39,40 @@ function SignInScreen({ navigation }) {
     }
   };
 
+  const handlePasswordChange = (val) => {
+    if (val.length != 0) {
+      setData({
+        ...data,
+        password: val,
+        // check_text_input_change: true,
+      });
+    } else {
+      setData({
+        ...data,
+        email: val,
+        // check_text_input_change: false,
+      });
+    }
+  };
+
+  const security = () => {
+    setData({
+      ...data,
+      secureTextEntry: !data.secureTextEntry,
+    });
+  };
   return (
     <View style={styles.container}>
+
+        <StatusBar backgroundColor = "#009387" barStyle = "light-content" />
       <View style={styles.header}>
         <Text style={styles.text_header}>Login </Text>
       </View>
 
-      <View style={styles.footer}>
+      <Animatable.View
+      animation= "fadeInUpBig"
+      
+      style={styles.footer}>
         <Text style={styles.text_footer}>Email</Text>
         <View style={styles.action}>
           <FontAwesome name="user-o" color="#05375a" size={20} />
@@ -72,16 +99,65 @@ function SignInScreen({ navigation }) {
 
           <TextInput
             placeholder="Your Password"
-            secureTextEntry={true}
+            secureTextEntry={data.secureTextEntry ? true : false}
             style={styles.textInput}
             autoCapitalize="none"
+            onChangeText={(val) => {
+              handlePasswordChange(val);
+            }}
           />
 
-          <FontAwesome name="eye-slash" color="green" size={20} />
+          {data.secureTextEntry ? (
+            <TouchableOpacity
+              onPress={() => {
+                security();
+              }}
+            >
+              <FontAwesome
+              
+                name="eye-slash"
+                color="black"
+                size={20}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                security();
+              }}
+            >
+              <FontAwesome name="eye" color="green" size={20} />
+            </TouchableOpacity>
+          )}
         </View>
 
-        <View></View>
-      </View>
+        <View style = {styles.button}>
+              
+            <LinearGradient
+            
+            colors={["#08d4c44", "#01ab9d"]}
+            style={styles.signIn}>
+
+<TouchableOpacity style ={styles.signIn}>
+                <Text style = {styles.textSign, {
+                    color : "#fff"
+                }}>
+                    Sign In
+                    </Text>  
+                    </TouchableOpacity>              
+            </LinearGradient>
+
+            <TouchableOpacity style ={[styles.signIn, {
+                borderColor : "#009387",
+                borderWidth : 1,
+                marginTop:15
+            }]}>
+                <Text onPress ={()=>{
+                    navigation.navigate("SignUpScreen")
+                }}>Sign Up</Text>
+            </TouchableOpacity>
+        </View>
+      </Animatable.View>
     </View>
   );
 }

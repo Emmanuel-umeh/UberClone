@@ -21,7 +21,7 @@ function SplashScreen({ navigation }) {
          */}
 
         <Animatable.Image
-        animation = "fadeInDown"
+        animation = "bounceIn"
         delay = {2}
           source={require("../assets/logo.png")}
           style={styles.logo}
@@ -29,7 +29,9 @@ function SplashScreen({ navigation }) {
         />
       </View>
 
-      <View style={styles.footer}>
+      <Animatable.View style={styles.footer}
+       animation = "fadeInUpBig"
+       >
         <Text style={styles.title}> Welcome to Axis</Text>
         <Text style={styles.text}>Get Started</Text>
 
@@ -53,7 +55,7 @@ function SplashScreen({ navigation }) {
             </LinearGradient>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animatable.View>
     </View>
   );
 }
