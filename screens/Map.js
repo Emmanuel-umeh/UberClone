@@ -10,8 +10,9 @@ import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
 
 import DestinationButton from "../components/destinationButton";
-import CurrentLocationButton from "../components/currentLocationButton";
+
 import Driver from "../components/driver";
+import CurrentLocationButton from '../components/currentLocationButton';
 export default class Map extends Component{
     constructor(props) {
         super(props);
@@ -77,15 +78,21 @@ export default class Map extends Component{
 
         return(
             <View style={styles.container}>
+              
         {/* <Text>Home Screen</Text> */}
 
         <DestinationButton />
 
-        <CurrentLocationButton
+        {/* <CurrentLocationButton
           cb={() => {
             this.centerMap();
           }}
-        />
+        /> */}
+
+
+        <CurrentLocationButton  cb={() => {
+            this.centerMap();
+          }} />
 
         <MapView
           followUserLocation={true}

@@ -64,7 +64,7 @@ function SignUpScreen({ navigation }) {
   return (
     <View style={styles.container}>
 
-        <StatusBar backgroundColor = "#009387" barStyle = "light-content" />
+        <StatusBar backgroundColor = "#000000" barStyle = "light-content" />
       <View style={styles.header}>
         <Text style={styles.text_header}>SignUp To WhiteAxis </Text>
       </View>
@@ -94,7 +94,7 @@ function SignUpScreen({ navigation }) {
             </Animatable.View>
           ) : null}
         </View>
-        <Text style={styles.text_footer, { marginTop: 35 }}>Email</Text>
+        <Text style={styles.text_footer, { marginTop: 35, fontFamily: "charm-bold", }}>Email</Text>
         <View style={styles.action}>
           <FontAwesome name="envelope" color="#05375a" size={20} />
 
@@ -114,7 +114,7 @@ function SignUpScreen({ navigation }) {
         </View>
 
         {/* Paassword */}
-        <Text style={(styles.text_footer, { marginTop: 35 })}>Password</Text>
+        <Text style={(styles.text_footer, { marginTop: 35, fontFamily: "charm-bold", })}>Password</Text>
         <View style={styles.action}>
           <FontAwesome name="lock" color="#05375a" size={20} />
 
@@ -169,7 +169,7 @@ function SignUpScreen({ navigation }) {
             </LinearGradient>
 
             <TouchableOpacity style ={[styles.signIn, {
-                borderColor : "#009387",
+                borderColor : "#000000",
                 borderWidth : 1,
                 marginTop:15
             }]}>
@@ -199,7 +199,7 @@ export default connect(mapStateToProps, { })(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#009387",
+    backgroundColor: "#000000",
   },
   header: {
     flex: 1,
@@ -217,12 +217,14 @@ const styles = StyleSheet.create({
   },
   text_header: {
     color: "#fff",
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontSize: 30,
+    fontFamily: "charm-bold",
   },
   text_footer: {
     color: "#05375a",
     fontSize: 18,
+    fontFamily: "charm-bold",
   },
   action: {
     flexDirection: "row",
@@ -243,6 +245,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
     color: "#05375a",
+    fontFamily: "charm-bold",
   },
   errorMsg: {
     color: "#FF0000",
@@ -258,9 +261,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
+    fontFamily: "charm-bold",
   },
   textSign: {
     fontSize: 18,
-    fontWeight: "bold",
+    // fontFamily: "charm-bold",
+    fontFamily: "charm-bold",
   },
 });

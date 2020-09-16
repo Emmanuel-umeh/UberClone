@@ -6,7 +6,7 @@ const WIDTH = Dimensions.get('window').width
 const HEIGHT = Dimensions.get('window').height
 
 
-export default  CurrentLocationButton =function(props){
+export default function CurrentLocationButton (props){
 // render(){
 
 console.log("props ", props)

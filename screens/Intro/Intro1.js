@@ -8,94 +8,104 @@ import {
   StatusBar,
   Image,
 } from "react-native";
+// import Dots from 'react-carousel-dots';
 import { connect } from "react-redux";
+import { useFonts } from '@use-expo/font';
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-function Splash1({ navigation }) {
+function Intro1({ navigation }) {
+ 
   return (
     <View style={styles.container}>
-      
+      <View style={styles.line}>
+        <Animatable.Image
+          source={require("../../assets/LineVector.png")}
+          //    resizeMode="center"
+          animation = {"slideInDown"}
+        />
+      </View>
+
+      <Animatable.Image
+        style={styles.dot1}
+        source={require("../../assets/dot.png")}
+        //  style={styles.line}
+        resizeMode="center"
+        animation = {"slideInUp"}
+      />
+      <Animatable.Image
+        style={styles.dot2}
+        source={require("../../assets/dot.png")}
+        animation = {"slideInUp"}
+        //  style={styles.line}
 
 
-    <View  style={styles.line}>
-    <Image
-         
-          source={require("../assets/LineVector.png")}
-        //    resizeMode="center"
-        />
+        //  resizeMode="center"
 
-    </View>
-  
-        <Image
-          style={styles.dot1}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          resizeMode="center"
-        />
-        <Image
-          style={styles.dot2}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
-        <Image
-          style={styles.dot3}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
-        <Image
-          style={styles.dot4}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
-        <Image
-          style={styles.dot5}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
-        <Image
-          style={styles.dot6}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
+        
+      />
+      <Animatable.Image
+        style={styles.dot3}
+        source={require("../../assets/dot.png")}
+        animation = {"slideInUp"}
+        //  style={styles.line}
+        //  resizeMode="center"
+      />
+      <Animatable.Image
+        style={styles.dot4}
+        animation = {"slideInRight"}
+        source={require("../../assets/dot.png")}
+        //  style={styles.line}
+        //  resizeMode="center"
+      />
+      <Animatable.Image
+        style={styles.dot5}
+        animation = {"slideInUp"}
+        source={require("../../assets/dot.png")}
+        //  style={styles.line}
+        //  resizeMode="center"
+      />
+      <Animatable.Image
+        style={styles.dot6}
+        source={require("../../assets/dot.png")}
+        //  style={styles.line}
+        //  resizeMode="center"
+      />
 
-        <Image
-          style={styles.dot7}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
+      <Animatable.Image
+        style={styles.dot7}
+        animation = {"slideInUp"}
+        source={require("../../assets/dot.png")}
+        //  style={styles.line}
+        //  resizeMode="center"
+      />
 
-        <Image
-          style={styles.dot8}
-          source={require("../assets/dot.png")}
-          //  style={styles.line}
-          //  resizeMode="center"
-        />
+      <Animatable.Image
+        style={styles.dot8}
+        animation = {"slideInUp"}
+        source={require("../../assets/dot.png")}
+        //  style={styles.line}
+        //  resizeMode="center"
+      />
 
-        {/* dot */}
-        <Image
-          style={styles.dot}
-          source={require("../assets/dot.png")}
-          style={styles.line}
-          resizeMode="center"
-        />
+      {/* dot */}
+      <Animatable.Image
+        style={styles.dot}
+        animation = {"slideInLeft"}
+        source={require("../../assets/dot.png")}
+        style={styles.line}
+        resizeMode="center"
+      />
+
+      <Animatable.View
+      animation = {"slideInUp"}
+      duration = {2000}
+      >
+        <Text style={styles.text}>Welcome To White Axis</Text>
+      </Animatable.View>
 
 
-
-<View>
-    <Text  style= {styles.text}>
-        Welcome To White Axis
-    </Text>
-</View>
-    
-     
 
       {/* <Animatable.View style={styles.footer}
        animation = "fadeInUpBig"
@@ -135,7 +145,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {})(Splash1);
+export default connect(mapStateToProps, {})(Intro1);
 
 const { height, width } = Dimensions.get("screen");
 const height_logo = height * 0.15;
@@ -221,6 +231,8 @@ const styles = StyleSheet.create({
     left: 273,
     top: 340,
   },
+
+
   footer: {
     flex: 1,
     backgroundColor: "#fff",
@@ -240,23 +252,20 @@ const styles = StyleSheet.create({
   },
 
   text: {
-  
-    
-position: "absolute",
-width: 300,
-height: 56,
-left: 34,
-top: 420,
+    position: "absolute",
+    width: 300,
+    height: 56,
+    left: 34,
+    top: 420,
+    color: "#fff",
 
-fontFamily: "charm-bold",
+    fontFamily: "charm-bold",
 
-fontStyle: "normal",
-fontWeight: "bold",
-fontSize: 36,
-lineHeight: 56
-/* identical to box height */
-
-
+    fontStyle: "normal",
+    // fontWeight: "bold",
+    fontSize: 30,
+    lineHeight: 56,
+    /* identical to box height */
   },
   button: {
     alignItems: "flex-end",

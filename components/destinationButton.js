@@ -29,7 +29,7 @@ export default class DestinantionButton extends Component{
     </View>
     
     <View style = {styles.centerCol}>
-    <Text  style ={{fontFamily :'sans-serif-thin', fontSize : 21, color : '#545454'}}>Where To? </Text>
+    <Text  style ={{fontFamily :'charm-bold', fontSize : 21, color : '#545454'}}>Where To? </Text>
     </View>
     
     <View style = {styles.rightCol}>
