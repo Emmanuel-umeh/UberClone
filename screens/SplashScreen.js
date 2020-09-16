@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,12 +8,23 @@ import {
   StatusBar,
   Image,
 } from "react-native";
- 
+import { connect } from "react-redux";
 import {LinearGradient} from 'expo-linear-gradient'
 import * as Animatable from "react-native-animatable"
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 function SplashScreen({ navigation }) {
+  useEffect(()=>{
+    console.log("stuff")
+    
+    setTimeout(() => {
+      console.log("timeout done")
+      navigation.navigate("Splash1")
+    }, 2000);
+  })
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -21,15 +32,17 @@ function SplashScreen({ navigation }) {
          */}
 
         <Animatable.Image
-        animation = "bounceIn"
+        animation = "fadeInUpBig"
         delay = {2}
-          source={require("../assets/logo.png")}
+          source={require("../assets/logo5.png")}
           style={styles.logo}
           resizeMode="stretch"
         />
+
+
       </View>
 
-      <Animatable.View style={styles.footer}
+      {/* <Animatable.View style={styles.footer}
        animation = "fadeInUpBig"
        >
         <Text style={styles.title}> Welcome to Axis</Text>
@@ -56,19 +69,34 @@ function SplashScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </Animatable.View>
+     */}
+    
+    
     </View>
   );
 }
 
-export default SplashScreen;
 
-const { height } = Dimensions.get("screen");
-const height_logo = height * 0.28;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, { })(
+  SplashScreen
+);
+
+
+
+const { height, width } = Dimensions.get("screen");
+const height_logo = height * 0.15;
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#009387",
+    backgroundColor: "#000000",
   },
   header: {
     flex: 2,
@@ -84,7 +112,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   logo: {
-    width: height_logo,
+    width: width ,
     height: height_logo,
   },
   title: {

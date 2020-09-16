@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component,  useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,160 +9,186 @@ import {
   Platform,
   Image,
 } from "react-native";
-
+import { connect } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 import { FontAwesome } from "@expo/vector-icons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextInput } from "react-native-gesture-handler";
-function SignInScreen({ navigation }) {
-  const [data, setData] = React.useState({
+
+import {loadUser} from "../action/authAction"
+class SignInScreen extends Component{
+
+
+
+  componentDidMount(){
+    console.log("state")
+    this.props.loadUser()
+  }
+
+state = { 
     email: "",
     password: "",
     secureTextEntry: true,
     check_text_input_change: false,
-  });
+  };
 
-  const textInputChange = (val) => {
+   textInputChange = (val) => {
     if (val.length != 0) {
-      setData({
-        ...data,
+      this.setState({
+        ...this.state,
         email: val,
         check_text_input_change: true,
       });
     } else {
-      setData({
-        ...data,
+      this.setState({
+        ...this.state,
         email: val,
         check_text_input_change: false,
       });
     }
   };
 
-  const handlePasswordChange = (val) => {
+   handlePasswordChange = (val) => {
     if (val.length != 0) {
-      setData({
-        ...data,
+      this.setState({
+        ...this.state,
         password: val,
         // check_text_input_change: true,
       });
     } else {
-      setData({
-        ...data,
+      this.setState({
+        ...this.state,
         email: val,
         // check_text_input_change: false,
       });
     }
   };
 
-  const security = () => {
-    setData({
-      ...data,
-      secureTextEntry: !data.secureTextEntry,
+   security = () => {
+    this.setState({
+      ...this.state,
+      secureTextEntry: !this.state.secureTextEntry,
     });
   };
-  return (
-    <View style={styles.container}>
 
-        <StatusBar backgroundColor = "#009387" barStyle = "light-content" />
-      <View style={styles.header}>
-        <Text style={styles.text_header}>Login </Text>
+
+  render(){
+
+    return (
+      <View style={styles.container}>
+  
+          <StatusBar backgroundColor = "#009387" barStyle = "light-content" />
+        <View style={styles.header}>
+          <Text style={styles.text_header}>Login </Text>
+        </View>
+  
+        <Animatable.View
+        animation= "fadeInUpBig"
+        
+        style={styles.footer}>
+          <Text style={styles.text_footer}>Email</Text>
+          <View style={styles.action}>
+            <FontAwesome name="user-o" color="#05375a" size={20} />
+  
+            <TextInput
+              placeholder="Your Email"
+              style={styles.textInput}
+              autoCapitalize="none"
+              onChangeText={(val) => {
+                this.textInputChange(val);
+              }}
+            />
+            {this.state.check_text_input_change ? (
+              <Animatable.View animation="bounceIn">
+                <FontAwesome name="check-circle" color="green" size={20} />
+              </Animatable.View>
+            ) : null}
+          </View>
+  
+          {/* Paassword */}
+          <Text style={(styles.text_footer, { marginTop: 35 })}>Password</Text>
+          <View style={styles.action}>
+            <FontAwesome name="lock" color="#05375a" size={20} />
+  
+            <TextInput
+              placeholder="Your Password"
+              secureTextEntry={this.state.secureTextEntry ? true : false}
+              style={styles.textInput}
+              autoCapitalize="none"
+              onChangeText={(val) => {
+                this.handlePasswordChange(val);
+              }}
+            />
+  
+            {this.state.secureTextEntry ? (
+              <TouchableOpacity
+                onPress={() => {
+                  this.security();
+                }}
+              >
+                <FontAwesome
+                
+                  name="eye-slash"
+                  color="black"
+                  size={20}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  this.security();
+                }}
+              >
+                <FontAwesome name="eye" color="green" size={20} />
+              </TouchableOpacity>
+            )}
+          </View>
+  
+          <View style = {styles.button}>
+                
+              <LinearGradient
+              
+              colors={["#08d4c44", "#01ab9d"]}
+              style={styles.signIn}>
+  
+  <TouchableOpacity style ={styles.signIn}>
+                  <Text style = {styles.textSign, {
+                      color : "#fff"
+                  }}>
+                      Sign In
+                      </Text>  
+                      </TouchableOpacity>              
+              </LinearGradient>
+  
+              <TouchableOpacity style ={[styles.signIn, {
+                  borderColor : "#009387",
+                  borderWidth : 1,
+                  marginTop:15
+              }]}>
+                  <Text onPress ={()=>{
+                      navigation.navigate("SignUpScreen")
+                  }}>Sign Up</Text>
+              </TouchableOpacity>
+          </View>
+        </Animatable.View>
       </View>
-
-      <Animatable.View
-      animation= "fadeInUpBig"
-      
-      style={styles.footer}>
-        <Text style={styles.text_footer}>Email</Text>
-        <View style={styles.action}>
-          <FontAwesome name="user-o" color="#05375a" size={20} />
-
-          <TextInput
-            placeholder="Your Email"
-            style={styles.textInput}
-            autoCapitalize="none"
-            onChangeText={(val) => {
-              textInputChange(val);
-            }}
-          />
-          {data.check_text_input_change ? (
-            <Animatable.View animation="bounceIn">
-              <FontAwesome name="check-circle" color="green" size={20} />
-            </Animatable.View>
-          ) : null}
-        </View>
-
-        {/* Paassword */}
-        <Text style={(styles.text_footer, { marginTop: 35 })}>Password</Text>
-        <View style={styles.action}>
-          <FontAwesome name="lock" color="#05375a" size={20} />
-
-          <TextInput
-            placeholder="Your Password"
-            secureTextEntry={data.secureTextEntry ? true : false}
-            style={styles.textInput}
-            autoCapitalize="none"
-            onChangeText={(val) => {
-              handlePasswordChange(val);
-            }}
-          />
-
-          {data.secureTextEntry ? (
-            <TouchableOpacity
-              onPress={() => {
-                security();
-              }}
-            >
-              <FontAwesome
-              
-                name="eye-slash"
-                color="black"
-                size={20}
-              />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                security();
-              }}
-            >
-              <FontAwesome name="eye" color="green" size={20} />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        <View style = {styles.button}>
-              
-            <LinearGradient
-            
-            colors={["#08d4c44", "#01ab9d"]}
-            style={styles.signIn}>
-
-<TouchableOpacity style ={styles.signIn}>
-                <Text style = {styles.textSign, {
-                    color : "#fff"
-                }}>
-                    Sign In
-                    </Text>  
-                    </TouchableOpacity>              
-            </LinearGradient>
-
-            <TouchableOpacity style ={[styles.signIn, {
-                borderColor : "#009387",
-                borderWidth : 1,
-                marginTop:15
-            }]}>
-                <Text onPress ={()=>{
-                    navigation.navigate("SignUpScreen")
-                }}>Sign Up</Text>
-            </TouchableOpacity>
-        </View>
-      </Animatable.View>
-    </View>
-  );
+    );
+  } 
+  
 }
 
-export default SignInScreen;
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, {loadUser })(
+  SignInScreen
+);
+
 
 const styles = StyleSheet.create({
   container: {

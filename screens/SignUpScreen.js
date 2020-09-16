@@ -9,7 +9,7 @@ import {
   Platform,
   Image,
 } from "react-native";
-
+import { connect } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 import { FontAwesome } from "@expo/vector-icons";
@@ -183,7 +183,18 @@ function SignUpScreen({ navigation }) {
   );
 }
 
-export default SignUpScreen;
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, { })(
+  SignUpScreen
+);
+
+
 
 const styles = StyleSheet.create({
   container: {
