@@ -10,31 +10,50 @@ import {
 } from "react-native";
 // import Dots from 'react-carousel-dots';
 import { connect } from "react-redux";
-import { useFonts } from '@use-expo/font';
+import { useFonts } from "@use-expo/font";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
 
+import LottieView from "lottie-react-native";
+
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 function Intro3({ navigation }) {
- 
   return (
     <View style={styles.container}>
+
+      
+<View style = {styles.vector}>
+    <Image
+    source = {require("../../assets/circleVector.png")}
+    
+    
+    />
+
+      </View>
+      
       <View style={styles.line}>
-        <Animatable.Image
+        {/* <Animatable.Image
           source={require("../../assets/carVector.png")}
              resizeMode="center"
           animation = {"bounceIn"}
+        /> */}
+
+        <LottieView
+          style={{
+            width: "100%",
+          }}
+          source={require("../../assets/lottie/car.json")}
+          autoPlay
+          loop
         />
       </View>
 
-      <Animatable.View
-      animation = {"bounceIn"}
-      duration = {2000}
-      >
+      <Animatable.View animation={"bounceIn"} duration={2000}>
         <Text style={styles.text}>Quick Delivery...</Text>
+        <Text style={styles.subText}>
+          Delivering your product quickly and efficiently...
+        </Text>
       </Animatable.View>
-
-
 
       {/* <Animatable.View style={styles.footer}
        animation = "fadeInUpBig"
@@ -85,15 +104,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#000000",
   },
   line: {
-
     position: "absolute",
     left: "13.77%",
     right: "13.54%",
-    top: "34.51%",
-    bottom:" 58.17%"
+    top: "25.51%",
+    bottom: " 58.17%",
   },
 
- 
+  vector: {
+    position: "absolute",
+    width: 387.96,
+    height: 257.64,
+    left: "1.77%",
+    // top: "0.51%",
+    zIndex: 1,
+    // backgroundColor: "#998415",
+    // transform: matrix(-0.8, 0.6, 0.6, 0.8, 0, 0)
+  },
+
   footer: {
     flex: 1,
     backgroundColor: "#fff",
@@ -126,6 +154,22 @@ const styles = StyleSheet.create({
     // fontWeight: "bold",
     fontSize: 30,
     lineHeight: 56,
+    /* identical to box height */
+  },
+
+  subText: {
+    position: "absolute",
+    width: 345,
+    height: 38,
+    left: 34,
+    top: height * 0.65,
+    color: "#fff",
+
+    fontFamily: "charm-bold",
+    // fontStyle: normal,
+    // fontWeight: normal,
+    fontSize: 20,
+    lineHeight: 22,
     /* identical to box height */
   },
   button: {

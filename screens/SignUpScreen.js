@@ -169,13 +169,14 @@ function SignUpScreen({ navigation }) {
             </LinearGradient>
 
             <TouchableOpacity style ={[styles.signIn, {
-                borderColor : "#000000",
-                borderWidth : 1,
+                // borderColor : "#000000",
+                // borderWidth : 1,
+                
                 marginTop:15
             }]}>
-                <Text onPress ={()=>{
+                <Text style = {{color : "#998415"}} onPress ={()=>{
                     navigation.navigate("SignInScreen")
-                }}>Sign In</Text>
+                }}>Already Have An Account ?</Text>
             </TouchableOpacity>
         </View>
       </Animatable.View>
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
+    // borderRadius: 10,
     fontFamily: "charm-bold",
   },
   textSign: {

@@ -15,11 +15,11 @@ import * as Animatable from "react-native-animatable"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 function SplashScreen({ navigation }) {
   useEffect(()=>{
-    console.log("stuff")
+    // console.log("stuff")
     
     setTimeout(() => {
-      console.log("timeout done")
-      navigation.navigate("Splash1")
+      // console.log("timeout done")
+      navigation.navigate("SignInScreen")
     }, 2000);
   })
 

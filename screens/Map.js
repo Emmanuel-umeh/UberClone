@@ -1,6 +1,4 @@
-import React, { Component } from 'react'
-
-
+import React, { Component } from "react";
 
 import { StatusBar } from "expo-status-bar";
 
@@ -12,76 +10,107 @@ import * as Permissions from "expo-permissions";
 import DestinationButton from "../components/destinationButton";
 
 import Driver from "../components/driver";
-import CurrentLocationButton from '../components/currentLocationButton';
-export default class Map extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-          region: {
-            latitude: 9.0765,
-            longitude: 7.3986,
-            latitudeDelta: 0.992,
-            longitudeDelta: 0.0421,
-          },
-        };
-    
-        this._getLocationAsync();
-      }
-    
-      _getLocationAsync = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
-        if (status !== "granted") {
-          console.log("Permission to access denied!!!.");
-        }
-    
-        let location = await Location.getCurrentPositionAsync({
-          enableHighAccuracy: true,
-        });
-    
-        const WIDTH = Dimensions.get("window").width;
-        const HEIGHT = Dimensions.get("window").height;
-        const ASPECT_RATIO = WIDTH / HEIGHT;
-        const LATITUDE_DELTA = 0.02358723958820065; //Very high zoom level
-        const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-        let region = {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        };
-        this.setState({
-          region: region,
-        });
-    
-        this.centerMap();
-      };
-    
-      centerMap = () => {
-        const {
-          latitudeDelta,
-          longitudeDelta,
-          latitude,
-          longitude,
-        } = this.state.region;
-    
-        this.map.animateToRegion(
-          {
-            latitudeDelta,
-            longitudeDelta,
-            latitude,
-            longitude,
-          },
-          2000
-        );
-      };
-    render(){
+import CurrentLocationButton from "../components/currentLocationButton";
 
-        return(
-            <View style={styles.container}>
-              
+import { Ionicons } from "@expo/vector-icons";
+export default class Map extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      region: {
+        latitude: 9.0765,
+        longitude: 7.3986,
+        latitudeDelta: 0.992,
+        longitudeDelta: 0.0421,
+      },
+    };
+
+    this._getLocationAsync();
+
+   
+  }
+
+
+
+  componentDidMount(){
+
+    console.log("Mounted with props, ", this.props.navigation)
+  }
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      console.log("Permission to access denied!!!.");
+    }
+
+    let location = await Location.getCurrentPositionAsync({
+      enableHighAccuracy: true,
+    });
+
+    const WIDTH = Dimensions.get("window").width;
+    const HEIGHT = Dimensions.get("window").height;
+    const ASPECT_RATIO = WIDTH / HEIGHT;
+    const LATITUDE_DELTA = 0.02358723958820065; //Very high zoom level
+    const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+    let region = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    };
+    this.setState({
+      region: region,
+    });
+
+    this.centerMap();
+  };
+
+  centerMap = () => {
+    const {
+      latitudeDelta,
+      longitudeDelta,
+      latitude,
+      longitude,
+    } = this.state.region;
+
+    this.map.animateToRegion(
+      {
+        latitudeDelta,
+        longitudeDelta,
+        latitude,
+        longitude,
+      },
+      2000
+    );
+  };
+  render() {
+
+    // console.log("this is it !!!! ",this.props.navigation)
+    return (
+      <View style={styles.container}>
         {/* <Text>Home Screen</Text> */}
 
         <DestinationButton />
+
+        <View
+          style={{
+            height: 55,
+            width: 55,
+            backgroundColor: "white",
+            borderRadius: 50,
+            // display: inline-block;
+
+            top: 40,
+            left: 30,
+            zIndex: 999,
+             alignItems : "center",
+             justifyContent : "center"
+             
+          }}
+        >
+          <Ionicons name="md-menu" size={32} color="black"  onPress ={()=>{
+            this.props.navigation.openDrawer()
+          }}/>
+        </View>
 
         {/* <CurrentLocationButton
           cb={() => {
@@ -89,10 +118,11 @@ export default class Map extends Component{
           }}
         /> */}
 
-
-        <CurrentLocationButton  cb={() => {
+        <CurrentLocationButton
+          cb={() => {
             this.centerMap();
-          }} />
+          }}
+        />
 
         <MapView
           followUserLocation={true}
@@ -105,13 +135,12 @@ export default class Map extends Component{
           showsTraffic={true}
           style={{
             flex: 1,
-            zIndex : 0
+            zIndex: 0,
           }}
           ref={(map) => {
             this.map = map;
           }}
         >
-
           <Driver
             driver={{
               uid: null,
@@ -126,17 +155,15 @@ export default class Map extends Component{
         </MapView>
         <StatusBar style="auto" />
       </View>
-        )
-    }
+    );
+  }
 }
 
-
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#fff",
-      // alignItems: 'center',
-      // justifyContent: 'center',
-    },
-  });
-  
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+});

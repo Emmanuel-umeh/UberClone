@@ -19,7 +19,6 @@ import { TextInput } from "react-native-gesture-handler";
 import { loadUser } from "../action/authAction";
 class SignInScreen extends Component {
   componentDidMount() {
-    console.log("props ", this.props.navigation);
     this.props.loadUser();
   }
 
@@ -137,21 +136,25 @@ class SignInScreen extends Component {
             )}
           </View>
 
-          <View style={styles.button} >
+          <View style={styles.button}>
             <LinearGradient
               colors={["#08d4c44", "#01ab9d"]}
               style={styles.signIn}
             >
-              <TouchableOpacity style={styles.signIn} onPress ={()=>{
+              <TouchableOpacity
+                style={styles.signIn}
+                onPress={() => {
+                  // this.props.complete
 
-this.props.navigation.navigate("Map")
-}}>
+                  this.props.navigation.navigate("Map");
+                }}
+              >
                 <Text
                   style={
                     (styles.textSign,
                     {
                       color: "#fff",
-  
+
                       fontFamily: "charm-bold",
                     })
                   }
@@ -178,7 +181,7 @@ this.props.navigation.navigate("Map")
                 }}
               >
                 Sign Up
-              </Text> 
+              </Text>
             </TouchableOpacity>
           </View>
         </Animatable.View>
