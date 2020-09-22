@@ -10,11 +10,12 @@ import DetailsScreen from './DetailsScreen';
 import ExploreScreen from './ExploreScreen';
 import ProfileScreen from './ProfileScreen';
 import Map from './Map';
+import RootStackScreen from './RootStackScreen';
 
 const HomeStack = createStackNavigator();
 const DetailsStack = createStackNavigator();
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createStackNavigator();
 
 function MainTabScreen (){
 
@@ -23,10 +24,11 @@ function MainTabScreen (){
     <Tab.Navigator
     initialRouteName="Home"
     activeColor="#fff"
-  >
+    screenOptions={{ headerShown: false }}>
+  
     <Tab.Screen
       name="Home"
-      component={HomeStackScreen}
+      component={RootStackScreen}
       options={{
         tabBarLabel: 'Home',
         tabBarColor: '#000000',

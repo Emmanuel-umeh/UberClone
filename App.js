@@ -129,7 +129,7 @@ class App extends React.Component {
   render() {
     if (this.state.loading) {
       return <AppLoading />;
-    } else if (this.state.completed) {
+    } else  {
       // console.log("second!!!");
       return (
         <Provider store={store}>
@@ -142,41 +142,18 @@ class App extends React.Component {
               <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
               {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
         <Drawer.Screen name="Details" component={DetailsStackScreen} /> */}
+
+
             </Drawer.Navigator>
+
+            
             {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
         renderNextButton={this._renderNextButton} data={slides} onDone={this._onDone}/> */}
             {/* <RootStackScreen /> */}
           </NavigationContainer>
         </Provider>
       );
-    } else {
-      // console.log("third");
-
-      return (
-        <Provider store={store}>
-          <NavigationContainer>
-            {/* <Drawer.Navigator drawerContent ={
-        props=><DrawerContent {...props} />
-      
-      } initialRouteName="Home">
-        
-        <Drawer.Screen name="Home" component={HomeStackScreen} />
-        <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
-        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-        <Drawer.Screen name="Details" component={DetailsStackScreen} />
-      </Drawer.Navigator> */}
-            <AppIntroSlider
-              renderItem={this._renderItem}
-              renderDoneButton={this._renderDoneButton}
-              renderNextButton={this._renderNextButton}
-              data={slides}
-              onDone={this._onDone}
-            />
-            {/* <RootStackScreen /> */}
-          </NavigationContainer>
-        </Provider>
-      );
-    }
+    } 
   }
 
   // const [dataLoaded, setDataLoaded] = useState(false)

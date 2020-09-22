@@ -97,6 +97,7 @@ export default class Map extends Component {
             width: 55,
             backgroundColor: "white",
             borderRadius: 50,
+            position : "absolute",
             // display: inline-block;
 
             top: 40,
