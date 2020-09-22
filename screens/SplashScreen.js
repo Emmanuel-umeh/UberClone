@@ -19,7 +19,7 @@ function SplashScreen({ navigation }) {
     
     setTimeout(() => {
       // console.log("timeout done")
-      navigation.navigate("SignInScreen")
+      navigation.navigate("getStarted")
     }, 2000);
   })
 
