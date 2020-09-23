@@ -12,7 +12,9 @@ import {
   GET_USERS,
   LOGIN_FAIL,
   LOGOUT_SUCCESS,
+  AUTH_MESSAGE_SENT,
   GET_ERRORS,
+  AUTH_MESSAGE_FAILED,
   CLEAR_TYPE,
 } from "./types";
 

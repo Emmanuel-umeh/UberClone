@@ -11,6 +11,8 @@ import {
     USERS_LOADED,
     UPDATED_USER,
     UPDATING_USER,
+    AUTH_MESSAGE_FAILED,
+    AUTH_MESSAGE_SENT,
     PROFILE_LOADED,
     CLEAR_TYPE
  } from "../action/types"
@@ -67,6 +69,16 @@ import {
                     isLoading:false,
                     type:'AUTH_MESSAGE_SENT',
                     auth_msg_details : action.payload
+
+                };
+
+                        
+            case AUTH_MESSAGE_FAILED:
+                return {
+                    ...state, 
+                    isLoading:false,
+                    type:'AUTH_MESSAGE_FAILED',
+                    auth_msg_details : null
 
                 };
     

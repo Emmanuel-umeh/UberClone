@@ -4,7 +4,7 @@ import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import * as Animatable from "react-native-animatable";
 import {connect} from "react-redux"
-
+import {textMessageAuth} from "../action/authAction"
 class PhoneNumber extends Component {
   constructor(props) {
     super(props);
