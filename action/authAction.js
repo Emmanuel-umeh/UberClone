@@ -24,8 +24,8 @@ import {
 // let notifier = new AWN
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
-  axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-  // axios.defaults.baseURL = 'http://localhost:5200';
+  // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
+  axios.defaults.baseURL = 'http://192.168.0.101:5200';
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -46,7 +46,7 @@ export const loadUser = () => (dispatch, getState) => {
     try {
 
       axios
-      .get(`/api/users/oneUser`, tokenConfig(getState))
+      .get(`/api/auth/oneUser`, tokenConfig(getState))
       .then( res=>  
 
         {
@@ -66,6 +66,8 @@ export const loadUser = () => (dispatch, getState) => {
            })
           //  console
           })
+
+
       .catch(err => {
           dispatch({
               type:AUTH_ERROR

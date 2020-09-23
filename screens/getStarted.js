@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Animatable from "react-native-animatable";
+import { loadUser } from "../action/authAction";
+import {connect} from "react-redux"
 function getStarted({navigation}) {
   return (
     <Animatable.View 
@@ -66,4 +68,11 @@ const styles = StyleSheet.create({
   }
 });
 
-export default getStarted;
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, { loadUser })(getStarted);

@@ -12,55 +12,17 @@ import MainTabScreen, {
 } from "./screens/MainTabScreen";
 import { DrawerContent } from "./screens/DrawerContent";
 import RootStackScreen from "./screens/RootStackScreen";
-import store from "./store";
-import { Provider } from "react-redux";
 
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
-import AppIntroSlider from "react-native-app-intro-slider";
-import Intro1 from "./screens/Intro/Intro1";
-import Intro2 from "./screens/Intro/Intro3";
-import { useFonts } from "@use-expo/font";
+
+import { connect } from "react-redux";
+import { loadUser } from "./action/authAction";
 
 import Icon from "react-native-vector-icons/Ionicons";
 import Intro3 from "./screens/Intro/Intro2";
+import AuthenticatedStack from "./screens/AuthenticatedStack";
 const Drawer = createDrawerNavigator();
-
-// const fetchFonts = () => {
-//   return Font.loadAsync({
-//   'charm-bold': require('./assets/fonts/Charm-Bold.ttf'),
-//   // 'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
-//   'charm-regular': require('./assets/fonts/Charm-Regular.ttf')
-//   });
-//   };
-
-const slides = [
-  {
-    key: 1,
-    title: "Title 1",
-    text: "Description.\nSay something cool",
-    image: require("./assets/car.png"),
-    backgroundColor: "#59b2ab",
-
-    design: <Intro1 />,
-  },
-  {
-    key: 2,
-    title: "Title 2",
-    text: "Other cool stuff",
-    image: require("./assets/logo.png"),
-    backgroundColor: "#febe29",
-    design: <Intro2 />,
-  },
-  {
-    key: 3,
-    title: "Rocket guy",
-    text: "I'm already out of descriptions\n\nLorem ipsum bla bla bla",
-    image: require("./assets/splash.png"),
-    backgroundColor: "#22bcb5",
-    design: <Intro3 />,
-  },
-];
 
 class App extends React.Component {
   constructor(props) {
@@ -80,43 +42,44 @@ class App extends React.Component {
 
       "roboto-700": require("./assets/fonts/roboto-700.ttf"),
       "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
-
     });
     this.setState({ loading: false });
+    this.props.loadUser();
+    // console.log("Redux props ", this.props)
   };
 
-  _renderNextButton = () => {
-    return (
-      <View style={styles.row}>
-        <View style={styles.buttonCircle}>
-          <Icon
-            name="md-arrow-round-forward"
-            color="rgba(255, 255, 255, .9)"
-            size={24}
-          />
-        </View>
-        <View style={{ paddingTop: 10 }}>
-          <Text style={styles.text}>Next</Text>
-        </View>
-      </View>
-    );
-  };
-  _renderDoneButton = () => {
-    return (
-      <View style={styles.row}>
-        <View style={styles.buttonCircle}>
-          <Icon name="md-checkmark" color="rgba(255, 255, 255, .9)" size={24} />
-        </View>
+  // _renderNextButton = () => {
+  //   return (
+  //     <View style={styles.row}>
+  //       <View style={styles.buttonCircle}>
+  //         <Icon
+  //           name="md-arrow-round-forward"
+  //           color="rgba(255, 255, 255, .9)"
+  //           size={24}
+  //         />
+  //       </View>
+  //       <View style={{ paddingTop: 10 }}>
+  //         <Text style={styles.text}>Next</Text>
+  //       </View>
+  //     </View>
+  //   );
+  // };
+  // _renderDoneButton = () => {
+  //   return (
+  //     <View style={styles.row}>
+  //       <View style={styles.buttonCircle}>
+  //         <Icon name="md-checkmark" color="rgba(255, 255, 255, .9)" size={24} />
+  //       </View>
 
-        <View style={{ paddingTop: 10 }}>
-          <Text style={styles.text}>Done</Text>
-        </View>
-      </View>
-    );
-  };
-  _renderItem = ({ item }) => {
-    return item.design;
-  };
+  //       <View style={{ paddingTop: 10 }}>
+  //         <Text style={styles.text}>Done</Text>
+  //       </View>
+  //     </View>
+  //   );
+  // };
+  // _renderItem = ({ item }) => {
+  //   return item.design;
+  // };
 
   _onDone = () => {
     // navigation.navigate("SignUpScreen")
@@ -127,40 +90,49 @@ class App extends React.Component {
   };
 
   render() {
+    const { isAuthenticated } = this.props.auth;
+
+    console.log("is authenticated??!! ", isAuthenticated);
     if (this.state.loading) {
       return <AppLoading />;
-    } else  {
+    } else {
       // console.log("second!!!");
       return (
-        <Provider store={store}>
-          <NavigationContainer>
-            <Drawer.Navigator
-              drawerContent={(props) => <DrawerContent {...props} />}
-              initialRouteName="Home"
-            >
-              {/* <Drawer.Screen name="Home" component={HomeStackScreen} /> */}
-              <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
-              {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+        // <Provider store={store}>
+        <NavigationContainer>
+          <Drawer.Navigator
+            drawerContent={(props) => <DrawerContent {...props} />}
+            initialRouteName="Home"
+          >
+            {isAuthenticated ? (
+              <Drawer.Screen name="HomeDrawer" component={AuthenticatedStack} />
+            ) : (
+              <Drawer.Screen name="Home" component={RootStackScreen} />
+            )}
+
+            {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
         <Drawer.Screen name="Details" component={DetailsStackScreen} /> */}
+          </Drawer.Navigator>
 
-
-            </Drawer.Navigator>
-
-            
-            {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
+          {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
         renderNextButton={this._renderNextButton} data={slides} onDone={this._onDone}/> */}
-            {/* <RootStackScreen /> */}
-          </NavigationContainer>
-        </Provider>
+          {/* <RootStackScreen /> */}
+        </NavigationContainer>
+        // </Provider>
       );
-    } 
+    }
   }
 
   // const [dataLoaded, setDataLoaded] = useState(false)
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+});
 
+// export default ProjectForm
+export default connect(mapStateToProps, { loadUser })(App);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

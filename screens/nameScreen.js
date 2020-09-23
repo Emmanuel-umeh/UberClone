@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text,TextInput } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
-
+import * as Animatable from "react-native-animatable"
 function nameScreen({navigation}) {
   return (
-    <View style={styles.container}>
+    <Animatable.View 
+    animation ="bounceInDown"
+    
+    style={styles.container}>
       <Text style={styles.whatsYourName}>What&#39;s your name?</Text>
       <View style={styles.rectRow}>
         <View style={styles.rect}></View>
@@ -14,8 +17,10 @@ function nameScreen({navigation}) {
         <TextInput style={styles.first} placeholder = "First"></TextInput>
         <TextInput style={styles.last} placeholder = "Last"></TextInput>
       </View>
-      <Icon name="chevron-with-circle-right" style={styles.icon1}></Icon>
-    </View>
+      <Icon name="chevron-with-circle-right" onPress ={()=>{
+        navigation.navigate("TermsAndCondition")
+      }} style={styles.icon1}></Icon>
+    </Animatable.View>
   );
 }
 
@@ -72,7 +77,7 @@ const styles = StyleSheet.create({
   icon1: {
     color: "rgba(1,1,1,1)",
     fontSize: 50,
-    marginTop: 439,
+    marginTop: "80%",
     marginLeft: 281
   }
 });

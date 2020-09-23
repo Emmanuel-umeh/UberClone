@@ -20,10 +20,10 @@ import {
 
  const initialState ={
      token:AsyncStorage.getItem("token"),
-     isAuthenticated:null,
+     isAuthenticated:false,
      isLoading:false,
-     user:[],
-     profile:[],
+     user:null,
+     profile:null,
      type:''
  }
 

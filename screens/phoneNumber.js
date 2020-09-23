@@ -2,10 +2,13 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
+import * as Animatable from "react-native-animatable"
 
 function phoneNumber({navigation}) {
   return (
-    <View style={styles.container}>
+    <Animatable.View
+    animation = "slideInUp"
+     style={styles.container}>
       <Text style={styles.loremIpsum}>Enter your mobile number</Text>
       <View style={styles.rect}></View>
       <View style={styles.loremIpsum2Row}>
@@ -40,7 +43,7 @@ function phoneNumber({navigation}) {
           style={styles.icon3}
         ></EntypoIcon>
       </View>
-    </View>
+    </Animatable.View>
   );
 }
 

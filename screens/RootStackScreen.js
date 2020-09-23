@@ -13,6 +13,7 @@ import { loadUser } from "../action/authAction";
 import {connect} from "react-redux"
 import getStarted from './getStarted';
 import nameScreen from './nameScreen';
+import TermsAndCondition from './termsAndCondition';
 const RootStack = createStackNavigator();
 
 const RootStackScreen = ({navigation}) => (
@@ -23,6 +24,7 @@ const RootStackScreen = ({navigation}) => (
         <RootStack.Screen name="getStarted" component={getStarted}/>
         <RootStack.Screen name="phoneNumberScreen" component={phoneNumber}/>
         <RootStack.Screen name="nameScreen" component={nameScreen}/>
+        <RootStack.Screen name="TermsAndCondition" component={TermsAndCondition}/>
         <RootStack.Screen name="SignInScreen" component={SignInScreen}/>
         <RootStack.Screen name="SignUpScreen" component={SignUpScreen}/>
         {/* <RootStack.Screen name="Splash1" component={Splash1}/> */}
