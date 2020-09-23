@@ -26,7 +26,7 @@ import {
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://192.168.0.101:5200";
+axios.defaults.baseURL = "http://192.168.0.100:5200";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -81,7 +81,7 @@ export const loadUser = () => (dispatch, getState) => {
 
 // export const register =
 
-export const textMessageAuth = ({ phoneNumber }) => (dispatch) => {
+export const textMessageAuth = ( phoneNumber ) => (dispatch) => {
   // console.log("data received ", email, password)
   const config = {
     headers: {
@@ -91,6 +91,8 @@ export const textMessageAuth = ({ phoneNumber }) => (dispatch) => {
 
   // REQUEST BODY
   const body = JSON.stringify({ phoneNumber });
+
+  console.log("body recieved ", body)
   axios
     .post(`/api/users/phone`, body, config)
     .then(

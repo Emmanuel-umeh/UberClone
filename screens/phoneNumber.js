@@ -14,18 +14,28 @@ class PhoneNumber extends Component {
     number: null,
   };
 
+
+  concatNumber=(phoneNumber)=>{
+
+    var number = "+234" + phoneNumber
+
+    // console.log("concat number ", number)
+    this.props.textMessageAuth(number)
+  }
+
   mobileNumber = () => {
 
     console.log("all zeros ? !",/^\d+$/.test(this.state.number.toString()) ? 
     
-    this.props.textMessageAuth() 
-    
+    this.concatNumber(this.state.number)
     : 
     alert("Please Enter Just Numbers")
     ) 
   };
   render() {
-    console.log("number", this.state.number);
+    // console.log("number", this.state.number);
+    console.log("endpoint details ", this.props.auth)
+   
     return (
       <Animatable.View animation="slideInUp" style={styles.container}>
         <Text style={styles.loremIpsum}>Enter your mobile number</Text>
@@ -78,8 +88,9 @@ class PhoneNumber extends Component {
           </Text>
           <EntypoIcon
             onPress={() => {
-              // this.props.navigation.navigate("nameScreen")
-              this.mobileNumber();
+              this.props.navigation.navigate("otp")
+              // this.mobileNumber();
+              
             }}
             name="chevron-with-circle-right"
             style={styles.icon3}

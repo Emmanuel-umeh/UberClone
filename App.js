@@ -90,7 +90,9 @@ class App extends React.Component {
   };
 
   render() {
-    const { isAuthenticated } = this.props.auth;
+    const { isAuthenticated, type } = this.props.auth;
+
+    console.log("type dispatched ", type)
 
     console.log("is authenticated??!! ", isAuthenticated);
     if (this.state.loading) {

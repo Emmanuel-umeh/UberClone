@@ -1,15 +1,57 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text,Image, } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Animatable from "react-native-animatable";
 import { loadUser } from "../action/authAction";
 import {connect} from "react-redux"
+
+import LottieView from 'lottie-react-native';
+
 function getStarted({navigation}) {
   return (
     <Animatable.View 
     animation = "bounceIn"
     style={styles.container}>
+
+{/* 
+<Image
+          style={{width: 50, height: 50}}
+          source={{uri: 'https://reactjs.org/logo-og.png'}}
+        /> */}
+
+      
+{/* <View style={styles.line}> */}
+        {/* <Animatable.Image
+          source={require("../../assets/carVector.png")}
+             resizeMode="center"
+          animation = {"bounceIn"}
+        /> */}
+
+      
+        <View style = {styles.line}>
+            <LottieView
+          style = {{
+            height : 200,
+            width : 200
+          }}
+          source={require("../assets/lottie/test9.json")}
+          autoPlay
+          loop
+        />
+{/* 
+        <Image
+          source={{uri: "../assets/lottie/axiscar4.gif"}}
+          style={{height : 300, width : 300}} 
+          /> */}
+        </View>
+
+      {/* </View> */}
+
+
       <Text style={styles.moveSafely}>Move Safely</Text>
+
+      
+
       <View style={styles.rect}>
         <Animatable.View 
         animation = "fadeInUp"
@@ -65,7 +107,15 @@ const styles = StyleSheet.create({
     marginRight: 19,
     marginLeft: 101,
     marginTop: 4
-  }
+  },
+  line: {
+    position: "absolute",
+    left: "25.77%",
+    right: "13.54%",
+    top: "25.51%",
+    bottom: " 58.17%",
+  },
+
 });
 
 
