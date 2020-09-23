@@ -24,7 +24,8 @@ import {
      isLoading:false,
      user:null,
      profile:null,
-     type:''
+     type:'',
+     auth_msg_details : null
  }
 
 
@@ -57,6 +58,18 @@ import {
                 isLoading:true,
                 type:'USER_LOADED'
             };
+
+
+                 
+            case AUTH_MESSAGE_SENT:
+                return {
+                    ...state, 
+                    isLoading:false,
+                    type:'AUTH_MESSAGE_SENT',
+                    auth_msg_details : action.payload
+
+                };
+    
 
         case LOGIN_SUCCESS:
         case REGISTER_SUCCESS:
