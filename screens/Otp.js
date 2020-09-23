@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 
-import OTPTextInput from "react-native-otp-textinput"
-
+import OTPInputView from '@twotalltotems/react-native-otp-input'
+ 
 class Otp extends Component{
 
      
@@ -15,12 +15,19 @@ class Otp extends Component{
   
     return (
       <View style={styles.container}>
-        <View style={styles.rectRow}>
-       
-              <OTPTextInput ref={e => (otpInput = e)} />
-              {/* <Button title="clear" onPress={()=>this.clearText()} /> */}
-      
-        </View>
+        
+<OTPInputView
+    style={{width: '80%', height: 200}}
+    pinCount={4}
+    // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
+    // onCodeChanged = {code => { this.setState({code})}}
+    autoFocusOnLoad
+    codeInputFieldStyle={styles.underlineStyleBase}
+    codeInputHighlightStyle={styles.underlineStyleHighLighted}
+    onCodeFilled = {(code => {
+        console.log(`Code is ${code}, you are good to go!`)
+    })}
+/>
   
  
         <View style={styles.loremIpsumStack}>
@@ -100,7 +107,26 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginTop: 175,
     marginLeft: 24
-  }
+  },
+  borderStyleBase: {
+    width: 30,
+    height: 45
+  },
+ 
+  borderStyleHighLighted: {
+    borderColor: "#03DAC6",
+  },
+ 
+  underlineStyleBase: {
+    width: 30,
+    height: 45,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+  },
+ 
+  underlineStyleHighLighted: {
+    borderColor: "#03DAC6",
+  },
 });
 
 export default Otp;
