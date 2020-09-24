@@ -15,17 +15,21 @@ class PhoneNumber extends Component {
   };
 
 
-  concatNumber=(phoneNumber)=>{
+  concatNumber=async(phoneNumber)=>{
 
     var number = "+234" + phoneNumber
 
     // console.log("concat number ", number)
-    this.props.textMessageAuth(number)
+    const result = await this.props.textMessageAuth(number)
+
+    // console.log({result})
+    // this.props.navigation.navigate("otp")
+
   }
 
   mobileNumber = () => {
 
-    console.log("all zeros ? !",/^\d+$/.test(this.state.number.toString()) ? 
+    "all zeros ? !",/^\d+$/.test(this.state.number.toString() ? 
     
     this.concatNumber(this.state.number)
     : 
@@ -34,7 +38,7 @@ class PhoneNumber extends Component {
   };
   render() {
     // console.log("number", this.state.number);
-    console.log("endpoint details ", this.props.auth)
+    // console.log("endpoint details ", this.props.auth)
    
     return (
       <Animatable.View animation="slideInUp" style={styles.container}>
@@ -66,7 +70,7 @@ class PhoneNumber extends Component {
           <Text
             style={styles.back}
             onPress={() => {
-              navigation.pop();
+              this.props.navigation.pop();
             }}
           >
             Back
@@ -88,8 +92,8 @@ class PhoneNumber extends Component {
           </Text>
           <EntypoIcon
             onPress={() => {
-              this.props.navigation.navigate("otp")
-              // this.mobileNumber();
+            
+              this.mobileNumber();
               
             }}
             name="chevron-with-circle-right"

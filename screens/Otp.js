@@ -2,23 +2,33 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 
 import OTPInputView from '@twotalltotems/react-native-otp-input'
- 
+ import {connect} from "react-redux"
+
+ import {textMessageVerify} from "../action/authAction"
 class Otp extends Component{
 
-     
+     constructor(props){
+       super(props)
+     }
+
    clearText = () => {
     otpInput.clear();
 }
 
   render(){
     
+
+    const {request_id, phoneNumber}  = this.props.route.params
   
+    console.log("params ", this.props.route.params)
     return (
       <View style={styles.container}>
         
 <OTPInputView
     style={{width: '80%', height: 200}}
     pinCount={4}
+    placeholderTextColor = "#000000"
+    // ref={e => (otpInput = e)} 
     // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
     // onCodeChanged = {code => { this.setState({code})}}
     autoFocusOnLoad
@@ -26,6 +36,7 @@ class Otp extends Component{
     codeInputHighlightStyle={styles.underlineStyleHighLighted}
     onCodeFilled = {(code => {
         console.log(`Code is ${code}, you are good to go!`)
+        this.props.textMessageVerify(request_id, code, phoneNumber)
     })}
 />
   
@@ -34,7 +45,7 @@ class Otp extends Component{
           <Text style={styles.loremIpsum}>
             Enter the 4-digit otp code{"\n"}sent to you
           </Text>
-          <Text style={styles.loremIpsum2}>+2349035342677</Text>
+  <Text style={styles.loremIpsum2}>{phoneNumber}</Text>
         </View>
         {/* <Text style={styles.resendCodeIn0015}>Resend code in 00:15</Text> */}
       </View>
@@ -45,7 +56,8 @@ class Otp extends Component{
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent : "center"
   },
   rect: {
     width: 67,
@@ -114,7 +126,7 @@ const styles = StyleSheet.create({
   },
  
   borderStyleHighLighted: {
-    borderColor: "#03DAC6",
+    borderColor: "#000000",
   },
  
   underlineStyleBase: {
@@ -125,8 +137,16 @@ const styles = StyleSheet.create({
   },
  
   underlineStyleHighLighted: {
-    borderColor: "#03DAC6",
+    borderColor: "#000000",
   },
 });
 
-export default Otp;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, {textMessageVerify })(
+  Otp
+);

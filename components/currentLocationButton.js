@@ -18,7 +18,7 @@ const cb = props.cb ? props.cb : ()=> console.log("callback function not passed"
 
         <View style = {[styles.container, {top : HEIGHT - bottom}]}>
 
-        <MaterialIcons name = "my-location" color = " #000000"
+        <MaterialIcons name = "my-location"
         size = {25} onPress ={ ()=>{
             cb()
         }} />
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         position : "absolute",
         width : 43,
         height  :45,
-        backgroundColor : '#fff',
+        backgroundColor : 'white',
         left : WIDTH - 70,
         borderRadius : 50,
         shadowColor : "#000000",

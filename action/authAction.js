@@ -1,7 +1,7 @@
 import axios from "axios";
 import { returnErrors } from "./errorActions";
 import AsyncStorage from "@react-native-community/async-storage";
-
+import { NavigationActions } from "react-navigation";
 import {
   USER_LOADING,
   USER_LOADED,
@@ -18,6 +18,10 @@ import {
   CLEAR_TYPE,
 } from "./types";
 
+
+
+
+import * as RootNavigation from "../rootNavigation";
 // import AWN from "awesome-notifications"
 
 // https://elesarrdevelopment.herokuapp.com/api/signupuser/all
@@ -26,7 +30,7 @@ import {
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://192.168.0.100:5200";
+axios.defaults.baseURL = "http://b6c238a735ab.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -36,6 +40,19 @@ axios.defaults.baseURL = "http://192.168.0.100:5200";
 // }
 //
 
+var token
+export const saveToken = async (token) => {
+  try {
+
+    token =  await AsyncStorage.setItem("token", token)
+    // token  = await AsyncStorage.getItem("token")
+    // alert(token)
+    console.log(token)
+  } catch (e) {
+    // alert('Failed to save the data to the storage')
+    console.log(e)
+  }
+}
 export const loadUser = () => (dispatch, getState) => {
   console.log("getting user");
   // dispatch({type:USER_LOADING}) // dispatch user loading
@@ -50,10 +67,12 @@ export const loadUser = () => (dispatch, getState) => {
       .then((res) => {
         console.log("response ", res.data);
         if (res.data.message === "error") {
-          AsyncStorage.removeItem("token");
-          return dispatch({
-            type: AUTH_ERROR,
-          });
+          // AsyncStorage.removeItem("token");
+          // return dispatch({
+          //   type: AUTH_ERROR,
+          // });
+          
+          console.log("login failed")
         }
         // console.log("user data ", res)
         dispatch({
@@ -81,7 +100,8 @@ export const loadUser = () => (dispatch, getState) => {
 
 // export const register =
 
-export const textMessageAuth = ( phoneNumber ) => (dispatch) => {
+// send OTP code to the user
+export const textMessageAuth = (phoneNumber) => (dispatch) => {
   // console.log("data received ", email, password)
   const config = {
     headers: {
@@ -92,37 +112,144 @@ export const textMessageAuth = ( phoneNumber ) => (dispatch) => {
   // REQUEST BODY
   const body = JSON.stringify({ phoneNumber });
 
-  console.log("body recieved ", body)
+  console.log("body recieved ", body);
   axios
     .post(`/api/users/phone`, body, config)
     .then(
       (res) => {
-        dispatch({
-          type: AUTH_MESSAGE_SENT,
-          payload: res.data,
+        console.log("data ", res.data);
+        // dispatch({
+        //   type: AUTH_MESSAGE_SENT,
+        //   payload: res.data,
+        // })
+        // status code 10 means otp has already been sent
+        // status code 6 means the otp has timed out or more of it has been completed
+        return RootNavigation.navigate("otp", {
+          request_id: res.data.request_id,
+          status: res.data.status,
+          phoneNumber: phoneNumber,
         });
 
-        console.log("MESSAGE res ", res)
+        // console.log("MESSAGE res ", res)
       }
       // console.log("this is the res ", res)
     )
     .catch((err) => {
-      dispatch(
-        returnErrors(
-          err.response.data,
-          err.response.status,
-          "AUTH_MESSAGE_FAILED"
-        )
-      );
-      dispatch({
-        type: AUTH_MESSAGE_FAILED,
-      });
+      // return dispatch(
+      //  returnErrors(
+      //     err.response.data,
+      //     err.response.status,
+      //     "AUTH_MESSAGE_FAILED"
+      //   ),
+      //   {
+      //     type: AUTH_MESSAGE_FAILED,
+      //   }
 
-      dispatch({
-        type: AUTH_MESSAGE_FAILED,
-      });
+      // );
+      console.log("error ", err);
+    });
+};
 
-      notifier.warning("Login Failed");
+// Verify the OTP
+export const textMessageVerify = (request_id, code, phoneNumber) => (
+  dispatch
+) => {
+  // console.log("data received ", email, password)
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  // REQUEST BODY
+  const body = JSON.stringify({ request_id, code, phoneNumber });
+
+  // console.log("body recieved ", body)
+  axios
+    .post(`/api/users/phone/verify`, body, config)
+    .then(
+      (res) => {
+        console.log("data ", res.data);
+        // dispatch({
+        //   type: REGISTER_SUCCESS,
+        //   payload: res.data,
+        // });
+
+        saveToken(res.data.token)
+
+        return RootNavigation.navigate("nameScreen", { token: res.data.token });
+
+        // status code 10 means otp has already been sent
+        // status code 6 means the otp has timed out or more of it has been completed
+        // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });
+
+        // console.log("MESSAGE res ", res)
+      }
+      // console.log("this is the res ", res)
+    )
+    .catch((err) => {
+      // return dispatch(
+      //  returnErrors(
+      //     err.response.data,
+      //     err.response.status,
+      //     "AUTH_MESSAGE_FAILED"
+      //   ),
+      //   {
+      //     type: AUTH_MESSAGE_FAILED,
+      //   }
+
+      // );
+      console.log("error ", err);
+    });
+};
+
+
+export const registerDetails = (firstName, lastName, email) => (
+  dispatch, getState
+) => {
+  // console.log("data received ", email, password)
+  const config = {
+    headers: {
+  // 'Accept': 'application/json',
+  "x-auth-token" : token,
+  'Content-Type': 'application/json'
+},
+};
+
+  // REQUEST BODY
+  const body = JSON.stringify({ firstName, lastName, email });
+
+  // console.log("body recieved ", body)
+  axios
+    .post(`/api/users/updateDetails`,body,config)
+    .then(
+      (res) => {
+        console.log("data ", res);
+    
+
+        return RootNavigation.navigate("TermsAndCondition", { token: res.data.token });
+
+        // status code 10 means otp has already been sent
+        // status code 6 means the otp has timed out or more of it has been completed
+        // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });
+
+        // console.log("MESSAGE res ", res)
+      }
+      // console.log("this is the res ", res)
+    )
+    .catch((err) => {
+      // return dispatch(
+      //  returnErrors(
+      //     err.response.data,
+      //     err.response.status,
+      //     "AUTH_MESSAGE_FAILED"
+      //   ),
+      //   {
+      //     type: AUTH_MESSAGE_FAILED,
+      //   }
+
+      // );
+      console.log("error ", err);
     });
 };
 
@@ -138,148 +265,6 @@ export const logout = () => {
   return {
     type: LOGOUT_SUCCESS,
   };
-};
-
-// Register Organizatiion
-
-export const registerOrg = ({
-  name_of_organisation,
-  email,
-  telephone_no,
-  office_address,
-  rc_no,
-  location_of_company,
-  country,
-  state,
-  postal_code,
-  password,
-  confirmPassword,
-}) => (dispatch) => {
-  // Headers
-  const config = {
-    headers: {
-      // 'Accept': 'application/json',
-      "Content-Type": "application/json",
-    },
-  };
-
-  // console.log(config)
-
-  // Request body
-  const body = JSON.stringify({
-    name_of_organisation,
-    email,
-    telephone_no,
-    office_address,
-    rc_no,
-    location_of_company,
-    country,
-    state,
-    postal_code,
-    password,
-    confirmPassword,
-  });
-
-  // console.log("consoling the body from register action ",body)
-
-  axios
-    .post("/api/organisationuser", body, config)
-    .then((res) => {
-      dispatch({
-        type: REGISTER_SUCCESS,
-        payload: res.data,
-      });
-      window.location.href = "/organisation/dashboard";
-    })
-    .catch((err) => {
-      dispatch(
-        returnErrors(err.response.data, err.response.status, "REGISTER_FAIL")
-      );
-      // console.log(err.response.data)
-      dispatch({
-        type: REGISTER_FAIL,
-      });
-    });
-};
-
-// Register User
-export const registerind = (
-  { username, email, password, confirmPassword },
-  history
-) => (dispatch) => {
-  // Headers
-  const config = {
-    headers: {
-      // 'Accept': 'application/json',
-      "Content-Type": "application/json",
-    },
-  };
-
-  // console.log(config)
-
-  // Request body
-  const body = JSON.stringify({ username, email, password, confirmPassword });
-  // console.log("registering individual")
-  // console.log("consoling the body from register action ",body)
-  axios
-    .post("/api/signupuser", body, config)
-    .then((res) => {
-      dispatch({
-        type: REGISTER_SUCCESS,
-        payload: res.data,
-      });
-      // history.push('/dashboard')
-      window.location.href = "/dashboard";
-    })
-    .catch((err) => {
-      notifier.warning("Registration failed");
-      dispatch(
-        returnErrors(err.response.data, err.response.status, "REGISTER_FAIL")
-      );
-      // console.log(err)
-      dispatch({
-        type: REGISTER_FAIL,
-      });
-    });
-};
-
-// regiseter individual modal
-export const registerindModal = (
-  { username, email, password, confirmPassword },
-  history
-) => (dispatch) => {
-  // Headers
-  const config = {
-    headers: {
-      // 'Accept': 'application/json',
-      "Content-Type": "application/json",
-    },
-  };
-
-  // console.log(config)
-
-  // Request body
-  const body = JSON.stringify({ username, email, password, confirmPassword });
-  // console.log("registering individual")
-  // console.log("consoling the body from register action ",body)
-  axios
-    .post("/api/signupuser", body, config)
-    .then((res) => {
-      dispatch({
-        type: REGISTER_SUCCESS,
-        payload: res.data,
-      });
-      // history.push('/dashboard')
-    })
-    .catch((err) => {
-      dispatch(
-        returnErrors(err.response.data, err.response.status, "REGISTER_FAIL")
-      );
-      // console.log(err)
-      dispatch({
-        type: REGISTER_FAIL,
-      });
-    });
 };
 
 // Setup config/headers and token

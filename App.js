@@ -12,6 +12,7 @@ import MainTabScreen, {
 } from "./screens/MainTabScreen";
 import { DrawerContent } from "./screens/DrawerContent";
 import RootStackScreen from "./screens/RootStackScreen";
+import { navigationRef } from './rootNavigation';
 
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
@@ -22,6 +23,8 @@ import { loadUser } from "./action/authAction";
 import Icon from "react-native-vector-icons/Ionicons";
 import Intro3 from "./screens/Intro/Intro2";
 import AuthenticatedStack from "./screens/AuthenticatedStack";
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import AsyncStorage from "@react-native-community/async-storage";
 const Drawer = createDrawerNavigator();
 
 class App extends React.Component {
@@ -32,6 +35,8 @@ class App extends React.Component {
       loading: true,
       completed: false,
     };
+
+ 
   }
 
   componentDidMount = async () => {
@@ -43,10 +48,25 @@ class App extends React.Component {
       "roboto-700": require("./assets/fonts/roboto-700.ttf"),
       "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
     });
+
+    await this.getToken()
+    await  this.props.loadUser();
     this.setState({ loading: false });
-    this.props.loadUser();
+   
     // console.log("Redux props ", this.props)
   };
+
+  componentDidUpdate(prevProps){
+    console.log("updated ", prevProps)
+
+  }
+
+  getToken = async () =>{
+    var value = await AsyncStorage.getItem('token')
+    console.log("test value  !!!!!!!!!! ", value)
+    // token = value
+    return value
+};
 
   // _renderNextButton = () => {
   //   return (
@@ -90,9 +110,9 @@ class App extends React.Component {
   };
 
   render() {
-    const { isAuthenticated, type } = this.props.auth;
+    const { isAuthenticated, type,token } = this.props.auth;
 
-    console.log("type dispatched ", type)
+  
 
     console.log("is authenticated??!! ", isAuthenticated);
     if (this.state.loading) {
@@ -101,7 +121,7 @@ class App extends React.Component {
       // console.log("second!!!");
       return (
         // <Provider store={store}>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <Drawer.Navigator
             drawerContent={(props) => <DrawerContent {...props} />}
             initialRouteName="Home"
