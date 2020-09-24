@@ -18,12 +18,9 @@ import * as Font from "expo-font";
 import { AppLoading } from "expo";
 
 import { connect } from "react-redux";
-import { loadUser } from "./action/authAction";
+import { loadUser ,setUserToken} from "./action/authAction";
 
-import Icon from "react-native-vector-icons/Ionicons";
-import Intro3 from "./screens/Intro/Intro2";
 import AuthenticatedStack from "./screens/AuthenticatedStack";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import AsyncStorage from "@react-native-community/async-storage";
 const Drawer = createDrawerNavigator();
 
@@ -62,10 +59,12 @@ class App extends React.Component {
   }
 
   getToken = async () =>{
-    var value = await AsyncStorage.getItem('token')
-    console.log("test value  !!!!!!!!!! ", value)
-    // token = value
-    return value
+    var token = await AsyncStorage.getItem('token')
+    console.log("app js ", token)
+
+    this.props.setUserToken(token)
+    // token = token
+    return token
 };
 
   // _renderNextButton = () => {
@@ -154,7 +153,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { loadUser })(App);
+export default connect(mapStateToProps, { loadUser,setUserToken })(App);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

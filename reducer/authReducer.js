@@ -15,6 +15,7 @@ import {
   AUTH_MESSAGE_SENT,
   PROFILE_LOADED,
   CLEAR_TYPE,
+  SET_USER_TOKEN
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 var token 
@@ -40,7 +41,7 @@ const saveToken = async (token) => {
   }
 };
 
-getToken();
+// getToken();
 
 const initialState = {
   token: token,
@@ -54,6 +55,15 @@ const initialState = {
 
 export default function (state = initialState, action) {
   switch (action.type) {
+
+    
+
+    case SET_USER_TOKEN: {
+        return {
+            ...state,
+            token : action.payload
+        };
+      }
     case CLEAR_TYPE: {
       return {
         // ...state,

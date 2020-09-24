@@ -16,6 +16,7 @@ import {
   GET_ERRORS,
   AUTH_MESSAGE_FAILED,
   CLEAR_TYPE,
+  SET_USER_TOKEN
 } from "./types";
 
 
@@ -53,6 +54,22 @@ export const saveToken = async (token) => {
     console.log(e)
   }
 }
+
+export const setUserToken = (token) => (dispatch) => {
+
+  dispatch({
+    type: SET_USER_TOKEN,
+    payload : token
+  });
+
+   
+
+  
+       
+       
+
+};
+
 export const loadUser = () => (dispatch, getState) => {
   console.log("getting user");
   // dispatch({type:USER_LOADING}) // dispatch user loading
