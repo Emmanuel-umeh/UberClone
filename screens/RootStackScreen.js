@@ -24,9 +24,9 @@ const RootStackScreen = ({navigation}) => (
         headerShown: false
       }}>
         {/* <RootStack.Screen name="SplashScreen" component={SplashScreen}/> */}
-        <RootStack.Screen name="getStarted" component={getStarted}/>
+        {/* <RootStack.Screen name="getStarted" component={getStarted}/>
         <RootStack.Screen name="phoneNumberScreen" component={PhoneNumber}/>
-        <RootStack.Screen name="otp" component={Otp}/>
+        <RootStack.Screen name="otp" component={Otp}/> */}
         <RootStack.Screen name="nameScreen" component={NameScreen}/>
         <RootStack.Screen name="TermsAndCondition" component={TermsAndCondition}/>
         <RootStack.Screen name="SignInScreen" component={SignInScreen}/>

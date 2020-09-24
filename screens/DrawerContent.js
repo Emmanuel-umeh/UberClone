@@ -26,11 +26,11 @@ import {logout} from "../action/authAction"
  class  DrawerContent extends Component {
 
     render(){
-          const paperTheme = useTheme();
+        //   const paperTheme = useTheme();
 
           return(
             <View style={{flex:1}}>
-                <DrawerContentScrollView {...props}>
+                <DrawerContentScrollView {...this.props}>
                     <View style={styles.drawerContent}>
                         <View style={styles.userInfoSection}>
                             <View style={{flexDirection:'row',marginTop: 15}}>
@@ -120,7 +120,7 @@ import {logout} from "../action/authAction"
                                 <View style={styles.preference}>
                                     <Text>Dark Theme</Text>
                                     <View pointerEvents="none">
-                                        <Switch value={paperTheme.dark}/>
+                                        {/* <Switch value={paperTheme.dark}/> */}
                                     </View>
                                 </View>
                             </TouchableRipple>
@@ -137,7 +137,10 @@ import {logout} from "../action/authAction"
                             />
                         )}
                         label="Sign Out"
-                        // onPress={() => {signOut()}}
+                        
+                        onPress={() => {
+                            this.props.navigation.closeDrawer()
+                            this.props.logout()}}
                     />
                 </Drawer.Section>
             </View>

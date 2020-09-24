@@ -41,6 +41,18 @@ const saveToken = async (token) => {
   }
 };
 
+const removeToken = async (token) => {
+  try {
+    await AsyncStorage.removeItem("token", token);
+    //   token  = await AsyncStorage.getItem("token")
+    // alert(token)
+    //   console.log(token)
+  } catch (e) {
+    // alert('Failed to save the data to the storage')
+    console.log(e);
+  }
+};
+
 // getToken();
 
 const initialState = {
@@ -122,6 +134,7 @@ export default function (state = initialState, action) {
 
     case LOGOUT_SUCCESS:
       // AsyncStorage.removeItem("token")
+      removeToken()
       console.log("logged OUT successfully");
       return {
         ...state,
@@ -136,6 +149,7 @@ export default function (state = initialState, action) {
     case LOGOUT_SUCCESS:
     case LOGIN_FAIL:
       // AsyncStorage.removeItem("token")
+      removeToken()
       return {
         ...state,
         token: token,

@@ -5,7 +5,8 @@ import {connect} from "react-redux"
 import { registerDetails} from "../action/authAction"
 import * as EmailValidator from 'email-validator';
 import AsyncStorage from "@react-native-community/async-storage";
-
+import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
+import { Kohana } from 'react-native-textinput-effects';
 class NameScreen extends Component{
 
 
@@ -78,12 +79,27 @@ class NameScreen extends Component{
           </View>
         </View>
         <View style={styles.firstNameStack}>
-          <TextInput onChangeText ={(firstName)=>{
+          {/* <TextInput onChangeText ={(firstName)=>{
             this.setState({
               firstName 
             })
-          }} style={styles.firstName} placeholderTextColor = "gray" placeholder = "First Name"></TextInput>
+          }} style={styles.firstName} placeholderTextColor = "gray" placeholder = "First Name"></TextInput> */}
          
+
+         <Kohana
+    style={{ backgroundColor: 'whitesmoke' }}
+    label={'First Name'}
+    // style={styles.firstName}
+    iconClass={MaterialsIcon}
+    iconName={'person'}
+    iconColor={'#000000'}
+    inputPadding={5}
+    labelStyle={{ color: '#000000' }}
+    inputStyle={{ color: '#000000' }}
+    labelContainerStyle={{ padding: 20 }}
+    iconContainerStyle={{ padding: 20 }}
+    useNativeDriver
+  />
         </View>
         <Icon name="chevron-with-circle-right" onPress ={()=>{
           this.submit()
