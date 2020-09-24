@@ -10,8 +10,10 @@ import MainTabScreen, {
   HomeStackScreen,
   DetailsStackScreen,
 } from "./screens/MainTabScreen";
-import { DrawerContent } from "./screens/DrawerContent";
+import  DrawerContent  from "./screens/DrawerContent";
 import RootStackScreen from "./screens/RootStackScreen";
+
+// handles all my navigation for redux
 import { navigationRef } from './rootNavigation';
 
 import * as Font from "expo-font";
