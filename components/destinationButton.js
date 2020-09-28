@@ -8,17 +8,36 @@ import {
     TouchableOpacity
 } from "react-native"
 
+import SearchInput from "../components/SearchInput"
 import {Ionicons} from '@expo/vector-icons'
 // gets width of window
 const WIDTH = Dimensions.get('window').width
 export default class DestinantionButton extends Component{
+
+    constructor(props){
+        super(props)
+    }
+    state = {
+        onLocationSelected : false
+    }
     render(){
+        console.log("set destination function !!!!!!!", this.props.selectDestination)
+        
+       
+        // console.log("props ", this.props)
         return(
 
 
-            <TouchableOpacity onPress ={()=>{
+            <TouchableOpacity  onPress ={()=>{
     
-    
+                console.log("where to clicked!!")
+                console.log("props", this.props)
+                this.props.navigation.navigate("setDestination",{
+                    address : this.props.state.addressShortName,
+                    longitude : this.props.state.region.longitude,
+                    latitude : this.props.state.region.latitude,
+                    selectDestination :this.props.selectDestination
+                  })
             }}  style = {styles.container}>
     
     
@@ -35,8 +54,11 @@ export default class DestinantionButton extends Component{
     <View style = {styles.rightCol}>
             <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} />
     </View>
+
+
             </TouchableOpacity>
     
+    // <SearchInput onLocationSelected={this.state.onLocationSelected} />
     
         )
 

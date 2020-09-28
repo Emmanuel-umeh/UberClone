@@ -15,24 +15,27 @@ import getStarted from './getStarted';
 import NameScreen from './nameScreen';
 import TermsAndCondition from './termsAndCondition';
 import Otp from './Otp';
+import setDestination from './setDestination';
 const RootStack = createStackNavigator();
 
 
 
 const RootStackScreen = ({navigation}) => (
-    <RootStack.Navigator headerMode='none '  screenOptions={{
-        headerShown: false
+    <RootStack.Navigator   screenOptions={{
+        headerShown: true
       }}>
         {/* <RootStack.Screen name="SplashScreen" component={SplashScreen}/> */}
-        {/* <RootStack.Screen name="getStarted" component={getStarted}/>
+         {/* <RootStack.Screen name="getStarted" component={getStarted}/>
         <RootStack.Screen name="phoneNumberScreen" component={PhoneNumber}/>
-        <RootStack.Screen name="otp" component={Otp}/> */}
+        <RootStack.Screen name="otp" component={Otp}/>
         <RootStack.Screen name="nameScreen" component={NameScreen}/>
         <RootStack.Screen name="TermsAndCondition" component={TermsAndCondition}/>
         <RootStack.Screen name="SignInScreen" component={SignInScreen}/>
-        <RootStack.Screen name="SignUpScreen" component={SignUpScreen}/> 
+        <RootStack.Screen name="SignUpScreen" component={SignUpScreen}/>  */}
    
         <RootStack.Screen headerMode ="none" name="Map" component={Map}/>
+        <RootStack.Screen   name="setDestination" component={setDestination}/>
+
 
 
     </RootStack.Navigator>

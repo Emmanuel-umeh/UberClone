@@ -15,9 +15,12 @@ import {
   AUTH_MESSAGE_SENT,
   PROFILE_LOADED,
   CLEAR_TYPE,
-  SET_USER_TOKEN
+  SET_USER_TOKEN,
+  SET_LOADING,
+  END_LOADING
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
+import { isLoaded, isLoading } from "expo-font";
 var token 
 
 
@@ -76,6 +79,26 @@ export default function (state = initialState, action) {
             token : action.payload
         };
       }
+
+      
+    case SET_LOADING: {
+      return {
+          ...state,
+          isLoading : true
+      };
+    }
+
+    case END_LOADING: {
+      return {
+          ...state,
+          isLoading : false
+      };
+    }
+
+
+    
+
+      
     case CLEAR_TYPE: {
       return {
         // ...state,

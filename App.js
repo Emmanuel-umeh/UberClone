@@ -4,39 +4,38 @@ import * as React from "react";
 import { useState } from "react";
 import { View, Text, Button, StyleSheet, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-
+import { NotifierWrapper } from "react-native-notifier";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import MainTabScreen, {
   HomeStackScreen,
   DetailsStackScreen,
 } from "./screens/MainTabScreen";
-import  DrawerContent  from "./screens/DrawerContent";
+import DrawerContent from "./screens/DrawerContent";
 import RootStackScreen from "./screens/RootStackScreen";
 
 // handles all my navigation for redux
-import { navigationRef } from './rootNavigation';
+import { navigationRef } from "./rootNavigation";
 
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
 
 import { connect } from "react-redux";
-import { loadUser ,setUserToken} from "./action/authAction";
+import { loadUser, setUserToken } from "./action/authAction";
 
 import AuthenticatedStack from "./screens/AuthenticatedStack";
 import AsyncStorage from "@react-native-community/async-storage";
 const Drawer = createDrawerNavigator();
-
+import LoadingView from "react-native-loading-view";
 class App extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      loading: true,
-      completed: false,
-    };
-
- 
   }
+  state = {
+    loading: true,
+    completed: false,
+
+    reduxLoading: this.props.auth.isLoading,
+  };
 
   componentDidMount = async () => {
     await Font.loadAsync({
@@ -48,26 +47,32 @@ class App extends React.Component {
       "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
     });
 
-    await this.getToken()
-    await  this.props.loadUser();
+    await this.getToken();
+    await this.props.loadUser();
     this.setState({ loading: false });
-   
+
     // console.log("Redux props ", this.props)
   };
 
-  componentDidUpdate(prevProps){
-    console.log("updated ", prevProps)
+  // componentDidUpdate(prevProps) {
+  //   console.log("prevprops ", prevProps.auth.isLoading);
+  //   const { isLoading } = this.props.auth;
+  //   console.log("currentprops", isLoading);
+  //   if (prevProps.auth.isLoading !== isLoading) {
+  //     this.setState({
+  //       reduxLoading: isLoading,
+  //     });
+  //   }
+  // }
 
-  }
+  getToken = async () => {
+    var token = await AsyncStorage.getItem("token");
+    console.log("app js ", token);
 
-  getToken = async () =>{
-    var token = await AsyncStorage.getItem('token')
-    console.log("app js ", token)
-
-    this.props.setUserToken(token)
+    this.props.setUserToken(token);
     // token = token
-    return token
-};
+    return token;
+  };
 
   // _renderNextButton = () => {
   //   return (
@@ -111,37 +116,42 @@ class App extends React.Component {
   };
 
   render() {
-    const { isAuthenticated, type,token } = this.props.auth;
+    const { isAuthenticated, type, token, isLoading } = this.props.auth;
 
-  
+    // console.log("last type dispatched ",type)
 
-    console.log("is authenticated??!! ", isAuthenticated);
+    //   console.log("is loading??!! ", isLoading);
+    //   console.log("redux loading " , this.state.reduxLoading)
     if (this.state.loading) {
       return <AppLoading />;
     } else {
       // console.log("second!!!");
       return (
-        // <Provider store={store}>
-        <NavigationContainer ref={navigationRef}>
-          <Drawer.Navigator
-            drawerContent={(props) => <DrawerContent {...props} />}
-            initialRouteName="Home"
-          >
-            {isAuthenticated ? (
-              <Drawer.Screen name="HomeDrawer" component={AuthenticatedStack} />
-            ) : (
-              <Drawer.Screen name="Home" component={RootStackScreen} />
-            )}
 
-            {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+          <NotifierWrapper>
+            <NavigationContainer ref={navigationRef}>
+              <Drawer.Navigator
+                drawerContent={(props) => <DrawerContent {...props} />}
+                initialRouteName="Home"
+              >
+                {isAuthenticated ? (
+                    <Drawer.Screen name="HomeDrawer" component={AuthenticatedStack} />
+                    // <Drawer.Screen name="Home" component={RootStackScreen} />
+                    ) : (
+                  // <Drawer.Screen name="HomeDrawer" component={AuthenticatedStack} />
+                  <Drawer.Screen name="Home" component={RootStackScreen} />
+                )}
+
+                {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
         <Drawer.Screen name="Details" component={DetailsStackScreen} /> */}
-          </Drawer.Navigator>
+              </Drawer.Navigator>
 
-          {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
+              {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
         renderNextButton={this._renderNextButton} data={slides} onDone={this._onDone}/> */}
-          {/* <RootStackScreen /> */}
-        </NavigationContainer>
-        // </Provider>
+              {/* <RootStackScreen /> */}
+            </NavigationContainer>
+          </NotifierWrapper>
+      
       );
     }
   }
@@ -155,7 +165,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { loadUser,setUserToken })(App);
+export default connect(mapStateToProps, { loadUser, setUserToken })(App);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

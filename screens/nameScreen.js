@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 import {connect} from "react-redux"
-import { registerDetails} from "../action/authAction"
+import { registerDetails, setLoading,endLoading} from "../action/authAction"
 import * as EmailValidator from 'email-validator';
 import AsyncStorage from "@react-native-community/async-storage";
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import { Kohana } from 'react-native-textinput-effects';
+import AnimateLoadingButton from 'react-native-animate-loading-button';
+import { Container, Header, Content, Item, Input } from 'native-base';
 class NameScreen extends Component{
 
 
@@ -16,6 +18,16 @@ class NameScreen extends Component{
     lastName : null,
     email : null
   }
+
+  componentDidMount(){
+    this.loadingButton.showLoading(false);
+  }
+
+  
+_onPressHandler=()=> {
+  this.loadingButton.showLoading(true);
+this.submit()
+}
   submit = async()=>{
 
     var {firstName,lastName,email} = this.state
@@ -25,6 +37,7 @@ class NameScreen extends Component{
       !email 
       
       ){
+        this.loadingButton.showLoading(false);
         return alert("Please enter all fields")
       }
 
@@ -39,13 +52,14 @@ class NameScreen extends Component{
           console.log(token)
         } catch (e) {
           // alert('Failed to save the data to the storage')
+          this.loadingButton.showLoading(false);
           console.log(e)
         }
       }
 
      
       
-      const isValid = EmailValidator.validate(email); // true
+      const isValid = EmailValidator.validate(email); // false
       if(isValid){
         getToken()
         // console.log("token ", async () => {
@@ -58,9 +72,20 @@ class NameScreen extends Component{
         
         // }
         // )
-  this.props.registerDetails(firstName,lastName,email,token)
+
+        const {user} = this.props.auth
+        // console.log("user id ", user._id)
+        const id = this.props.route.params.id
+        const tokens = this.props.route.params.token
+        // console.log("id params name screen ", id)
+        // console.log("token params name screen ", tokens)
+      //  await this.props.setLoading()
+
+  await this.props.registerDetails(firstName,lastName,email,id,tokens)
+  // await this.props.endLoading()
 
       }else{
+        this.loadingButton.showLoading(false);
         alert("Enter a valid email")
       }
 
@@ -69,27 +94,22 @@ class NameScreen extends Component{
   }
 
   render(){
-    console.log("firstname ", this.state.email)
+    // console.log("firstname ", this.state.email)
     return (
-      <View style={styles.container}>
-        <Text style={styles.whatsYourName}>Some Information About You...</Text>
-        <View style={styles.rect}>
-          <View style={styles.rect4}>
-            <View style={styles.rect5}></View>
-          </View>
-        </View>
-        <View style={styles.firstNameStack}>
-          {/* <TextInput onChangeText ={(firstName)=>{
-            this.setState({
-              firstName 
-            })
-          }} style={styles.firstName} placeholderTextColor = "gray" placeholder = "First Name"></TextInput> */}
-         
-
-         <Kohana
-    style={{ backgroundColor: 'whitesmoke' }}
+      <Container style ={styles.container}>
+      {/* <Header /> */}
+      <Content>
+        <Item rounded  style={{ backgroundColor: 'transparent', marginTop : "10%"  }}>
+          {/* <Input placeholder='Rounded Textbox'/> */}
+          <Kohana
+   
     label={'First Name'}
     // style={styles.firstName}
+    onChangeText ={(firstName)=>{
+      this.setState({
+        firstName 
+      })
+    }} 
     iconClass={MaterialsIcon}
     iconName={'person'}
     iconColor={'#000000'}
@@ -100,31 +120,101 @@ class NameScreen extends Component{
     iconContainerStyle={{ padding: 20 }}
     useNativeDriver
   />
+        </Item>
+
+
+        <Item rounded style={{ backgroundColor: 'transparent', marginTop : "10%"  }}>
+          {/* <Input placeholder='Rounded Textbox'/> */}
+          <Kohana
+    
+    label={'Last Name'}
+    // style={styles.firstName}
+    onChangeText ={(lastName)=>{
+      this.setState({
+        lastName 
+      })
+    }} 
+    iconClass={MaterialsIcon}
+    iconName={'person'}
+    iconColor={'#000000'}
+    inputPadding={5}
+    labelStyle={{ color: '#000000' }}
+    inputStyle={{ color: '#000000' }}
+    labelContainerStyle={{ padding: 20 }}
+    iconContainerStyle={{ padding: 20 }}
+    useNativeDriver
+  />
+        </Item>
+
+        <Item rounded   style={{ backgroundColor: 'transparent', marginTop : "10%" }}>
+          {/* <Input placeholder='Rounded Textbox'/> */}
+          <Kohana
+  
+    label={'Email Name'}
+    // style={styles.firstName}
+    onChangeText ={(email)=>{
+      this.setState({
+        email 
+      })
+    }} 
+    iconClass={MaterialsIcon}
+    iconName={'email'}
+    iconColor={'#000000'}
+    inputPadding={5}
+    labelStyle={{ color: '#000000' }}
+    inputStyle={{ color: '#000000' }}
+    labelContainerStyle={{ padding: 20 }}
+    iconContainerStyle={{ padding: 20 }}
+    useNativeDriver
+  />
+        </Item>
+
+
+        <View style={styles.loremIpsum5Row}>
+          <Text style={styles.loremIpsum5}>
+            By continuing you may receive an{"\n"}SMS for verification. Message
+            and{"\n"}data rates may apply.
+          </Text>
+          {/* <EntypoIcon
+            onPress={() => {
+            
+              this.mobileNumber();
+              
+            }}
+            name="chevron-with-circle-right"
+            style={styles.icon3}
+          ></EntypoIcon> */}
+        <View  style = {styles.icon3}>
+        <AnimateLoadingButton
+          ref={c => (this.loadingButton = c)}
+          width={80}
+          height={50}
+          title="Verify"
+         
+          titleFontSize={16}
+          titleWeight={'100'}
+          titleColor="rgb(255,255,255)"
+          backgroundColor="#000000"
+          borderRadius={30}
+          onPress={()=>this._onPressHandler()}
+          useNativeDriver = {true}
+        />
+
         </View>
-        <Icon name="chevron-with-circle-right" onPress ={()=>{
-          this.submit()
-        }} style={styles.icon1}></Icon>
-        <View style={styles.rect3}></View>
-        <TextInput style={styles.lastName} onChangeText ={(lastName)=>{
-            this.setState({
-              lastName 
-            })
-          }}  placeholderTextColor = "gray"  placeholder = "Last Name"></TextInput>
-        <View style={styles.rect6}></View>
-        <TextInput style={styles.email} onChangeText ={(email)=>{
-            this.setState({
-              email 
-            })
-          }} placeholderTextColor = "gray"  placeholder = "Email"></TextInput>
+     
       </View>
-    );
+     
+      </Content>
+    </Container>
+   );
   }
 
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent : "center"
   },
   whatsYourName: {
     fontFamily: "roboto-regular",
@@ -205,7 +295,20 @@ const styles = StyleSheet.create({
     opacity: 0.19,
     marginTop: 59,
     marginLeft: 26
-  }
+  },  
+  icon3: {
+    color: "rgba(1,1,1,1)",
+    fontSize: 50,
+    marginLeft: 36,
+  },
+  loremIpsum5Row: {
+    height: 54,
+    flexDirection: "row",
+    marginTop: "90%",
+    marginLeft: 24,
+    marginRight: 37,
+  },
+ 
 });
 
 const mapStateToProps = (state) => ({
@@ -214,6 +317,6 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {registerDetails })(
+export default connect(mapStateToProps, {registerDetails, setLoading,endLoading })(
   NameScreen
 );

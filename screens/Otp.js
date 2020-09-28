@@ -4,7 +4,8 @@ import { StyleSheet, View, Text, Button } from "react-native";
 import OTPInputView from '@twotalltotems/react-native-otp-input'
  import {connect} from "react-redux"
 
- import {textMessageVerify} from "../action/authAction"
+ import AnimateLoadingButton from 'react-native-animate-loading-button';
+ import {textMessageVerify, setLoading} from "../action/authAction"
 class Otp extends Component{
 
      constructor(props){
@@ -13,6 +14,17 @@ class Otp extends Component{
 
    clearText = () => {
     otpInput.clear();
+}
+
+
+_onPressHandler=()=> {
+  this.loadingButton.showLoading(true);
+
+  // mock
+  // setTimeout(() => {
+  //   this.loadingButton.showLoading(false);
+  // }, 2000);
+  // this.mobileNumber()
 }
 
   render(){
@@ -36,6 +48,8 @@ class Otp extends Component{
     codeInputHighlightStyle={styles.underlineStyleHighLighted}
     onCodeFilled = {(code => {
         console.log(`Code is ${code}, you are good to go!`)
+        // this.props.setLoading()
+        this._onPressHandler()
         this.props.textMessageVerify(request_id, code, phoneNumber)
     })}
 />
@@ -48,6 +62,40 @@ class Otp extends Component{
   <Text style={styles.loremIpsum2}>{phoneNumber}</Text>
         </View>
         {/* <Text style={styles.resendCodeIn0015}>Resend code in 00:15</Text> */}
+
+        <View style={styles.loremIpsum5Row}>
+          <Text style={styles.loremIpsum5}>
+            By continuing you may receive an{"\n"}SMS for verification. Message
+            and{"\n"}data rates may apply.
+          </Text>
+          {/* <EntypoIcon
+            onPress={() => {
+            
+              this.mobileNumber();
+              
+            }}
+            name="chevron-with-circle-right"
+            style={styles.icon3}
+          ></EntypoIcon> */}
+        <View  style = {styles.icon3}>
+        <AnimateLoadingButton
+          ref={c => (this.loadingButton = c)}
+          width={80}
+          height={50}
+          title="Verify"
+         
+          titleFontSize={16}
+          titleWeight={'100'}
+          titleColor="rgb(255,255,255)"
+          backgroundColor="#000000"
+          borderRadius={30}
+          onPress={()=>this._onPressHandler()}
+          useNativeDriver = {true}
+        />
+
+        </View>
+     
+      </View>
       </View>
     );
   }
@@ -135,6 +183,18 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
   },
+  icon3: {
+    color: "rgba(1,1,1,1)",
+    fontSize: 50,
+    marginLeft: 36,
+  },
+  loremIpsum5Row: {
+    height: 54,
+    flexDirection: "row",
+    marginTop: 373,
+    marginLeft: 24,
+    marginRight: 37,
+  },
  
   underlineStyleHighLighted: {
     borderColor: "#000000",
@@ -147,6 +207,6 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {textMessageVerify })(
+export default connect(mapStateToProps, {textMessageVerify,setLoading })(
   Otp
 );

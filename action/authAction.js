@@ -16,13 +16,16 @@ import {
   GET_ERRORS,
   AUTH_MESSAGE_FAILED,
   CLEAR_TYPE,
-  SET_USER_TOKEN
+  SET_USER_TOKEN,
+  SET_LOADING,
+  END_LOADING
 } from "./types";
 
 
 
 
 import * as RootNavigation from "../rootNavigation";
+import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
 // import AWN from "awesome-notifications"
 
 // https://elesarrdevelopment.herokuapp.com/api/signupuser/all
@@ -31,7 +34,7 @@ import * as RootNavigation from "../rootNavigation";
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://b6c238a735ab.ngrok.io";
+axios.defaults.baseURL = "http://edeb2de73c80.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -45,7 +48,7 @@ var token
 export const saveToken = async (token) => {
   try {
 
-    token =  await AsyncStorage.setItem("token", token)
+  await AsyncStorage.setItem("token", token)
     // token  = await AsyncStorage.getItem("token")
     // alert(token)
     console.log(token)
@@ -55,6 +58,18 @@ export const saveToken = async (token) => {
   }
 }
 
+getToken = async () =>{
+   token = await AsyncStorage.getItem('token')
+  console.log("redux action js ", token)
+
+  // this.props.setUserToken(token)
+  // token = token
+  return token
+};
+
+
+getToken()
+
 export const setUserToken = (token) => (dispatch) => {
 
   dispatch({
@@ -62,16 +77,11 @@ export const setUserToken = (token) => (dispatch) => {
     payload : token
   });
 
-   
-
-  
-       
-       
-
 };
 
+// authenticate a user on load of app
 export const loadUser = () => (dispatch, getState) => {
-  console.log("getting user");
+  // console.log("getting user");
   // dispatch({type:USER_LOADING}) // dispatch user loading
 
   // user loading
@@ -82,7 +92,7 @@ export const loadUser = () => (dispatch, getState) => {
     axios
       .get(`/api/auth/oneUser`, tokenConfig(getState))
       .then((res) => {
-        console.log("response ", res.data);
+        // console.log("response ", res.data);
         if (res.data.message === "error") {
           // AsyncStorage.removeItem("token");
           // return dispatch({
@@ -115,7 +125,23 @@ export const loadUser = () => (dispatch, getState) => {
   }
 };
 
-// export const register =
+// BEGIN LOADING ANIMATON
+export const setLoading = () => (dispatch, getState) => {
+ 
+  dispatch({ type: SET_LOADING }); // dispatch user loading
+
+
+};
+
+// END LOADING ANIMATION
+export const endLoading = () => (dispatch, getState) => {
+ 
+  dispatch({ type: END_LOADING }); // dispatch user loading
+
+
+};
+
+
 
 // send OTP code to the user
 export const textMessageAuth = (phoneNumber) => (dispatch) => {
@@ -129,16 +155,19 @@ export const textMessageAuth = (phoneNumber) => (dispatch) => {
   // REQUEST BODY
   const body = JSON.stringify({ phoneNumber });
 
-  console.log("body recieved ", body);
+  // console.log("body recieved ", body);
+
   axios
     .post(`/api/users/phone`, body, config)
     .then(
       (res) => {
-        console.log("data ", res.data);
+        // 
+        // endLoading()
         // dispatch({
-        //   type: AUTH_MESSAGE_SENT,
-        //   payload: res.data,
+        //   type : END_LOADING
         // })
+     
+        
         // status code 10 means otp has already been sent
         // status code 6 means the otp has timed out or more of it has been completed
         return RootNavigation.navigate("otp", {
@@ -152,17 +181,7 @@ export const textMessageAuth = (phoneNumber) => (dispatch) => {
       // console.log("this is the res ", res)
     )
     .catch((err) => {
-      // return dispatch(
-      //  returnErrors(
-      //     err.response.data,
-      //     err.response.status,
-      //     "AUTH_MESSAGE_FAILED"
-      //   ),
-      //   {
-      //     type: AUTH_MESSAGE_FAILED,
-      //   }
-
-      // );
+    
       console.log("error ", err);
     });
 };
@@ -181,20 +200,23 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
   // REQUEST BODY
   const body = JSON.stringify({ request_id, code, phoneNumber });
 
-  // console.log("body recieved ", body)
   axios
     .post(`/api/users/phone/verify`, body, config)
     .then(
       (res) => {
-        console.log("data ", res.data);
+        
         // dispatch({
         //   type: REGISTER_SUCCESS,
         //   payload: res.data,
         // });
 
         saveToken(res.data.token)
+        // endLoading()
+        // dispatch({
+        //   type : END_LOADING
+        // })
 
-        return RootNavigation.navigate("nameScreen", { token: res.data.token });
+        return RootNavigation.navigate("nameScreen", { token: res.data.token, id : res.data.user._id });
 
         // status code 10 means otp has already been sent
         // status code 6 means the otp has timed out or more of it has been completed
@@ -216,33 +238,49 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
       //   }
 
       // );
+
+    
+      Notifier.showNotification({
+        title: 'The request was failed',
+        description: 'Check your internet connection, please',
+        Component: NotifierComponents.Alert,
+        componentProps: {
+          alertType: 'error',
+        },
+      });
       console.log("error ", err);
     });
 };
 
 
-export const registerDetails = (firstName, lastName, email) => (
+export const registerDetails = (firstName, lastName, email, id,tokens) => (
   dispatch, getState
 ) => {
-  // console.log("data received ", email, password)
+  console.log("toekn received in register details ", tokens)
   const config = {
     headers: {
   // 'Accept': 'application/json',
-  "x-auth-token" : token,
+  "x-auth-token" : tokens,
   'Content-Type': 'application/json'
 },
 };
 
   // REQUEST BODY
-  const body = JSON.stringify({ firstName, lastName, email });
+  const body = JSON.stringify({ firstName, lastName, email,id });
 
-  // console.log("body recieved ", body)
+  // console.log("body recieved registered details ", body)
+
+  // setLoading()
   axios
-    .post(`/api/users/updateDetails`,body,config)
+    .post(`/api/users/updateDetails/${id}`,body,config)
     .then(
       (res) => {
-        console.log("data ", res);
-    
+        // console.log("data ", res);
+    // endLoading()
+
+    // dispatch({
+    //   type : END_LOADING
+    // })
 
         return RootNavigation.navigate("TermsAndCondition", { token: res.data.token });
 
@@ -259,7 +297,7 @@ export const registerDetails = (firstName, lastName, email) => (
       //  returnErrors(
       //     err.response.data,
       //     err.response.status,
-      //     "AUTH_MESSAGE_FAILED"
+      //     "AUTH_MESSAGE _FAILED"
       //   ),
       //   {
       //     type: AUTH_MESSAGE_FAILED,
@@ -277,11 +315,31 @@ export const clearType = () => (dispatch) => {
 };
 
 // logout
-export const logout = () => {
+export const logout = () =>(dispatch)=> {
   // AsyncStorage.removeItem('referral')
-  return {
-    type: LOGOUT_SUCCESS,
-  };
+  // setLoading()
+
+  
+    // setTimeout(() => {
+      
+      dispatch({
+        type: LOGOUT_SUCCESS
+      })
+
+      RootNavigation.reset({
+        key: null,
+        index: 0,
+        actions: [RootNavigation.navigate({ routeName: 'getStarted' })],
+      })
+      // dispatch({
+      //   type : END_LOADING
+      // })
+  
+  
+    // }, 1000);
+   
+  
+ 
 };
 
 // Setup config/headers and token

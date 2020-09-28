@@ -4,7 +4,8 @@ import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import * as Animatable from "react-native-animatable";
 import {connect} from "react-redux"
-import {textMessageAuth} from "../action/authAction"
+import {textMessageAuth, setLoading} from "../action/authAction"
+import AnimateLoadingButton from 'react-native-animate-loading-button';
 class PhoneNumber extends Component {
   constructor(props) {
     super(props);
@@ -14,12 +15,22 @@ class PhoneNumber extends Component {
     number: null,
   };
 
+  _onPressHandler() {
+    this.loadingButton.showLoading(true);
+
+    // mock
+    // setTimeout(() => {
+    //   this.loadingButton.showLoading(false);
+    // }, 2000);
+    this.mobileNumber()
+  }
 
   concatNumber=async(phoneNumber)=>{
-
+  
     var number = "+234" + phoneNumber
 
     // console.log("concat number ", number)
+    // this.props.setLoading()
     const result = await this.props.textMessageAuth(number)
 
     // console.log({result})
@@ -28,6 +39,13 @@ class PhoneNumber extends Component {
   }
 
   mobileNumber = () => {
+
+    if(!this.state.number ||  this.state.number.length < 10||  this.state.number.length > 11){
+      this.loadingButton.showLoading(false);
+      return alert("Please enter a valid phone number")
+     
+     }
+ 
 
     "all zeros ? !",/^\d+$/.test(this.state.number.toString() ? 
     
@@ -78,11 +96,11 @@ class PhoneNumber extends Component {
         </View>
         <View style={styles.group}>
           <View style={styles.loremIpsum4Row}>
-            <Text style={styles.loremIpsum4}>or connect with social</Text>
-            <IoniconsIcon
+            {/* <Text style={styles.loremIpsum4}>or connect with social</Text> */}
+            {/* <IoniconsIcon
               name="md-arrow-round-forward"
               style={styles.icon2}
-            ></IoniconsIcon>
+            ></IoniconsIcon> */}
           </View>
         </View>
         <View style={styles.loremIpsum5Row}>
@@ -90,7 +108,7 @@ class PhoneNumber extends Component {
             By continuing you may receive an{"\n"}SMS for verification. Message
             and{"\n"}data rates may apply.
           </Text>
-          <EntypoIcon
+          {/* <EntypoIcon
             onPress={() => {
             
               this.mobileNumber();
@@ -98,7 +116,25 @@ class PhoneNumber extends Component {
             }}
             name="chevron-with-circle-right"
             style={styles.icon3}
-          ></EntypoIcon>
+          ></EntypoIcon> */}
+        <View  style = {styles.icon3}>
+        <AnimateLoadingButton
+          ref={c => (this.loadingButton = c)}
+          width={80}
+          height={50}
+          title="Verify"
+         
+          titleFontSize={16}
+          titleWeight={'100'}
+          titleColor="rgb(255,255,255)"
+          backgroundColor="#000000"
+          borderRadius={30}
+          onPress={this._onPressHandler.bind(this)}
+          useNativeDriver = {true}
+        />
+
+        </View>
+
         </View>
       </Animatable.View>
     );
@@ -158,7 +194,7 @@ const styles = StyleSheet.create({
   iconRow: {
     height: 44,
     flexDirection: "row",
-    marginTop: -167,
+    marginTop: -190,
     marginLeft: 9,
     marginRight: 274,
   },
@@ -171,12 +207,12 @@ const styles = StyleSheet.create({
   },
   loremIpsum4: {
     fontFamily: "roboto-regular",
-    color: "rgba(241,227,25,1)",
+    color: "lightblue",
     fontSize: 22,
     marginTop: 9,
   },
   icon2: {
-    color: "rgba(241,227,25,1)",
+    color: "lightblue",
     fontSize: 40,
     marginLeft: 24,
   },
@@ -209,6 +245,6 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {textMessageAuth })(
+export default connect(mapStateToProps, {textMessageAuth, setLoading })(
   PhoneNumber
 );
