@@ -70,7 +70,7 @@ import {logout, setLoading} from "../action/authAction"
                                     />
                                 )}
                                 label="Home"
-                                onPress={() => {this.props.navigation.navigate('Home')}}
+                                onPress={() => {this.props.navigation.navigate('Map')}}
                             />
                             <DrawerItem 
                                 icon={({color, size}) => (
@@ -81,7 +81,7 @@ import {logout, setLoading} from "../action/authAction"
                                     />
                                 )}
                                 label="Profile"
-                                onPress={() => {this.props.navigation.navigate('Profile')}}
+                                onPress={() => {this.props.navigation.navigate('profileScreen')}}
                             />
                             <DrawerItem 
                                 icon={({color, size}) => (

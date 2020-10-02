@@ -73,13 +73,15 @@ class setDestination extends Component {
             longitude : json.result.geometry.location.lng
           }
 
-          this.props.route.params.selectDestination(destination)
-          this.props.navigation.navigate("Map", {
-            destination :{
-              latitude : json.result.geometry.location.lat,
-              longitude : json.result.geometry.location.lng
-            }
-          })
+          // this.props.route.params.selectDestination(destination)
+          // this.props.navigation.navigate("Map", {
+          //   destination :{
+          //     latitude : json.result.geometry.location.lat,
+          //     longitude : json.result.geometry.location.lng
+          //   }
+          // })
+
+          this.props.navigation.navigate("setLogisticsScreen")
 
 
           // returns 

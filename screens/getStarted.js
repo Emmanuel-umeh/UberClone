@@ -34,8 +34,10 @@ function getStarted({navigation}) {
             height : 200,
             width : 200
           }}
-          source={require("../assets/lottie/test9.json")}
+           source={require("../assets/lottie/test9.json")}
+         
           autoPlay
+
           loop
         />
 {/* 
