@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 
-function CupertinoButtonWarning(props) {
+function SelectCar(props) {
   return (
     <TouchableOpacity style={[styles.container, props.style]}>
       <Text style={styles.selectCar}>select car</Text>
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CupertinoButtonWarning;
+export default SelectCar;

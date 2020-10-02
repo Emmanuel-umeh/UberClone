@@ -2,18 +2,18 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
 
-function MaterialCardWithImageAndTitle1(props) {
+function Bike(props) {
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
-          <Text style={styles.car2}>Car</Text>
-          <Text style={styles.subtitleStyle}>7 min</Text>
+          <Text style={styles.bike}>Bike</Text>
+          <Text style={styles.subtitleStyle}>5 min</Text>
         </View>
       </View>
       <View style={styles.actionBody}>
         <TouchableOpacity style={styles.actionButton1}>
-          <Text style={styles.n1700}>₦ 1700</Text>
+          <Text style={styles.n900}>₦ 900</Text>
         </TouchableOpacity>
       </View>
       <LottieView
@@ -23,11 +23,11 @@ function MaterialCardWithImageAndTitle1(props) {
             // width : 100,
             // height: 100
           }}
-          imageAssetsFolder={'lottie/animation_1'}
-          source={require("../../assets/lottie/animation_1/Car.json")}
+          source={require("../../assets/lottie/5056-delivery-latest.json")}
           autoPlay 
           loop
         />
+
     </View>
   );
 }
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     flex: 1
   },
-  car2: {
+  bike: {
     fontFamily: "roboto-700",
     fontSize: 22,
     color: "#000",
@@ -78,18 +78,19 @@ const styles = StyleSheet.create({
     padding: 8,
     height: 36
   },
-  n1700: {
+  n900: {
     fontSize: 22,
     color: "#000",
-    opacity: 0.9
+    opacity: 0.9,
+    lineHeight: 22
   },
   image: {
+    top: 21,
+    left: 217,
     width: 100,
     height: 100,
-    position: "absolute",
-    left: 218,
-    top: 21
+    position: "absolute"
   }
 });
 
-export default MaterialCardWithImageAndTitle1;
+export default Bike;

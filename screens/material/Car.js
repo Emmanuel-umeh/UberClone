@@ -2,38 +2,30 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
 
-function MaterialCardWithImageAndTitle3(props) {
+function Car(props) {
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
-          <Text style={styles.truck}>Truck</Text>
-          <Text style={styles.subtitleStyle}>3 min</Text>
+          <Text style={styles.car2}>Car</Text>
+          <Text style={styles.subtitleStyle}>7 min</Text>
         </View>
       </View>
       <View style={styles.actionBody}>
         <TouchableOpacity style={styles.actionButton1}>
-          <Text style={styles.n400}>₦ 5000</Text>
+          <Text style={styles.n1700}>₦ 1700</Text>
         </TouchableOpacity>
       </View>
-      {/* <Image
-        source={require("../../assets/images/truck.png")}
-        resizeMode="contain"
-        style={styles.image}
-      ></Image> */}
-
-        <LottieView
-          // style = {{
-          //   height : 200,
-          //   width : 200
-          // }}
+      <LottieView
+          // style = {styles.image}
           style ={{
             marginLeft : "28%",
             // width : 100,
             // height: 100
           }}
-          source={require("../../assets/lottie/test9.json")}
-          autoPlay
+          imageAssetsFolder={'lottie/animation_1'}
+          source={require("../../assets/lottie/animation_1/Car.json")}
+          autoPlay 
           loop
         />
     </View>
@@ -66,7 +58,7 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     flex: 1
   },
-  truck: {
+  car2: {
     fontFamily: "roboto-700",
     fontSize: 22,
     color: "#000",
@@ -86,18 +78,18 @@ const styles = StyleSheet.create({
     padding: 8,
     height: 36
   },
-  n400: {
+  n1700: {
     fontSize: 22,
     color: "#000",
     opacity: 0.9
   },
   image: {
-    top: 21,
-    left: 217,
     width: 100,
     height: 100,
-    position: "absolute"
+    position: "absolute",
+    left: 218,
+    top: 21
   }
 });
 
-export default MaterialCardWithImageAndTitle3;
+export default Car;

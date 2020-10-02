@@ -1,78 +1,149 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, SafeAreaView, ScrollView } from "react-native";
-import MaterialCardWithImageAndTitle1 from "./material/MaterialCardWithImageAndTitle1";
-import MaterialCardWithImageAndTitle2 from "./material/MaterialCardWithImageAndTitle2";
-import MaterialCardWithImageAndTitle3 from "./material/MaterialCardWithImageAndTitle3";
-import CupertinoButtonWarning from "./material/CupertinoButtonWarning";
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import Car from "./material/Car";
+import Bike from "./material/Bike";
+import Truck from "./material/Truck";
+// import CupertinoButtonWarning from "./material/CupertinoButtonWarning";
 import { Button, Header } from "native-base";
 import plane from "./material/plane";
 import Plane from "./material/plane";
+import * as Animatable from "react-native-animatable";
 
-function SetLogistics(props) {
-  return (
-    <View style={styles.container}>
-          {/* <Header />  */}
+class SetLogistics extends Component {
+  state = {
+    isTruckSelected: null,
+    isBikeSelected: null,
+    isCarSelected: null,
+    selected : null
+  };
+  render() {
 
-<SafeAreaView>
- <Text style={styles.selectAVechicle}>Select a vechicle</Text>
-      
-      </SafeAreaView>
+    // console.log("state changed,", this.state)
+    return (
+      <View style={styles.container}>
+        {/* <Header />  */}
 
+        <SafeAreaView>
+          <Animatable.Text animation = "bounceIn" style={styles.selectAVechicle}>Select a vechicle</Animatable.Text>
+        </SafeAreaView>
 
-     <ScrollView>
-      <MaterialCardWithImageAndTitle1
-        style={styles.materialCardWithImageAndTitle1}
-      ></MaterialCardWithImageAndTitle1>
-      <MaterialCardWithImageAndTitle2
-        style={styles.materialCardWithImageAndTitle2}
-      ></MaterialCardWithImageAndTitle2>
-      
-      <MaterialCardWithImageAndTitle3
-        style={styles.materialCardWithImageAndTitle3}
-      ></MaterialCardWithImageAndTitle3>
-       {/* <Plane/> */}
-      </ScrollView>
+        <ScrollView>
+          <TouchableOpacity onPress ={()=>{
+            this.setState({
+              isCarSelected : true,
+              isTruckSelected:null,
+              isBikeSelected : null,
+              selected : "Car"
+            })
+          }}>
+            <Animatable.View 
+            animation = "slideInLeft"
+            >
+            <Car
+              style={
+                (styles.Car,
+                { backgroundColor: this.state.isCarSelected ? "gold" : null })
+              }
+            ></Car>
+            </Animatable.View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress ={()=>{
+            this.setState({
+              isCarSelected : null,
+              isTruckSelected:null,
+              isBikeSelected : true,
+              selected : "Bike"
+            })
+          }}>
 
-      {/* <CupertinoButtonWarning
-        style={styles.cupertinoButtonWarning}
-      ></CupertinoButtonWarning> */}
+<Animatable.View 
+            animation = "slideInRight"
+            >
+            <Bike
+              style={
+                (styles.Bike,
+                { backgroundColor: this.state.isBikeSelected ? "gold" : null })
+              }
+            ></Bike>
 
-<Button full warning style = {{height:70, top : 10, bottom : 10}}>
-                 <Text style ={{fontWeight : "bold", fontSize : 20, color : "white"}} >Select Car</Text>
-               </Button>
-    
-    
-    </View>
-  );
+</Animatable.View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+          onPress ={()=>{
+            this.setState({
+              isCarSelected : null,
+              isTruckSelected:true,
+              isBikeSelected : null,
+              selected : "Truck"
+              
+            })
+          }}>
+            <Animatable.View 
+            animation = "slideInUp"
+            >
+            <Truck
+              style={
+                (styles.Truck,
+                { backgroundColor: this.state.isTruckSelected ? "gold" : null })
+              }
+            ></Truck>
+            </Animatable.View>
+            {/* <Plane/> */}
+          </TouchableOpacity>
+        </ScrollView>
+
+        {/* <CupertinoButtonWarning
+          style={styles.cupertinoButtonWarning}
+        ></CupertinoButtonWarning> */}
+        <TouchableOpacity>
+          <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }}>
+            <Text style={{ fontWeight: "bold", fontSize: 20, color: "white" }}>
+              Select {this.state.selected}
+            </Text>
+          </Button>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
-  materialCardWithImageAndTitle1: {
+  Car: {
     height: 151,
     width: 359,
     marginTop: 10,
-    marginLeft: 1
+    marginLeft: 1,
   },
-  materialCardWithImageAndTitle2: {
+  Bike: {
     height: 151,
     width: 360,
-    marginTop: 10
+    marginTop: 10,
+    // backgroundColor : this.state.isTruckSelected
   },
-  materialCardWithImageAndTitle3: {
+  Truck: {
     height: 151,
     width: 360,
-    marginTop: 10
+    marginTop: 10,
+    // backgroundColor : this.state.isTruckSelected
   },
   cupertinoButtonWarning: {
     height: 99,
     width: 299,
     borderRadius: 100,
     marginTop: 24,
-    marginLeft: 26
+    marginLeft: 26,
   },
   selectAVechicle: {
     fontFamily: "roboto-700",
@@ -81,9 +152,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     // position : "relative",
     marginTop: "20%",
-    alignSelf: "center"
-  }
-
+    alignSelf: "center",
+  },
 });
 
 export default SetLogistics;

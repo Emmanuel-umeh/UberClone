@@ -49,7 +49,10 @@ class App extends React.Component {
 
     await this.getToken();
     await this.props.loadUser();
-    this.setState({ loading: false });
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 2000);
+   
 
     // console.log("Redux props ", this.props)
   };
