@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 function Car(props) {
   return (
@@ -8,18 +9,18 @@ function Car(props) {
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
           <Text style={styles.car2}>Car</Text>
-          <Text style={styles.subtitleStyle}>7 min</Text>
+          {/* <Text style={styles.subtitleStyle}>7 min</Text> */}
         </View>
       </View>
       <View style={styles.actionBody}>
         <TouchableOpacity style={styles.actionButton1}>
-          <Text style={styles.n1700}>₦ 1700</Text>
+          {/* <Text style={styles.n1700}>₦ 1700</Text> */}
         </TouchableOpacity>
       </View>
       <LottieView
           // style = {styles.image}
           style ={{
-            marginLeft : "28%",
+            marginLeft : wp("10%"),
             // width : 100,
             // height: 100
           }}
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
     borderColor: "#CCC",
     flexWrap: "nowrap",
     backgroundColor: "#FFF",
-    shadowColor: "#000",
+    shadowColor: "#B5B5B8",
     shadowOffset: {
       width: -2,
       height: 2
@@ -60,8 +61,9 @@ const styles = StyleSheet.create({
   },
   car2: {
     fontFamily: "roboto-700",
-    fontSize: 22,
+    fontSize: 30,
     color: "#000",
+    top :wp("10%"),
     paddingBottom: 12
   },
   subtitleStyle: {

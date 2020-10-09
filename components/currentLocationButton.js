@@ -12,6 +12,7 @@ export default function CurrentLocationButton (props){
 console.log("props ", props)
 const bottom = props.bottom ? props.bottom : 80
 
+
 const cb = props.cb ? props.cb : ()=> console.log("callback function not passed")
 
     return(

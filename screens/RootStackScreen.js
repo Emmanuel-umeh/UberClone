@@ -23,7 +23,7 @@ const RootStack = createStackNavigator();
 
 const RootStackScreen = ({navigation}) => (
     <RootStack.Navigator   screenOptions={{
-        headerShown: true
+        headerShown: false
       }}>
         {/* <RootStack.Screen name="SplashScreen" component={SplashScreen}/> */}
          <RootStack.Screen name="getStarted" component={getStarted}/>

@@ -29,6 +29,9 @@ import LoadingView from "react-native-loading-view";
 class App extends React.Component {
   constructor(props) {
     super(props);
+    console.ignoredYellowBox = [
+      'Setting a timer'
+  ]
   }
   state = {
     loading: true,
@@ -44,6 +47,7 @@ class App extends React.Component {
       "charm-regular": require("./assets/fonts/Charm-Regular.ttf"),
 
       "roboto-700": require("./assets/fonts/roboto-700.ttf"),
+      "roboto-900": require("./assets/fonts/roboto-900.ttf"),
       "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
     });
 
@@ -125,7 +129,7 @@ class App extends React.Component {
 
     //   console.log("is loading??!! ", isLoading);
     //   console.log("redux loading " , this.state.reduxLoading)
-    if (this.state.loading) {
+    if (this.state.loading || isLoading) {
       return <AppLoading />;
     } else {
       // console.log("second!!!");

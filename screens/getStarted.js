@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import * as Animatable from "react-native-animatable";
 import { loadUser } from "../action/authAction";
 import {connect} from "react-redux"
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import LottieView from 'lottie-react-native';
 
@@ -82,12 +83,12 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   rect: {
-    width: 306,
+    width: wp("70%"),
     height: 61,
     backgroundColor: "rgba(0,0,0,1)",
     flexDirection: "row",
     marginTop: 155,
-    marginLeft: 27
+    marginLeft: wp("15%")
   },
   getStarted: {
     fontFamily: "roboto-regular",
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     marginRight: 19,
-    marginLeft: 101,
+    marginLeft: wp("10%"),
     marginTop: 4
   },
   line: {

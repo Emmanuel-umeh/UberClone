@@ -13,15 +13,16 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import google_api from "../keys/google_map";
-import _ from 'lodash'
+import _ from "lodash";
 
 class setDestination extends Component {
+  constructor(props) {
+    super(props);
 
-  constructor(props){
-    super(props)
-
-
-    this.onChangeDestinationDebounced = _.debounce(this.destinationChange, 1000)
+    this.onChangeDestinationDebounced = _.debounce(
+      this.destinationChange,
+      1000
+    );
   }
   state = {
     destination: null,
@@ -33,21 +34,19 @@ class setDestination extends Component {
 
     const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=500`;
     const result = await fetch(api_url);
-    const json = await result.json()
+    const json = await result.json();
     this.setState({
       destination,
-      predictions : json.predictions
-    })
+      predictions: json.predictions,
+    });
   };
 
-  locationPressed =(e)=>{
-  
-    // console.log("latitude and longitude ", 
+  locationPressed = (e) => {
+    // console.log("latitude and longitude ",
     // e
     // )
-    }
+  };
   render() {
-    
     // const predictions = this.state.predictions.map((prediction) => (
     //   <TouchableOpacity key={prediction.id} style={styles.button2}>
     //     <View style={styles.icon7Row}>
@@ -58,46 +57,54 @@ class setDestination extends Component {
     // ));
     // var v = Object.values(this.state.predictions);
 
-    const predictions = this.state.predictions.map((prediction) => (
-        <TouchableOpacity key={prediction.id} onPress ={async()=>{
+    const predictions = this.state.predictions.map((prediction,key) => (
+      <TouchableOpacity
+        key={key}
+        onPress={async () => {
           // console.log("id , ",prediction.place_id)
 
           const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${prediction.place_id}&key=${google_api}`;
           const result = await fetch(place_url);
-          const json = await result.json()
+          const json = await result.json();
 
-          console.log("latitude, longitude ", json.result.geometry.location)
+          console.log("latitude, longitude ", json.result.geometry.location);
 
           const destination = {
-            latitude : json.result.geometry.location.lat,
-            longitude : json.result.geometry.location.lng
-          }
+            latitude: json.result.geometry.location.lat,
+            longitude: json.result.geometry.location.lng,
+          };
 
-          // this.props.route.params.selectDestination(destination)
+        
           // this.props.navigation.navigate("Map", {
           //   destination :{
           //     latitude : json.result.geometry.location.lat,
           //     longitude : json.result.geometry.location.lng
           //   }
           // })
+          console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
 
-          this.props.navigation.navigate("setLogisticsScreen")
+          this.props.navigation.navigate("Map", {
+            destination,
+            logistics : this.props.route.params.logistics
+          });
 
 
-          // returns 
+
+          this.props.route.params.selectDestination(destination)
+          // returns
           // Object {
           //   "lat": 8.969173699999999,
           //   "lng": 7.440240199999998,
           // }
-          
-       
-        }} style={styles.button2}>
-          <View style={styles.icon7Row}>
-            <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
-            <Text style={styles.addHome}>{prediction.description}</Text>
-          </View>
-        </TouchableOpacity>
-      ));
+        }}
+        style={styles.button2}
+      >
+        <View style={styles.icon7Row}>
+          <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
+          <Text style={styles.addHome}>{prediction.description}</Text>
+        </View>
+      </TouchableOpacity>
+    ));
     // console.log("predictions", predictions)
     return (
       <View style={styles.container}>
@@ -138,6 +145,9 @@ class setDestination extends Component {
             </View>
           </Animatable.View>
 
+
+          
+
           <Animatable.View animation="fadeInDownBig" style={styles.footer}>
             {/* <ScrollView> */}
             <TouchableOpacity style={styles.button2}>
@@ -152,7 +162,6 @@ class setDestination extends Component {
                 <Text style={styles.addHome}>Add Work</Text>
               </View>
             </TouchableOpacity>
-
 
             {predictions}
 
@@ -352,7 +361,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   icon7Row: {
-    height: 29,
+    height: 329,
     flexDirection: "row",
     flex: 1,
     width: "100%",

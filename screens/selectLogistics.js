@@ -15,14 +15,28 @@ import { Button, Header } from "native-base";
 import plane from "./material/plane";
 import Plane from "./material/plane";
 import * as Animatable from "react-native-animatable";
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import Tanker from "./material/Tanker";
+ 
 class SetLogistics extends Component {
   state = {
     isTruckSelected: null,
     isBikeSelected: null,
     isCarSelected: null,
-    selected : null
+    isTankerSelected: null,
+    logistics : null
   };
+
+
+  _next =()=>{
+    console.log("props passed!!!!!!!!!!!!!!!! ", this.props.navigation)
+
+   
+    this.props.navigation.navigate("Map", {
+      logistics : this.state.logistics
+    })
+    // this.props.route.params.selectDestination(this.props.route.params.destination)
+  }
   render() {
 
     // console.log("state changed,", this.state)
@@ -31,7 +45,7 @@ class SetLogistics extends Component {
         {/* <Header />  */}
 
         <SafeAreaView>
-          <Animatable.Text animation = "bounceIn" style={styles.selectAVechicle}>Select a vechicle</Animatable.Text>
+          <Animatable.Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Vehicle</Animatable.Text>
         </SafeAreaView>
 
         <ScrollView>
@@ -40,7 +54,8 @@ class SetLogistics extends Component {
               isCarSelected : true,
               isTruckSelected:null,
               isBikeSelected : null,
-              selected : "Car"
+              isTruckSelected:null,
+              logistics : "Car"
             })
           }}>
             <Animatable.View 
@@ -58,8 +73,9 @@ class SetLogistics extends Component {
             this.setState({
               isCarSelected : null,
               isTruckSelected:null,
+              
               isBikeSelected : true,
-              selected : "Bike"
+              logistics : "Bike"
             })
           }}>
 
@@ -81,8 +97,9 @@ class SetLogistics extends Component {
             this.setState({
               isCarSelected : null,
               isTruckSelected:true,
+              isTankerSelected:null,
               isBikeSelected : null,
-              selected : "Truck"
+              logistics : "Truck"
               
             })
           }}>
@@ -98,15 +115,41 @@ class SetLogistics extends Component {
             </Animatable.View>
             {/* <Plane/> */}
           </TouchableOpacity>
+
+
+          
+          <TouchableOpacity 
+          onPress ={()=>{
+            this.setState({
+              isCarSelected : null,
+              isTruckSelected:null,
+              isTankerSelected:true,
+              isBikeSelected : null,
+              logistics : "Tanker"
+              
+            })
+          }}>
+            <Animatable.View 
+            animation = "slideInUp"
+            >
+            <Tanker
+              style={
+                (styles.Truck,
+                { backgroundColor: this.state.isTankerSelected ? "gold" : null })
+              }
+            ></Tanker>
+            </Animatable.View>
+            {/* <Plane/> */}
+          </TouchableOpacity>
         </ScrollView>
 
         {/* <CupertinoButtonWarning
           style={styles.cupertinoButtonWarning}
         ></CupertinoButtonWarning> */}
         <TouchableOpacity>
-          <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }}>
-            <Text style={{ fontWeight: "bold", fontSize: 20, color: "white" }}>
-              Select {this.state.selected}
+          <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }} onPress ={this._next}>
+            <Text style={{ fontWeight: "bold", fontSize: 20, color: "black" }}>
+              Select {this.state.logistics}
             </Text>
           </Button>
         </TouchableOpacity>
@@ -121,19 +164,19 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   Car: {
-    height: 151,
+    height: hp("50%"),
     width: 359,
     marginTop: 10,
     marginLeft: 1,
   },
   Bike: {
-    height: 151,
+    height: hp("50%"),
     width: 360,
     marginTop: 10,
     // backgroundColor : this.state.isTruckSelected
   },
   Truck: {
-    height: 151,
+    height: hp("50%"),
     width: 360,
     marginTop: 10,
     // backgroundColor : this.state.isTruckSelected
@@ -151,7 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     textAlign: "center",
     // position : "relative",
-    marginTop: "20%",
+    marginTop: hp("5%"),
     alignSelf: "center",
   },
 });

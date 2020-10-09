@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 function Truck(props) {
   return (
@@ -8,12 +9,12 @@ function Truck(props) {
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
           <Text style={styles.truck}>Truck</Text>
-          <Text style={styles.subtitleStyle}>3 min</Text>
+          {/* <Text style={styles.subtitleStyle}>3 min</Text> */}
         </View>
       </View>
       <View style={styles.actionBody}>
         <TouchableOpacity style={styles.actionButton1}>
-          <Text style={styles.n400}>₦ 5000</Text>
+          {/* <Text style={styles.n400}>₦ 5000</Text> */}
         </TouchableOpacity>
       </View>
       {/* <Image
@@ -28,7 +29,7 @@ function Truck(props) {
           //   width : 200
           // }}
           style ={{
-            marginLeft : "28%",
+            marginLeft : wp("10%"),
             // width : 100,
             // height: 100
           }}
@@ -68,8 +69,9 @@ const styles = StyleSheet.create({
   },
   truck: {
     fontFamily: "roboto-700",
-    fontSize: 22,
+    fontSize: 30,
     color: "#000",
+    top :wp("10%"),
     paddingBottom: 12
   },
   subtitleStyle: {

@@ -19,7 +19,7 @@ import {
 import {connect} from "react-redux"
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import * as Animatable from "react-native-animatable"
 import {logout, setLoading} from "../action/authAction"
 // import{ AuthContext } from '../components/context';
 
@@ -59,8 +59,12 @@ import {logout, setLoading} from "../action/authAction"
                                 </View>
                             </View> */}
                         </View>
-    
+                            
                         <Drawer.Section style={styles.drawerSection}>
+
+                            <Animatable.View
+                            
+                            animation = "slideInLeft">
                             <DrawerItem 
                                 icon={({color, size}) => (
                                     <Icon 
@@ -72,6 +76,7 @@ import {logout, setLoading} from "../action/authAction"
                                 label="Home"
                                 onPress={() => {this.props.navigation.navigate('Map')}}
                             />
+                            </Animatable.View>
                             <DrawerItem 
                                 icon={({color, size}) => (
                                     <Icon 

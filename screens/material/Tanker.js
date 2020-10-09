@@ -3,32 +3,40 @@ import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-function Bike(props) {
+function Tanker(props) {
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
-          <Text style={styles.bike}>Bike</Text>
-          <Text style={styles.subtitleStyle}></Text>
+          <Text style={styles.Tanker}>Tanker</Text>
+          {/* <Text style={styles.subtitleStyle}>3 min</Text> */}
         </View>
       </View>
       <View style={styles.actionBody}>
         <TouchableOpacity style={styles.actionButton1}>
-          {/* <Text style={styles.n900}>₦ 900</Text> */}
+          {/* <Text style={styles.n400}>₦ 10000</Text> */}
         </TouchableOpacity>
       </View>
-      <LottieView
-          // style = {styles.image}
+      {/* <Image
+        source={require("../../assets/images/Tanker.png")}
+        resizeMode="contain"
+        style={styles.image}
+      ></Image> */}
+
+        <LottieView
+          // style = {{
+          //   height : 200,
+          //   width : 200
+          // }}
           style ={{
-            marginLeft : wp("10%"),
+            marginLeft :wp("10%"),
             // width : 100,
             // height: 100
           }}
-          source={require("../../assets/lottie/5056-delivery-latest.json")}
-          autoPlay 
+          source={require("../../assets/lottie/test9.json")}
+          autoPlay
           loop
         />
-
     </View>
   );
 }
@@ -59,7 +67,7 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     flex: 1
   },
-  bike: {
+  Tanker: {
     fontFamily: "roboto-700",
     fontSize: 30,
     color: "#000",
@@ -78,21 +86,20 @@ const styles = StyleSheet.create({
   },
   actionButton1: {
     padding: 8,
-    height: hp("3%")
+    height: 36
   },
-  n900: {
+  n400: {
     fontSize: 22,
     color: "#000",
-    opacity: 0.9,
-    lineHeight: 22
+    opacity: 0.9
   },
   image: {
-    // top: 21,
-    // left: 217,
-    // width: 100,
-    // height: 200,
+    top: 21,
+    left: 217,
+    width: 100,
+    height: 100,
     position: "absolute"
   }
 });
 
-export default Bike;
+export default Tanker;

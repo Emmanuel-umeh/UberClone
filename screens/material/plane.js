@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 function Plane(props) {
   return (
@@ -19,7 +20,7 @@ function Plane(props) {
       <LottieView
           // style = {styles.image}
           style ={{
-            marginLeft : "28%",
+            marginLeft : wp("28%"),
             // width : 100,
             // height: 100
           }}

@@ -13,6 +13,8 @@ import { Kohana } from 'react-native-textinput-effects';
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import {connect} from "react-redux"
 import { Ionicons } from "@expo/vector-icons";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 const {width,height} = Dimensions.get("window")
 
 
@@ -310,14 +312,14 @@ const styles = StyleSheet.create({
   },
   icon4: {
     color: "rgba(7,7,7,1)",
-    fontSize: 38,
+    fontSize: wp("6.2%"),
     height: 41,
     width: 25
   },
   editProfile: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    fontSize: 24,
+    fontSize: wp("6.2%"),
     marginLeft: 61,
     marginTop: 6
   },
@@ -329,24 +331,24 @@ const styles = StyleSheet.create({
     marginRight: 104
   },
   ellipse: {
-    width: "50%",
-    height: "50%",
+    width: wp("50%"),
+    height: wp("50%"),
     marginTop: 4,
-    marginLeft: 82
+    marginLeft: wp("25%")
   },
   image: {
     top: 0,
     left: 0,
     width: "100%",
-    height: 348,
+    height: "100%",
     position: "absolute",
     opacity: 0.09
   },
   image3: {
-    top: 56,
-    left: 85,
-    width: 304,
-    height: 304,
+    top: hp("7%"),
+    left: wp("25%"),
+    width: wp("80%"),
+    height: hp("45%"),
     position: "absolute"
   },
   image3_imageStyle: {},

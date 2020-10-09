@@ -21,7 +21,7 @@ export default class DestinantionButton extends Component{
         onLocationSelected : false
     }
     render(){
-        console.log("set destination function !!!!!!!", this.props.selectDestination)
+        // console.log("set destination function !!!!!!!", this.props.selectDestination)
         
        
         // console.log("props ", this.props)
@@ -30,13 +30,16 @@ export default class DestinantionButton extends Component{
 
             <TouchableOpacity  onPress ={()=>{
     
-                console.log("where to clicked!!")
-                console.log("props", this.props)
+                // console.log("where to clicked!!")
+                // console.log("props", this.props)
+
+                console.log("logistics ", this.props.logistics)
                 this.props.navigation.navigate("setDestination",{
                     address : this.props.state.addressShortName,
                     longitude : this.props.state.region.longitude,
                     latitude : this.props.state.region.latitude,
-                    selectDestination :this.props.selectDestination
+                    selectDestination :this.props.selectDestination,
+                    logistics : this.props.logistics
                   })
             }}  style = {styles.container}>
     
@@ -48,7 +51,7 @@ export default class DestinantionButton extends Component{
     </View>
     
     <View style = {styles.centerCol}>
-    <Text  style ={{fontFamily :'charm-bold', fontSize : 21, color : '#545454'}}>Where To? </Text>
+    <Text  style ={{ fontSize : 21, color : '#545454'}}>Where To? </Text>
     </View>
     
     <View style = {styles.rightCol}>
