@@ -14,6 +14,13 @@ import EntypoIcon from "react-native-vector-icons/Entypo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import google_api from "../keys/google_map";
 import _ from "lodash";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+
+import  FloatingActionButton  from "react-native-floating-action-button";
+import { Spinner } from "native-base";
 
 class setDestination extends Component {
   constructor(props) {
@@ -27,18 +34,24 @@ class setDestination extends Component {
   state = {
     destination: null,
     predictions: [],
+    visible : false
   };
 
   destinationChange = async (destination) => {
     // console.log("longitude ", this.props.route.params.longitude);
-
+this.setState({
+  visible : true
+})
     const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=500`;
     const result = await fetch(api_url);
     const json = await result.json();
     this.setState({
       destination,
       predictions: json.predictions,
+      visible : false
     });
+
+
   };
 
   locationPressed = (e) => {
@@ -58,6 +71,8 @@ class setDestination extends Component {
     // var v = Object.values(this.state.predictions);
 
     const predictions = this.state.predictions.map((prediction,key) => (
+
+      <KeyboardAwareScrollView>
       <TouchableOpacity
         key={key}
         onPress={async () => {
@@ -104,10 +119,35 @@ class setDestination extends Component {
           <Text style={styles.addHome}>{prediction.description}</Text>
         </View>
       </TouchableOpacity>
+      </KeyboardAwareScrollView>
     ));
     // console.log("predictions", predictions)
     return (
       <View style={styles.container}>
+
+
+
+<View   style={{
+      position : "absolute",
+      zIndex : 9,
+      top :hp("90%"),
+      left : wp("80%")
+    }}>
+
+         <FloatingActionButton
+    // text="Back"
+    iconName="md-arrow-round-back"
+    iconType="Ionicons"
+    iconColor="black"
+  onPress ={()=>{
+    this.props.navigation.pop()
+  }}
+    textColor="black"
+    shadowColor="gold"
+    
+    rippleColor="gold"
+/>
+           </View> 
         <KeyboardAwareScrollView>
           <Animatable.View animation="bounceIn" style={styles.header}>
             <View style={styles.icon3StackStackRow}>
@@ -128,8 +168,8 @@ class setDestination extends Component {
               <View style={styles.textInputColumn}>
                 <TextInput
                   defaultValue={
-                    this.props.route.params
-                      ? this.props.route.params.address
+                    this.props.route.params && this.props.route.params.address
+                      ? this.props.route.params.address.length !=0 && this.props.route.params.address
                       : "Unknown Road"
                   }
                   style={styles.textInput}
@@ -141,7 +181,19 @@ class setDestination extends Component {
                 ></TextInput>
               </View>
 
-              <EntypoIcon name="plus" style={styles.icon}></EntypoIcon>
+  {/* <EntypoIcon name="plus" style={styles.icon}></EntypoIcon> */}
+  {this.state.visible && 
+            <Spinner
+            visible={this.state.visible}
+            style={styles.icon}
+           
+            color = "#d1ab21"
+            animation="fade"
+          />
+  
+  }
+  
+    
             </View>
           </Animatable.View>
 
@@ -149,6 +201,8 @@ class setDestination extends Component {
           
 
           <Animatable.View animation="fadeInDownBig" style={styles.footer}>
+            
+
             {/* <ScrollView> */}
             <TouchableOpacity style={styles.button2}>
               <View style={styles.icon7Row}>
@@ -167,6 +221,8 @@ class setDestination extends Component {
 
             {/* </ScrollView> */}
           </Animatable.View>
+
+
         </KeyboardAwareScrollView>
       </View>
     );
@@ -177,14 +233,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  icon4: {
-    color: "rgba(128,128,128,1)",
-    fontSize: 40,
-    marginLeft: 702,
-    marginTop: 209,
-  },
+
   scrollArea: {
-    top: 180,
+    top: hp("20%"),
     left: 1,
     position: "absolute",
     backgroundColor: "rgba(255,255,255,1)",
@@ -200,13 +251,13 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   scrollArea_contentContainerStyle: {
-    height: 559,
+    height: hp("70%"),
   },
   rect: {
     top: 0,
     left: 0,
     height: 181,
-    width: "100%",
+    width: wp("100%"),
     position: "absolute",
     backgroundColor: "rgba(255,255,255,0.21)",
     borderWidth: 1,
@@ -230,7 +281,7 @@ const styles = StyleSheet.create({
     top: 23,
     left: 0,
     position: "absolute",
-    color: "rgba(35,46,182,1)",
+    color: "rgba(105,174,26,1)",
     fontSize: 40,
     height: 44,
     width: 40,
@@ -254,7 +305,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 8,
     position: "absolute",
-    color: "rgba(105,174,26,1)",
+    color: "#d1ab21",
     fontSize: 25,
     height: 27,
     width: 25,
@@ -267,8 +318,8 @@ const styles = StyleSheet.create({
   textInput: {
     fontFamily: "roboto-regular",
     color: "black",
-    height: 44,
-    width: 254,
+    height: hp("6.5%"),
+    width: wp("70%"),
     fontSize: 15,
     opacity: 0.94,
     paddingLeft: 10,
@@ -277,8 +328,8 @@ const styles = StyleSheet.create({
   textInput1: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    height: 44,
-    width: 254,
+    height: hp("6.5%"),
+    width: wp("70%"),
     fontSize: 15,
     opacity: 0.94,
     backgroundColor: "whitesmoke",
@@ -286,14 +337,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   textInputColumn: {
-    width: 254,
+    width: wp("75%"),
     marginLeft: 6,
   },
   icon: {
-    color: "rgba(32,30,14,1)",
-    fontSize: 30,
+    color: "gold",
+    fontSize: 25,
     height: 44,
-    width: 40,
+    width: 5,
+    left : 0,
     marginTop: 60,
   },
   icon3StackStackRow: {

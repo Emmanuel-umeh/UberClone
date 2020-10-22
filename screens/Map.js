@@ -1,8 +1,17 @@
 import React, { Component } from "react";
 
 import { StatusBar } from "expo-status-bar";
-
-import { StyleSheet, Text, View, Dimensions, Alert , Vibration} from "react-native";
+import PubNubReact from "pubnub-react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Alert,
+  Vibration,
+  YellowBox,
+  Platform,
+} from "react-native";
 import MapView, { Marker, AnimatedRegion } from "react-native-maps";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
@@ -18,23 +27,29 @@ import { Ionicons } from "@expo/vector-icons";
 import SearchInput from "../components/SearchInput";
 import Geocoder from "react-native-geocoding";
 import google_api from "../keys/google_map";
-import {connect} from "react-redux"
+import { connect } from "react-redux";
 import Pusher from "pusher-js/react-native";
 import { regionFrom, getLatLonDiffInMeters } from "../helpers/helper";
 
 import MapViewDirections from "react-native-maps-directions";
 
-import { LogBox } from 'react-native';
+import { LogBox } from "react-native";
 
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
-import { Button, Content, Header } from "native-base";
+import { Button, Content, Header, Image } from "native-base";
 import MaterialButtonPink from "./material/MaterialButtonPink";
 import MaterialButtonPink1 from "./material/MaterialButtonPink1";
 import * as Animatable from "react-native-animatable";
 import { BackHandler } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
+import DriverDetailsPopUp from "./components/DriverDetailsPopUp";
+import _ from "lodash";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import CustomModal from "./components/Modal";
 // import {
 //   SharedElement,
 //   SharedElementTransition,
@@ -51,20 +66,26 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 // const going = {latitude: 9.0756154, longitude: 7.3886};
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
-
+YellowBox.ignoreWarnings(["Setting a timer"]);
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
 class Map extends Component {
   constructor(props) {
-      
-
     super(props);
-
+this.map =[]
+    this.marker = React.createRef();
     this.phoneNumber = "09021990562";
 
-    
     this.available_drivers_channel = null;
     this.bookRide = this.bookRide.bind(this);
     this.user_ride_channel = null;
     this.state = {
+
+      // clients initial region
       region: {
         latitude: 9.0765,
         longitude: 7.3986,
@@ -94,154 +115,167 @@ class Map extends Component {
       has_ridden: false,
       totalPriceVisible: false,
 
+      // price of ride
+      price: 0,
+
       // name of the accepted driver
-      driverName  : null
+      driverName: null,
     };
   }
 
   componentDidMount() {
-    // LogBox.ignoreLogs(['Setting a timer']); // Ignore log notification by message
-
-    
-    this._getLocationAsync();
-
     var pusher = new Pusher("eead8d5075773e7aca0a", {
-      authEndpoint: "http://caab60820848.ngrok.io/api/pusher/auth",
+      authEndpoint: "http://5ce2b3d6af3a.ngrok.io/api/pusher/auth",
       cluster: "eu",
+      auth: {
+        headers : { 'Authorization':'bb692c03c2d8402ca3a5' }
+      },
       encrypted: true,
     });
-     Pusher.logToConsole = true;
+    Pusher.logToConsole = true;
 
-
-
-    
-
-
-     this.available_drivers_channel = pusher.subscribe("private-available-drivers",function() {
-      console.log("Subscribed succesfully")
-    }
-    
+    this.available_drivers_channel = pusher.subscribe(
+      "private-available-drivers",
+      function () {
+        console.log("Subscribed succesfully");
+      }
     );
-
-
 
     // available_drivers_channel.bind("Driver_Accepted", function (data) {
     //   alert("New Driver Alerted")
     //     })
+
+    this.user_ride_channel = pusher.subscribe(
+      "private-ride-" + this.phoneNumber
+    );
+    this.user_ride_channel.bind("pusher:subscription_succeeded", () => {
+      this.user_ride_channel.bind("client-driver-response", (data) => {
+        let passenger_response = "no";
+        if (!this.state.has_ride) {
+          passenger_response = "yes";
+        }
+
+        // passenger responds to driver's response
+        this.user_ride_channel.trigger("client-driver-response", {
+          response: passenger_response,
+        });
+      });
+
+      this.user_ride_channel.bind("client-found-driver", (data) => {
+        // found driver, the passenger has no say about this.
+        // once a driver is found, this will be the driver that's going to drive the user
+        // to their destination
+        // Vibration.vibrate({pattern:500});
+        let driverLocation = regionFrom(
+          data.location.latitude,
+          data.location.longitude,
+          data.location.accuracy
+        );
+
+        this.setState({
+          has_ride: true,
+          is_searching: false,
+          location: driverLocation,
+          driver: {
+            latitude: data.location.latitude,
+            longitude: data.location.longitude,
+            accuracy: data.location.accuracy,
+          },
+
+          driverName: data.driver.name,
+        });
+
+   
+        Vibration.vibrate();
+
+
+        console.log("Driver accepted and animating to driver location ", data);
+
+        const WIDTH = Dimensions.get("window").width;
+        const HEIGHT = Dimensions.get("window").height;
+        const ASPECT_RATIO = WIDTH / HEIGHT;
+        const LATITUDE_DELTA = 0.02358723958820065; //Very high zoom level
+        const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+         this.map.animateToRegion(
+          {
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+            longitude: data.location.longitude,
+            latitude: data.location.latitude,
+          },
+          2000
+        );
+      });
+
+      this.user_ride_channel.bind("client-driver-location", (data) => {
       
 
-    this.user_ride_channel = pusher.subscribe("private-ride-" + this.phoneNumber);
+        if (data) {
+          const { longitude, latitude, accuracy } = data
 
-    this.user_ride_channel.bind("client-driver-response", (data) => {
-      let passenger_response = "no";
-      if (!this.state.has_ride) {
-        passenger_response = "yes";
-      }
 
-      // passenger responds to driver's response
-      this.user_ride_channel.trigger("client-driver-response", {
-        response: passenger_response,
+          console.log("client driver location updated!! ? ", latitude,longitude,accuracy);
+
+          const newCoordinate = {
+            latitude,
+            longitude,
+          };
+
+          // driver location received
+          let driverLocation = regionFrom(latitude, longitude, accuracy);
+console.log("the drivers new location ", driverLocation)
+          this.setState({
+            location: driverLocation,//the drivers location
+            driver: {
+              latitude: latitude,
+              longitude: longitude,
+            },
+          });
+
+          if (Platform.OS === "android") {
+            if (this.marker && newCoordinate) {
+              console.log({ newCoordinate });
+              console.log("ANIMATING TO NEW POSITION ", newCoordinate);
+
+              this.marker &&
+              this.marker.animateMarkerToCoordinate(
+                newCoordinate,
+                500
+              ); // 500 is the duration to animate the marker
+            }
+          } else {
+            coordinate.timing(newCoordinate).start();
+          }
+        }
+      });
+
+      this.user_ride_channel.bind("client-driver-message", (data) => {
+        if (data.type == "near_pickup") {
+          //remove passenger marker
+          this.setState({
+            has_ridden: true,
+          });
+        }
+
+        if (data.type == "near_dropoff") {
+          this._getLocationAsync();
+        }
+
+        Alert.alert(
+          data.title,
+          data.msg,
+          [
+            {
+              text: "Aye sir!",
+            },
+          ],
+          { cancelable: false }
+        );
       });
     });
 
-    this.user_ride_channel.bind("client-found-driver", (data) => {
-      // found driver, the passenger has no say about this.
-      // once a driver is found, this will be the driver that's going to drive the user
-      // to their destination
-      let region = regionFrom(
-        data.location.latitude,
-        data.location.longitude,
-        data.location.accuracy
-      );
-
-      this.setState({
-        has_ride: true,
-        is_searching: false,
-        location: region,
-        driver: {
-          latitude: data.location.latitude,
-          longitude: data.location.longitude,
-          accuracy: data.location.accuracy,
-        },
-      });
-     
-
-      Vibration.vibrate()
-
-      // Alert.alert(
-      //   "Orayt!",
-      //   "We found you a driver. \nName: " +
-      //     data.driver.name +
-      //     "\nCurrent location: " +
-      //     data.location.name,
-      //   [
-      //     {
-      //       text: "Sweet!",
-      //     },
-      //   ],
-      //   { cancelable: false }
-      // );
-
-      this.setState({
-        driverName : data.driver.name
-      })
-
-      this.RBSheet.open();
-
-      const WIDTH = Dimensions.get("window").width;
-      const HEIGHT = Dimensions.get("window").height;
-      const ASPECT_RATIO = WIDTH / HEIGHT;
-      const LATITUDE_DELTA = 0.02358723958820065; //Very high zoom level
-      const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
-      this.map.animateToRegion(
-        {
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-         longitude : data.location.longitude,
-         latitude : data.location.latitude
-        },
-        2000
-      );
-    });
-
-    this.user_ride_channel.bind("client-driver-location", (data) => {
-      console.log("did it bind ? ", data);
-      // driver location received
-      let region = regionFrom(data.latitude, data.longitude, data.accuracy);
-
-      this.setState({
-        location: region,
-        driver: {
-          latitude: data.latitude,
-          longitude: data.longitude,
-        },
-      });
-    });
-
-    this.user_ride_channel.bind("client-driver-message", (data) => {
-      if (data.type == "near_pickup") {
-        //remove passenger marker
-        this.setState({
-          has_ridden: true,
-        });
-      }
-
-      if (data.type == "near_dropoff") {
-        this._setCurrentLocation();
-      }
-
-      Alert.alert(
-        data.title,
-        data.msg,
-        [
-          {
-            text: "Aye sir!",
-          },
-        ],
-        { cancelable: false }
-      );
-    });
+    this._getLocationAsync();
 
     // console.log("Mounted with props, ", this.props.navigation)
   }
@@ -295,74 +329,9 @@ class Map extends Component {
         // }
       })
       .catch((error) => console.warn(error));
+    this.watchId = location;
 
     this.centerMap();
-    //     await Location.watchPositionAsync({
-    //       // timeInterval : 2000,
-    //       distanceInterval : 10,
-    //       enableHighAccuracy: true,
-    //     },
-
-    //     // this.callback(locationObject)
-    //     // console.log
-
-    //     (location)=>{
-    //       const ASPECT_RATIO = WIDTH / HEIGHT;
-    //     const LATITUDE_DELTA = 0.02358723958820065; //Very high zoom level
-    //     const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-    //     let region = {
-    //       latitude: location.coords.latitude,
-    //       longitude: location.coords.longitude,
-    //       latitudeDelta: LATITUDE_DELTA,
-    //       longitudeDelta: LONGITUDE_DELTA,
-    //     };
-
-    //     console.log("region ", region);
-
-    //     // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-    //     this.setState({
-    //       region: region,
-    //     });
-
-    //     Geocoder.from({
-    //       latitude: location.coords.latitude,
-    //       longitude: location.coords.longitude,
-    //     })
-    //       .then((json) => {
-    //         var addressComponent = json.results[0].address_components[0].long_name;
-    //         console.log(json.results[0].formatted_address);
-
-    //         this.setState({
-    //           address: json.results[0].formatted_address,
-    //           addressShortName: addressComponent,
-    //         });
-    //         // y address  Object {
-    //         //   "long_name": "9",
-    //         //   "short_name": "9",
-    //         //   "types": Array [
-    //         //     "street_number",
-    //         //   ],
-    //         // }
-    //       })
-    //       .catch((error) => console.warn(error));
-
-    //     }
-    //     /*
-
-    //     Object {
-    //   "coords": Object {
-    //     "accuracy": 4.436999797821045,
-    //     "altitude": 459.4,
-    //     "heading": 94.0741958618164,
-    //     "latitude": 8.9695804,
-    //     "longitude": 7.4399433,
-    //     "speed": 0.0015216430183500051,
-    //   },
-    //   "mocked": false,
-    //   "timestamp": 1602072849000,
-    // }*/
-
-    //     );
   };
 
   centerMap = () => {
@@ -400,6 +369,20 @@ class Map extends Component {
 
     const latitude = going.latitude;
     const longitude = going.longitude;
+
+    var diff_in_meter_pickup = getLatLonDiffInMeters(
+      this.state.region.latitude,
+      this.state.region.longitude,
+      going.latitude,
+      going.longitude
+    );
+
+    console.log({diff_in_meter_pickup})
+
+    this.setState({
+      price : diff_in_meter_pickup *0.2
+    })
+
     // console.log("latitude animate to ", latitude);
     // console.log("longitude animate to ", longitude);
 
@@ -415,20 +398,20 @@ class Map extends Component {
     );
   };
 
-  bookRide=()=> {
-    console.log("booking ride")
+  bookRide = () => {
+    console.log("booking ride");
     // RNGooglePlacePicker.show((response) => {
     //   if (response.didCancel) {
     //     console.log('User cancelled GooglePlacePicker');
     //   } else if (response.error) {
     //     console.log('GooglePlacePicker Error: ', response.error);
     //   } else {
-    // this.setState({
-    //   is_searching: true,
-    //   destination: response,
-    // });
+    this.setState({
+      is_searching: true,
+      // destination: response,
+    });
 
-    const {user} = this.props.auth
+    const { user } = this.props.auth;
     let pickup_data = {
       name: user.firstName,
       latitude: this.state.region.latitude,
@@ -437,26 +420,68 @@ class Map extends Component {
 
     let dropoff_data = {
       name: "Area",
-      latitude: 9.0765,
-        longitude: 7.3986,
+      latitude: this.state.going.latitude,
+      longitude: this.state.going.longitude,
     };
-  
+
     this.available_drivers_channel.trigger("client-driver-request", {
       phoneNumber: this.phoneNumber,
       pickup: pickup_data,
       dropoff: dropoff_data,
       // triggered : "Yes!"
     });
+  };
+
+  
+  cancelOrder =()=>{
+    this.setState({
+      is_searching: false,
+    })
+//  this.user_ride_channel.unbind_all()
+this.user_ride_channel.unbind("client-driver-response")
+
+this.user_ride_channel.unbind("client-found-driver")
+
+this.user_ride_channel.unbind("client-driver-location")
+
+this.user_ride_channel.unbind("client-driver-message")
+    // this.user_ride_channel.unbind_all()
   }
 
+  componentWillUnmount() {
+    console.log("Unmounting COmponents!!!!!!!");
+    
+    navigator.geolocation.clearWatch(this.watchId);
+
+    this.user_ride_channel.unbind("client-driver-response")
+
+    this.user_ride_channel.unbind("client-found-driver")
+
+    this.user_ride_channel.unbind("client-driver-location")
+
+    this.user_ride_channel.unbind("client-driver-message")
+    // this.user_ride_channel && this.user_ride_channel.unbind_all()
+
+    // this.user_ride_channel.unbind_all()
+    // this.pusher &&
+      // this.pusher.unsubscribe(
+      //   "private-ride-" + this.state.passenger.phoneNumber
+      // );
+  }
+
+
+
+
   renderContent = () => (
+    
     <Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
       <Text style={styles.totalAmount}>Total Amount</Text>
-      <Text style={styles.n3500}>N 3500</Text>
+      <Text style={styles.n3500}> ₦{Math.ceil(this.state.price/100)*100}</Text>
 
       <Text
         style={{
-          marginLeft: WIDTH / 6,
+          // marginLeft: WIDTH / 6,
+          alignSelf :"center"
 
           // flex : 1,
           // flexDirection : "row",
@@ -466,12 +491,48 @@ class Map extends Component {
         How Would You Like To Pay for Your {this.props.route.params.logistics}?
       </Text>
       <View style={styles.materialButtonPinkRow}>
-        <MaterialButtonPink
+        {/* <MaterialButtonPink
           style={styles.materialButtonPink}
-        ></MaterialButtonPink>
-        <MaterialButtonPink1
+
+          onPress ={()=>
+            this.props.navigation.navigate("creditCardScreen", {
+              bookRide : this.bookRide()
+            })
+          }
+        ></MaterialButtonPink> */}
+        <Button rounded success style = {styles.materialButtonPink1}
+        onPress ={()=>{
+          
+this.bookRide()
+         
+        
+                }        }
+        >
+            <Text style = {{fontSize : 22, color : "white", alignSelf : "center", paddingLeft : wp("12%")}}>Cash</Text>
+          </Button>
+        {/* <MaterialButtonPink1
           style={styles.materialButtonPink1}
-        ></MaterialButtonPink1>
+          onPress ={()=>this.props.navigation.navigate("creditCardScreen")}
+        ></MaterialButtonPink1> */}
+
+<Button rounded warning  style = {styles.materialButtonPink1}
+
+onPress ={()=>{
+
+  this.props.navigation.navigate("creditCardScreen", {
+    bookRide : this.bookRide
+  })
+  this.setState({
+    is_searching : false
+  })
+
+}
+  }
+
+
+>
+            <Text style = {{fontSize : 22, color : "white", paddingLeft : wp("12%")}}>Card</Text>
+          </Button>
       </View>
       <TouchableOpacity>
         <Animatable.View
@@ -495,7 +556,8 @@ class Map extends Component {
               this._getLocationAsync();
             }}
             style={{
-              marginLeft: WIDTH / 3,
+              // marginLeft: WIDTH / 3,
+              alignSelf :"center",
               fontWeight: "bold",
               fontSize: 20,
               color: "#c90c02",
@@ -517,80 +579,17 @@ class Map extends Component {
   sheetRef = React.createRef(null);
 
   render() {
- 
-    console.log("has driver ? ", this.state.has_ride)
+    console.log("has driver ? ", this.state.has_ride);
 
     return (
       <View style={styles.container}>
-        {/* <Text>Home Screen</Text> */}
-
-      {/* SHOW THIS WHEN THE USER HAS A DRIVER */}
-      <RBSheet
-          ref={(ref) => {
-            this.RBSheet = ref;
-          }}
-
-          closeOnDragDown={false}
-          closeOnPressMask={false}
-          height={300}
-          openDuration={250}
-          customStyles={{
-            container: {
-              justifyContent: "center",
-              // alignItems: "center"
-            },
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "left",
-              fontSize: 20,
-              padding: 10,
-              fontWeight: "bold",
-            }}
-          >
-            Your Order Has Been Accepted
-          </Text>
-
-          <Content style={{ top: 20 }}>
-            <Text
-              style={{
-                // textAlign : "left",
-                fontSize: 15,
-                padding: 10,
-                fontWeight: "bold",
-              }}
-            >
-              Driver Name : {this.state.driverName && this.state.driverName}
-            </Text>
-            <Text
-              style={{
-                // textAlign : "left",
-                fontSize: 15,
-                padding: 10,
-                fontWeight: "bold",
-              }}
-            >
-             100 Rides Completed 
-             
-            </Text>
-            <Text
-              style={{
-                // textAlign : "left",
-                fontSize: 15,
-                padding: 10,
-                fontWeight: "bold",
-              }}
-            >
-              Rating : 5
-            </Text>
-         
-          </Content>
-        </RBSheet>
-      
 
 
-        {!this.state.destinationRequested ? (
+
+        {this.state.is_searching  &&
+        <CustomModal  cancelOrder = {this.cancelOrder}/>
+           } 
+        {!this.state.destinationRequested && !this.state.has_ride ? (
           <DestinationButton
             navigation={this.props.navigation}
             state={this.state}
@@ -598,6 +597,11 @@ class Map extends Component {
             selectDestination={this.selectDestination}
           />
         ) : null}
+
+        {/* if the user has a driver, show the driver details */}
+
+        {this.state.has_ride ? 
+        <DriverDetailsPopUp /> : null}
 
         <View
           style={{
@@ -621,8 +625,8 @@ class Map extends Component {
               size={32}
               color="black"
               onPress={() => {
-                // this.props.navigation.openDrawer();
-                this.bookRide()
+                this.props.navigation.openDrawer();
+                // this.bookRide();
               }}
             />
           ) : (
@@ -653,7 +657,7 @@ class Map extends Component {
           }}
         /> */}
 
-        {!this.state.destinationRequested ? (
+        {!this.state.destinationRequested && !this.state.has_ride ? (
           <CurrentLocationButton
             cb={() => {
               this.centerMap();
@@ -671,7 +675,8 @@ class Map extends Component {
           showsUserLocation={true}
           showsBuildings={true}
           zoomEnabled={true}
-          showsCompass={true}
+          showsCompass={false}
+          loadingEnabled
           // followUserLocation={true}
           // showsTraffic={true}
           style={{
@@ -690,6 +695,7 @@ class Map extends Component {
                 apikey={google_api}
                 strokeWidth={3}
                 strokeColor="blue"
+                showsCompass={false}
               ></MapViewDirections>
 
               <Marker coordinate={this.state.going} pinColor="#ffffff" />
@@ -698,29 +704,22 @@ class Map extends Component {
           ) : null}
 
           {this.state.driver && (
-            // <MapView.Marker
-            //   coordinate={{
-            //     latitude: this.state.driver.latitude,
-            //     longitude: this.state.driver.longitude,
-            //   }}
-            //   title={"Your driver is here"}
-            //   pinColor={"coral"}
-            // />
+        
 
-           <Driver
-            driver={{
-              uid: null,
-              location: {
-                latitude: this.state.driver.latitude,
-                    longitude: this.state.driver.longitude,
-                // latitudeDelta :0.3,
-                // longitudeDelta : 0.3,
-              },
-            }}
-          />
+            <Driver
+              driver={{
+                uid: null,
+                location: {
+                  latitude: this.state.driver.latitude,
+                  longitude: this.state.driver.longitude,
+                  // latitudeDelta :0.3,
+                  // longitudeDelta : 0.3,
+                },
+              }}
+            
+              innerRef = {this.marker}
+            />
           )}
-
-         
         </MapView>
         <StatusBar style="auto" />
 
@@ -738,7 +737,7 @@ class Map extends Component {
         />
       </View> */}
 
-        {this.state.destinationRequested ? (
+        {this.state.destinationRequested && !this.state.is_searching ? (
           <BottomSheet
             ref={this.sheetRef}
             snapPoints={["40%", "10%"]}
@@ -761,7 +760,7 @@ class Map extends Component {
               </View>
             }
           />
-        ) : null}
+      ) : null} 
       </View>
     );
   }
@@ -773,10 +772,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {})(
-  Map
-);
-
+export default connect(mapStateToProps, {})(Map);
 
 const styles = StyleSheet.create({
   container: {
@@ -798,30 +794,35 @@ const styles = StyleSheet.create({
     color: "#121212",
     fontSize: 22,
     marginTop: 10,
-    marginLeft: WIDTH / 3,
+    // marginLeft: WIDTH / 3,
+    alignSelf :"center"
   },
   n3500: {
     fontFamily: "roboto-900",
     color: "#121212",
     fontSize: 40,
     marginTop: 10,
-    marginLeft: WIDTH / 3,
+    // marginLeft: WIDTH / 3,
+    alignSelf :"center"
   },
   materialButtonPink: {
-    height: "60%",
-    width: 160,
-    borderRadius: 100,
+    height: hp("13%"),
+    width: wp("35%"),
+    // borderRadius: 100,
     marginTop: 1,
   },
   materialButtonPink1: {
-    height: "60%",
-    width: 168,
-    borderRadius: 100,
+    height: hp("13%"),
+    width: wp("35%"),
+    // borderRadius: 100,
     marginLeft: 28,
   },
   materialButtonPinkRow: {
-    height: 91,
-    flexDirection: "row",
+    flex : 1,
+    flexDirection : "row",
+    alignContent : "center",
+    height: hp("30%"),
+    justifyContent : "center",
     marginTop: 20,
     marginRight: 4,
   },

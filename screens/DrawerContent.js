@@ -88,7 +88,7 @@ import {logout, setLoading} from "../action/authAction"
                                 label="Profile"
                                 onPress={() => {this.props.navigation.navigate('profileScreen')}}
                             />
-                            <DrawerItem 
+                            {/* <DrawerItem 
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="bookmark-outline" 
@@ -98,7 +98,7 @@ import {logout, setLoading} from "../action/authAction"
                                 )}
                                 label="Bookmarks"
                                 onPress={() => {this.props.navigation.navigate('BookmarkScreen')}}
-                            />
+                            /> */}
                             <DrawerItem 
                                 icon={({color, size}) => (
                                     <Icon 
@@ -122,16 +122,7 @@ import {logout, setLoading} from "../action/authAction"
                                 onPress={() => {this.props.navigation.navigate('SupportScreen')}}
                             />
                         </Drawer.Section>
-                        <Drawer.Section title="Preferences">
-                            <TouchableRipple onPress={() => {toggleTheme()}}>
-                                <View style={styles.preference}>
-                                    <Text>Dark Theme</Text>
-                                    <View pointerEvents="none">
-                                        {/* <Switch value={paperTheme.dark}/> */}
-                                    </View>
-                                </View>
-                            </TouchableRipple>
-                        </Drawer.Section>
+                     
                     </View>
                 </DrawerContentScrollView>
                 <Drawer.Section style={styles.bottomDrawerSection}>

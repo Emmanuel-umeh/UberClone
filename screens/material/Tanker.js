@@ -33,7 +33,7 @@ function Tanker(props) {
             // width : 100,
             // height: 100
           }}
-          source={require("../../assets/lottie/test9.json")}
+          source={require("../../assets/lottie/15437-truck.json")}
           autoPlay
           loop
         />

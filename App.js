@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { View, Text, Button, StyleSheet, Image } from "react-native";
+import { View, Text, Button, StyleSheet, Image,YellowBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { NotifierWrapper } from "react-native-notifier";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -10,6 +10,8 @@ import MainTabScreen, {
   HomeStackScreen,
   DetailsStackScreen,
 } from "./screens/MainTabScreen";
+import _ from 'lodash';
+
 import DrawerContent from "./screens/DrawerContent";
 import RootStackScreen from "./screens/RootStackScreen";
 
@@ -26,6 +28,14 @@ import AuthenticatedStack from "./screens/AuthenticatedStack";
 import AsyncStorage from "@react-native-community/async-storage";
 const Drawer = createDrawerNavigator();
 import LoadingView from "react-native-loading-view";
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf('Setting a timer') <= -1) {
+    _console.warn(message);
+  }
+};
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -41,6 +51,8 @@ class App extends React.Component {
   };
 
   componentDidMount = async () => {
+    // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmM4MjJiOGJhMGZlM2NmMGVkZjllZCIsImlhdCI6MTYwMTA0MjgzMywiZXhwIjoxMDAwMDAxNjAxMDQyODMyfQ.oaWC5E0Mh4I0blFd5aMNbEHH-hAKbux10ip_dpqaApA")
+  
     await Font.loadAsync({
       "charm-bold": require("./assets/fonts/Charm-Bold.ttf"),
       //   // 'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
@@ -49,6 +61,10 @@ class App extends React.Component {
       "roboto-700": require("./assets/fonts/roboto-700.ttf"),
       "roboto-900": require("./assets/fonts/roboto-900.ttf"),
       "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
+
+      'Roboto': require('native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+      // ...Ionicons.font,
     });
 
     await this.getToken();

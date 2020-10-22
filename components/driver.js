@@ -7,13 +7,22 @@ import {
     Dimensions,
     Image,
     ColorPropType,
+    YellowBox
    
 } from "react-native"
-
+import _ from 'lodash';
 
 import MapView ,{AnimatedRegion} from "react-native-maps"
 
 
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf('Setting a timer') <= -1) {
+    _console.warn(message);
+  }
+};
 export default class Driver extends Component{
     constructor(props){
         super(props)
@@ -38,13 +47,13 @@ export default class Driver extends Component{
     
     }
     render(){
-        console.log("data recievedw , " , this.state.driver)
+        console.log("ref, " , this.props.innerRef)
         return(
             <MapView.Marker.Animated 
             
             coordinate = {this.state.coordinate} 
             anchor = {{x : 0.35, y:0.32}}
-            ref = {marker => this.marker = marker}
+            ref = {this.props.innerRef}
             style = {{width : 50, height   :50 }}
         
 

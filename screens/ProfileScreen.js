@@ -305,8 +305,8 @@ const styles = StyleSheet.create({
   rect3: {
     top: 45,
     left: 70,
-    width: 360,
-    height: 279,
+    width: wp("100%"),
+    height: hp("42%"),
     position: "relative",
     backgroundColor: "#E6E6E6"
   },
@@ -389,66 +389,32 @@ const styles = StyleSheet.create({
     // top: 324
   },
   rect3StackStack: {
-    width: 474,
+    // width: 474,
     // height: 367,
     flex : 1,
     marginTop: -21,
     marginLeft: -72
   },
-  materialIconTextbox: {
-    height: 43,
-    width: 327,
-    marginTop: 314,
-    marginLeft: 17,
-    alignSelf: "center"
-  },
-  materialIconTextbox1: {
-    height: 43,
-    width: 318,
-    marginTop: -309,
-    marginLeft: 21,
-    alignSelf: "center"
-  },
-  rect: {
-    width: 163,
-    height: 68,
-    backgroundColor: "rgba(255,255,255,1)",
-    borderWidth: 1,
-    borderColor: "#000000",
-    borderRadius: 6,
-    flexDirection: "row"
-  },
-  nov131897: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    fontSize: 20,
-    marginTop: 2
-  },
+ 
+  // rect: {
+  //   width: 163,
+  //   height: 68,
+  //   backgroundColor: "rgba(255,255,255,1)",
+  //   borderWidth: 1,
+  //   borderColor: "#000000",
+  //   borderRadius: 6,
+  //   flexDirection: "row"
+  // },
+ 
   icon: {
     color: "rgba(0,0,0,1)",
     fontSize: 25,
     height: 27,
     width: 25,
     marginLeft: 8
-  },
-  nov131897Row: {
-    height: 27,
-    flexDirection: "row",
-    flex: 1,
-    marginRight: 5,
-    marginLeft: 9,
-    marginTop: 24
-  },
-  rect2: {
-    width: 124,
-    height: 68,
-    backgroundColor: "rgba(255,255,255,1)",
-    borderWidth: 1,
-    borderColor: "#000000",
-    borderRadius: 6,
-    flexDirection: "row",
-    marginLeft: 23
-  },
+  },  
+
+
   female: {
     fontFamily: "roboto-regular",
     color: "#121212",
@@ -491,7 +457,7 @@ const styles = StyleSheet.create({
   birthDateRow: {
     height: 24,
     flexDirection: "row",
-    marginTop: -96,
+    // marginTop: -96,
     marginLeft: 40,
     marginRight: 76
   }

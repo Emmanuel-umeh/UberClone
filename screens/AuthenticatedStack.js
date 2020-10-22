@@ -9,6 +9,7 @@ import setDestination from "./setDestination";
 import MapDestination from "./MapDestination";
 import ProfileScreen from "./ProfileScreen";
 import SetLogistics from "./selectLogistics";
+import CreditCard from "./CreditCard";
 
 const AuthStack = createStackNavigator();
 
@@ -25,8 +26,11 @@ const AuthenticatedStack = ({ navigation }) => (
     {/* <AuthStack.Screen name="SplashScreen" component={AuthSplashScreen}/> */}
 
     <AuthStack.Screen name="setDestination" component={setDestination} />
+    <AuthStack.Screen name="creditCardScreen" component={CreditCard} />
 
     <AuthStack.Screen name="profileScreen" component={ProfileScreen} />
+
+  
     {/* 
         <AuthStack.Screen name="setDestination" component={setDestination}/>
 

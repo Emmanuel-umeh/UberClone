@@ -34,7 +34,7 @@ import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = " http://caab60820848.ngrok.io";
+axios.defaults.baseURL = "http://5ce2b3d6af3a.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -81,7 +81,7 @@ export const setUserToken = (token) => (dispatch) => {
 
 // authenticate a user on load of app
 export const loadUser = () => (dispatch, getState) => {
-  // console.log("getting user");
+  console.log("getting user");
   // dispatch({type:USER_LOADING}) // dispatch user loading
 
   // user loading
@@ -113,7 +113,7 @@ export const loadUser = () => (dispatch, getState) => {
         dispatch({
           type: AUTH_ERROR,
         });
-        console.log("err", err);
+        console.log("error occured ", err);
         // console.log("Eroor" , err.response.data)
         // console.clear()
       });

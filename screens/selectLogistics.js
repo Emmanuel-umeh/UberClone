@@ -73,7 +73,7 @@ class SetLogistics extends Component {
             this.setState({
               isCarSelected : null,
               isTruckSelected:null,
-              
+              isTankerSelected:null,
               isBikeSelected : true,
               logistics : "Bike"
             })
@@ -147,7 +147,14 @@ class SetLogistics extends Component {
           style={styles.cupertinoButtonWarning}
         ></CupertinoButtonWarning> */}
         <TouchableOpacity>
-          <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }} onPress ={this._next}>
+          <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }} onPress ={
+            ()=>{
+              if(!this.state.logistics){
+                return alert("Please Select a Vehicle")
+              }
+              this._next()
+            }
+           }>
             <Text style={{ fontWeight: "bold", fontSize: 20, color: "black" }}>
               Select {this.state.logistics}
             </Text>
