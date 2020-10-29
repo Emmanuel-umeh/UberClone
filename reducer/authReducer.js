@@ -108,6 +108,7 @@ export default function (state = initialState, action) {
 
     case USER_LOADED:
       console.log("updating payload for user loaded ", action.payload);
+      
       return {
         ...state,
         isAuthenticated: true,

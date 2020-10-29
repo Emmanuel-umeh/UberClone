@@ -12,6 +12,7 @@ import {
   YellowBox,
   Platform,
 } from "react-native";
+import store from "../store";
 import MapView, { Marker, AnimatedRegion } from "react-native-maps";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
@@ -50,6 +51,10 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import CustomModal from "./components/Modal";
+import LottieLoader from 'react-native-lottie-loader';
+
+// redux imports
+import { makeOrder, cancelOrder } from "../action/orderActions";
 // import {
 //   SharedElement,
 //   SharedElementTransition,
@@ -76,62 +81,64 @@ console.warn = (message) => {
 class Map extends Component {
   constructor(props) {
     super(props);
-this.map =[]
+    this.map = [];
     this.marker = React.createRef();
-    this.phoneNumber = "09021990562";
+    // this.props.auth.user.phoneNumber = null;
 
     this.available_drivers_channel = null;
     this.bookRide = this.bookRide.bind(this);
     this.user_ride_channel = null;
-    this.state = {
+    // this.props.order = {
 
-      // clients initial region
-      region: {
-        latitude: 9.0765,
-        longitude: 7.3986,
-        latitudeDelta: 0.992,
-        longitudeDelta: 0.0421,
+    //   // clients initial region
+    //   region: {
+    //     latitude: 9.0765,
+    //     longitude: 7.3986,
+    //     latitudeDelta: 0.992,
+    //     longitudeDelta: 0.0421,
 
-        // destination the user is going to
-      },
+    //     // destination the user is going to
+    //   },
 
-      coming: null,
-      going: null,
-      // determines if the user has selected the destination
-      destinationRequested: false,
-      // destination : ""
+    //   coming: null,
+    //   going: null,
+    //   // determines if the user has selected the destination
+    //   destinationRequested: false,
+    //   // destination : ""
 
-      address: null,
+    //   address: null,
 
-      addressShortName: null,
+    //   addressShortName: null,
 
-      location: null,
-      error: null,
-      has_ride: false,
-      destination: null,
-      driver: null,
-      origin: null,
-      is_searching: false,
-      has_ridden: false,
-      totalPriceVisible: false,
+    //   location: null,
+    //   error: null,
+    //   has_ride: false,
+    //   destination: null,
+    //   driver: null,
+    //   origin: null,
+    //   is_searching: false,
+    //   has_ridden: false,
+    //   totalPriceVisible: false,
 
-      // price of ride
-      price: 0,
+    //   // price of ride
+    //   price: 0,
 
-      // name of the accepted driver
-      driverName: null,
-    };
+    //   // name of the accepted driver
+    //   driverName: null,
+    // };
   }
 
   componentDidMount() {
     var pusher = new Pusher("eead8d5075773e7aca0a", {
-      authEndpoint: "http://5ce2b3d6af3a.ngrok.io/api/pusher/auth",
+      authEndpoint: "http://dee6666e76be.ngrok.io/api/pusher/auth",
       cluster: "eu",
       auth: {
-        headers : { 'Authorization':'bb692c03c2d8402ca3a5' }
+        headers: { "x-auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmM4MjJiOGJhMGZlM2NmMGVkZjllZCIsImlhdCI6MTYwMTA0MjgzMywiZXhwIjoxMDAwMDAxNjAxMDQyODMyfQ.oaWC5E0Mh4I0blFd5aMNbEHH-hAKbux10ip_dpqaApA" },
       },
       encrypted: true,
     });
+
+    // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
     Pusher.logToConsole = true;
 
     this.available_drivers_channel = pusher.subscribe(
@@ -146,12 +153,12 @@ this.map =[]
     //     })
 
     this.user_ride_channel = pusher.subscribe(
-      "private-ride-" + this.phoneNumber
+      "private-ride-" + this.props.auth.user.phoneNumber
     );
     this.user_ride_channel.bind("pusher:subscription_succeeded", () => {
       this.user_ride_channel.bind("client-driver-response", (data) => {
         let passenger_response = "no";
-        if (!this.state.has_ride) {
+        if (!this.props.order.has_ride) {
           passenger_response = "yes";
         }
 
@@ -166,13 +173,14 @@ this.map =[]
         // once a driver is found, this will be the driver that's going to drive the user
         // to their destination
         // Vibration.vibrate({pattern:500});
+
         let driverLocation = regionFrom(
           data.location.latitude,
           data.location.longitude,
           data.location.accuracy
         );
 
-        this.setState({
+        const found_driver = {
           has_ride: true,
           is_searching: false,
           location: driverLocation,
@@ -183,11 +191,18 @@ this.map =[]
           },
 
           driverName: data.driver.name,
+        };
+
+        store.dispatch({
+          type: "FOUND_DRIVER",
+          payload: found_driver,
         });
 
-   
-        Vibration.vibrate();
+        // this.setState({
 
+        // });
+
+        Vibration.vibrate();
 
         console.log("Driver accepted and animating to driver location ", data);
 
@@ -197,7 +212,7 @@ this.map =[]
         const LATITUDE_DELTA = 0.02358723958820065; //Very high zoom level
         const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-         this.map.animateToRegion(
+        this.map.animateToRegion(
           {
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
@@ -209,13 +224,15 @@ this.map =[]
       });
 
       this.user_ride_channel.bind("client-driver-location", (data) => {
-      
-
         if (data) {
-          const { longitude, latitude, accuracy } = data
+          const { longitude, latitude, accuracy } = data;
 
-
-          console.log("client driver location updated!! ? ", latitude,longitude,accuracy);
+          console.log(
+            "client driver location updated!! ? ",
+            latitude,
+            longitude,
+            accuracy
+          );
 
           const newCoordinate = {
             latitude,
@@ -224,14 +241,23 @@ this.map =[]
 
           // driver location received
           let driverLocation = regionFrom(latitude, longitude, accuracy);
-console.log("the drivers new location ", driverLocation)
-          this.setState({
-            location: driverLocation,//the drivers location
+          console.log("the drivers new location ", driverLocation);
+
+          var data = {
+            location: driverLocation, //the drivers location
             driver: {
               latitude: latitude,
               longitude: longitude,
             },
+          };
+
+          store.dispatch({
+            type: "DRIVER_LOCATION",
+            payload: data,
           });
+          // this.setState({
+
+          // });
 
           if (Platform.OS === "android") {
             if (this.marker && newCoordinate) {
@@ -239,10 +265,7 @@ console.log("the drivers new location ", driverLocation)
               console.log("ANIMATING TO NEW POSITION ", newCoordinate);
 
               this.marker &&
-              this.marker.animateMarkerToCoordinate(
-                newCoordinate,
-                500
-              ); // 500 is the duration to animate the marker
+                this.marker.animateMarkerToCoordinate(newCoordinate, 500); // 500 is the duration to animate the marker
             }
           } else {
             coordinate.timing(newCoordinate).start();
@@ -253,9 +276,15 @@ console.log("the drivers new location ", driverLocation)
       this.user_ride_channel.bind("client-driver-message", (data) => {
         if (data.type == "near_pickup") {
           //remove passenger marker
-          this.setState({
-            has_ridden: true,
+
+
+          store.dispatch({
+            type: "HAS_RIDDEN"
+            // payload: data,
           });
+          // this.setState({
+          //   has_ridden: true,
+          // });
         }
 
         if (data.type == "near_dropoff") {
@@ -304,9 +333,9 @@ console.log("the drivers new location ", driverLocation)
     // console.log("region ", region);
 
     // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-    this.setState({
-      region: region,
-    });
+    // this.setState({
+
+    // });
 
     Geocoder.from({
       latitude: location.coords.latitude,
@@ -316,10 +345,23 @@ console.log("the drivers new location ", driverLocation)
         var addressComponent = json.results[0].address_components[0].long_name;
         // console.log(json.results[0].formatted_address);
 
-        this.setState({
+        // this.setState({
+
+       var data = {
+          region: region,
           address: json.results[0].formatted_address,
           addressShortName: addressComponent,
+        };
+        store.dispatch({
+          type: "GET_LOCATION",
+          payload: data,
         });
+
+        this.watchId = location;
+
+    this.centerMap();
+
+        // });
         // y address  Object {
         //   "long_name": "9",
         //   "short_name": "9",
@@ -329,9 +371,7 @@ console.log("the drivers new location ", driverLocation)
         // }
       })
       .catch((error) => console.warn(error));
-    this.watchId = location;
-
-    this.centerMap();
+    
   };
 
   centerMap = () => {
@@ -340,7 +380,8 @@ console.log("the drivers new location ", driverLocation)
       longitudeDelta,
       latitude,
       longitude,
-    } = this.state.region;
+    } = this.props.order.region;
+
 
     this.map.animateToRegion(
       {
@@ -355,11 +396,21 @@ console.log("the drivers new location ", driverLocation)
 
   selectDestination = async (going) => {
     // console.log("performing the select destination ");
-    this.setState({
-      going: going,
-      destinationRequested: true,
-      latitudeDelta: 0.3,
-    });
+var data = {
+  going: going,
+  destinationRequested: true,
+  latitudeDelta: 0.3,
+}
+
+console.log({going})
+
+    store.dispatch({
+      type : "SELECT_DESTINATION",
+      payload : data
+    })
+    // this.setState({
+      
+    // });
 
     const WIDTH = Dimensions.get("window").width;
     const HEIGHT = Dimensions.get("window").height;
@@ -371,17 +422,26 @@ console.log("the drivers new location ", driverLocation)
     const longitude = going.longitude;
 
     var diff_in_meter_pickup = getLatLonDiffInMeters(
-      this.state.region.latitude,
-      this.state.region.longitude,
+      this.props.order.region.latitude,
+      this.props.order.region.longitude,
       going.latitude,
       going.longitude
     );
 
-    console.log({diff_in_meter_pickup})
+    console.log({ diff_in_meter_pickup });
 
-    this.setState({
-      price : diff_in_meter_pickup *0.2
+   var  price = diff_in_meter_pickup * 0.2
+
+   console.log("price of transportation ", price)
+
+    store.dispatch({
+      type : "PRICE_UPDATED",
+      payload : price
+
     })
+    // this.setState({
+     
+    // });
 
     // console.log("latitude animate to ", latitude);
     // console.log("longitude animate to ", longitude);
@@ -406,82 +466,99 @@ console.log("the drivers new location ", driverLocation)
     //   } else if (response.error) {
     //     console.log('GooglePlacePicker Error: ', response.error);
     //   } else {
-    this.setState({
-      is_searching: true,
-      // destination: response,
-    });
+    // this.setState({
+    //   is_searching: true,
+    //   // destination: response,
+    // });
 
     const { user } = this.props.auth;
     let pickup_data = {
       name: user.firstName,
-      latitude: this.state.region.latitude,
-      longitude: this.state.region.longitude,
+      latitude: this.props.order.region.latitude,
+      longitude: this.props.order.region.longitude,
     };
 
     let dropoff_data = {
       name: "Area",
-      latitude: this.state.going.latitude,
-      longitude: this.state.going.longitude,
+      latitude: this.props.order.going.latitude,
+      longitude: this.props.order.going.longitude,
     };
 
-    this.available_drivers_channel.trigger("client-driver-request", {
-      phoneNumber: this.phoneNumber,
-      pickup: pickup_data,
-      dropoff: dropoff_data,
-      // triggered : "Yes!"
-    });
+    let phoneNumber = this.props.auth.user.phoneNumber
+    let avaiable_drivers_channel = this.available_drivers_channel
+
+    const trigger = function () {
+      console.log("Trigger functionality reached", phoneNumber, pickup_data, dropoff_data)
+      avaiable_drivers_channel.trigger("client-driver-request", {
+        phoneNumber: phoneNumber,
+        pickup: pickup_data,
+        dropoff: dropoff_data,
+        // triggered : "Yes!"
+      });
+    };
+
+    const data = {
+      startLatitude: this.props.order.region.latitude,
+      startLongitude: this.props.order.region.longitude,
+      endLatitude: this.props.order.going.latitude,
+      endLongitude: this.props.order.going.longitude,
+      price: Math.ceil(this.props.order.price / 100) * 100,
+      trigger: trigger,
+    };
+
+    this.props.makeOrder(data);
   };
 
-  
-  cancelOrder =()=>{
-    this.setState({
-      is_searching: false,
-    })
-//  this.user_ride_channel.unbind_all()
-this.user_ride_channel.unbind("client-driver-response")
+  cancelOrder = () => {
+    // this.setState({
+    //   is_searching: false,
+    // });
 
-this.user_ride_channel.unbind("client-found-driver")
+    this.props.cancelOrder()
+    //  this.user_ride_channel.unbind_all()
+    this.user_ride_channel.unbind("client-driver-response");
 
-this.user_ride_channel.unbind("client-driver-location")
+    this.user_ride_channel.unbind("client-found-driver");
 
-this.user_ride_channel.unbind("client-driver-message")
+    this.user_ride_channel.unbind("client-driver-location");
+
+    this.user_ride_channel.unbind("client-driver-message");
     // this.user_ride_channel.unbind_all()
-  }
+  };
 
   componentWillUnmount() {
     console.log("Unmounting COmponents!!!!!!!");
-    
+
     navigator.geolocation.clearWatch(this.watchId);
 
-    this.user_ride_channel.unbind("client-driver-response")
+    this.user_ride_channel.unbind("client-driver-response");
 
-    this.user_ride_channel.unbind("client-found-driver")
+    this.user_ride_channel.unbind("client-found-driver");
 
-    this.user_ride_channel.unbind("client-driver-location")
+    this.user_ride_channel.unbind("client-driver-location");
 
-    this.user_ride_channel.unbind("client-driver-message")
+    this.user_ride_channel.unbind("client-driver-message");
     // this.user_ride_channel && this.user_ride_channel.unbind_all()
 
     // this.user_ride_channel.unbind_all()
     // this.pusher &&
-      // this.pusher.unsubscribe(
-      //   "private-ride-" + this.state.passenger.phoneNumber
-      // );
+    // this.pusher.unsubscribe(
+    //   "private-ride-" + this.props.order.passenger.phoneNumber
+    // );
   }
 
-
-
-
   renderContent = () => (
-    
     <Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
       <Text style={styles.totalAmount}>Total Amount</Text>
-      <Text style={styles.n3500}> ₦{Math.ceil(this.state.price/100)*100}</Text>
+      <Text style={styles.n3500}>
+        {" "}
+        ₦{Math.ceil(this.props.order.price / 100) * 100}
+      </Text>
 
       <Text
         style={{
           // marginLeft: WIDTH / 6,
-          alignSelf :"center"
+          alignSelf: "center",
 
           // flex : 1,
           // flexDirection : "row",
@@ -500,47 +577,64 @@ this.user_ride_channel.unbind("client-driver-message")
             })
           }
         ></MaterialButtonPink> */}
-        <Button rounded success style = {styles.materialButtonPink1}
-        onPress ={()=>{
-          
-this.bookRide()
-         
-        
-                }        }
+        <Button
+          rounded
+          success
+          style={styles.materialButtonPink1}
+          onPress={() => {
+            this.bookRide();
+          }}
         >
-            <Text style = {{fontSize : 22, color : "white", alignSelf : "center", paddingLeft : wp("12%")}}>Cash</Text>
-          </Button>
+          <Text
+            style={{
+              fontSize: 22,
+              color: "white",
+              alignSelf: "center",
+              paddingLeft: wp("12%"),
+            }}
+          >
+            Cash
+          </Text>
+        </Button>
         {/* <MaterialButtonPink1
           style={styles.materialButtonPink1}
           onPress ={()=>this.props.navigation.navigate("creditCardScreen")}
         ></MaterialButtonPink1> */}
 
-<Button rounded warning  style = {styles.materialButtonPink1}
+        <Button
+          rounded
+          warning
+          style={styles.materialButtonPink1}
+          onPress={() => {
+            this.props.navigation.navigate("creditCardScreen", {
+              bookRide: this.bookRide,
+            });
 
-onPress ={()=>{
-
-  this.props.navigation.navigate("creditCardScreen", {
-    bookRide : this.bookRide
-  })
-  this.setState({
-    is_searching : false
-  })
-
-}
-  }
-
-
->
-            <Text style = {{fontSize : 22, color : "white", paddingLeft : wp("12%")}}>Card</Text>
-          </Button>
+            store.dispatch({
+              type : "END_LOADING"
+            })
+            // this.setState({
+            //   is_searching: false,
+            // });
+          }}
+        >
+          <Text
+            style={{ fontSize: 22, color: "white", paddingLeft: wp("12%") }}
+          >
+            Card
+          </Text>
+        </Button>
       </View>
       <TouchableOpacity>
         <Animatable.View
           animation="bounceIn"
           onPress={() => {
-            this.setState({
-              destinationRequested: false,
-            });
+            // this.setState({
+            //   destinationRequested: false,
+            // });
+            store.dispatch({
+              type : "DESTINATION_CANCELLED"
+            })
             this.centerMap;
           }}
           delay={1500}
@@ -550,14 +644,17 @@ onPress ={()=>{
         >
           <Text
             onPress={() => {
-              this.setState({
-                destinationRequested: false,
-              });
+              // this.setState({
+              //   destinationRequested: false,
+              // });
+              store.dispatch({
+                type : "DESTINATION_CANCELLED"
+              })
               this._getLocationAsync();
             }}
             style={{
               // marginLeft: WIDTH / 3,
-              alignSelf :"center",
+              alignSelf: "center",
               fontWeight: "bold",
               fontSize: 20,
               color: "#c90c02",
@@ -579,20 +676,31 @@ onPress ={()=>{
   sheetRef = React.createRef(null);
 
   render() {
-    console.log("has driver ? ", this.state.has_ride);
+    console.log("has driver ? ", this.props.order.has_ride);
 
     return (
       <View style={styles.container}>
 
+      {/* Loading Animation */}
+
+      <LottieLoader visible={this.props.order.is_fetching}
+    
+    
+      
+      source = {
+        require('../assets/lottie/car.json')
+      } />
+      {/* End Loading animation */}
 
 
-        {this.state.is_searching  &&
-        <CustomModal  cancelOrder = {this.cancelOrder}/>
-           } 
-        {!this.state.destinationRequested && !this.state.has_ride ? (
+
+        {this.props.order.is_searching && (
+          <CustomModal cancelOrder={this.cancelOrder} />
+        )}
+        {!this.props.order.destinationRequested && !this.props.order.has_ride ? (
           <DestinationButton
             navigation={this.props.navigation}
-            state={this.state}
+            state={this.props.order}
             logistics={this.props.route.params.logistics}
             selectDestination={this.selectDestination}
           />
@@ -600,8 +708,7 @@ onPress ={()=>{
 
         {/* if the user has a driver, show the driver details */}
 
-        {this.state.has_ride ? 
-        <DriverDetailsPopUp /> : null}
+        {this.props.order.has_ride ? <DriverDetailsPopUp /> : null}
 
         <View
           style={{
@@ -619,7 +726,7 @@ onPress ={()=>{
             justifyContent: "center",
           }}
         >
-          {!this.state.destinationRequested ? (
+          {!this.props.order.destinationRequested ? (
             <Ionicons
               name="md-menu"
               size={32}
@@ -637,9 +744,13 @@ onPress ={()=>{
               onPress={() => {
                 // this.props.navigation.openDrawer();
 
-                this.setState({
-                  destinationRequested: false,
-                });
+                // this.setState({
+
+                store.dispatch({
+                  type : "DESTINATION_CANCELLED"
+                })
+                  // destinationRequested: false,
+                // });
                 this.centerMap;
               }}
             />
@@ -657,7 +768,7 @@ onPress ={()=>{
           }}
         /> */}
 
-        {!this.state.destinationRequested && !this.state.has_ride ? (
+        {!this.props.order.destinationRequested && !this.props.order.has_ride ? (
           <CurrentLocationButton
             cb={() => {
               this.centerMap();
@@ -670,7 +781,7 @@ onPress ={()=>{
 
         <MapView
           followUserLocation={true}
-          initialRegion={this.state.region}
+          initialRegion={this.props.order.region}
           rotateEnabled={false}
           showsUserLocation={true}
           showsBuildings={true}
@@ -687,37 +798,34 @@ onPress ={()=>{
             this.map = map;
           }}
         >
-          {this.state.destinationRequested ? (
+          {this.props.order.destinationRequested ? (
             <>
               <MapViewDirections
-                origin={this.state.region}
-                destination={this.state.going}
+                origin={this.props.order.region}
+                destination={this.props.order.going}
                 apikey={google_api}
                 strokeWidth={3}
                 strokeColor="blue"
                 showsCompass={false}
               ></MapViewDirections>
 
-              <Marker coordinate={this.state.going} pinColor="#ffffff" />
-              <Marker coordinate={this.state.region} pinColor="#000000" />
+              <Marker coordinate={this.props.order.going} pinColor="#ffffff" />
+              <Marker coordinate={this.props.order.region} pinColor="#000000" />
             </>
           ) : null}
 
-          {this.state.driver && (
-        
-
+          {this.props.order.driver && (
             <Driver
               driver={{
                 uid: null,
                 location: {
-                  latitude: this.state.driver.latitude,
-                  longitude: this.state.driver.longitude,
+                  latitude: this.props.order.driver.latitude,
+                  longitude: this.props.order.driver.longitude,
                   // latitudeDelta :0.3,
                   // longitudeDelta : 0.3,
                 },
               }}
-            
-              innerRef = {this.marker}
+              innerRef={this.marker}
             />
           )}
         </MapView>
@@ -737,7 +845,7 @@ onPress ={()=>{
         />
       </View> */}
 
-        {this.state.destinationRequested && !this.state.is_searching ? (
+        {this.props.order.destinationRequested && !this.props.order.is_searching ? (
           <BottomSheet
             ref={this.sheetRef}
             snapPoints={["40%", "10%"]}
@@ -760,7 +868,7 @@ onPress ={()=>{
               </View>
             }
           />
-      ) : null} 
+        ) : null}
       </View>
     );
   }
@@ -769,10 +877,11 @@ onPress ={()=>{
 const mapStateToProps = (state) => ({
   auth: state.auth,
   error: state.error,
+  order: state.order,
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {})(Map);
+export default connect(mapStateToProps, { makeOrder,cancelOrder })(Map);
 
 const styles = StyleSheet.create({
   container: {
@@ -795,7 +904,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginTop: 10,
     // marginLeft: WIDTH / 3,
-    alignSelf :"center"
+    alignSelf: "center",
   },
   n3500: {
     fontFamily: "roboto-900",
@@ -803,7 +912,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     marginTop: 10,
     // marginLeft: WIDTH / 3,
-    alignSelf :"center"
+    alignSelf: "center",
   },
   materialButtonPink: {
     height: hp("13%"),
@@ -818,12 +927,14 @@ const styles = StyleSheet.create({
     marginLeft: 28,
   },
   materialButtonPinkRow: {
-    flex : 1,
-    flexDirection : "row",
-    alignContent : "center",
+    flex: 1,
+    flexDirection: "row",
+    alignContent: "center",
     height: hp("30%"),
-    justifyContent : "center",
+    justifyContent: "center",
     marginTop: 20,
     marginRight: 4,
   },
+
+  
 });

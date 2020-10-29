@@ -34,7 +34,7 @@ import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://5ce2b3d6af3a.ngrok.io";
+axios.defaults.baseURL = "http://dee6666e76be.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -66,6 +66,8 @@ getToken = async () =>{
   // token = token
   return token
 };
+
+// AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmM4MjJiOGJhMGZlM2NmMGVkZjllZCIsImlhdCI6MTYwMTA0MjgzMywiZXhwIjoxMDAwMDAxNjAxMDQyODMyfQ.oaWC5E0Mh4I0blFd5aMNbEHH-hAKbux10ip_dpqaApA")
 
 
 getToken()
@@ -326,11 +328,11 @@ export const logout = () =>(dispatch)=> {
         type: LOGOUT_SUCCESS
       })
 
-      RootNavigation.reset({
-        key: null,
-        index: 0,
-        actions: [RootNavigation.navigate({ routeName: 'getStarted' })],
-      })
+      // RootNavigation.reset({
+      //   key: null,
+      //   index: 0,
+      //   actions: [RootNavigation.navigate({ routeName: 'getStarted' })],
+      // })
       // dispatch({
       //   type : END_LOADING
       // })

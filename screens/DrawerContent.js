@@ -17,6 +17,7 @@ import {
 } from '@react-navigation/drawer';
 
 import {connect} from "react-redux"
+import { StackActions, NavigationActions } from 'react-navigation';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from "react-native-animatable"
@@ -140,7 +141,17 @@ import {logout, setLoading} from "../action/authAction"
                            
                             this.props.navigation.closeDrawer()
                             // this.props.setLoading()
-                            this.props.logout()}}
+                            this.props.logout()
+
+                            // const resetAction = StackActions.reset({
+                            //     index: 0,
+                            //     actions: [NavigationActions.navigate({ routeName: 'getStarted' })],
+                            //   });
+                            //   this.props.navigation.dispatch(resetAction);
+                        
+                        
+                        }}
+                            
                     />
                 </Drawer.Section>
             </View>

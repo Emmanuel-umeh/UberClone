@@ -59,6 +59,7 @@
     "react-native-linear-gradient": "^2.5.6",
     "react-native-loading-spinner-overlay": "^1.1.0",
     "react-native-loading-view": "^1.0.1",
+    "react-native-lottie-loader": "^1.0.0",
     "react-native-maps": "0.27.1",
     "react-native-maps-directions": "^1.8.0",
     "react-native-material-ripple": ">= 0.8.x",
