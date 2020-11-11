@@ -16,8 +16,11 @@ import {
   PROFILE_LOADED,
   CLEAR_TYPE,
   SET_USER_TOKEN,
+  IS_AUTHENTICATED,
   SET_LOADING,
-  END_LOADING
+  END_LOADING,
+  ADD_CARD,
+  ADD_CARD_FAILED
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 import { isLoaded, isLoading } from "expo-font";
@@ -207,16 +210,32 @@ export default function (state = initialState, action) {
         isLoading: false,
         user: action.payload,
       };
+    case IS_AUTHENTICATED:
+      return {
+        ...state,
+        isAuthenticated : true
+      };
 
     case AUTH_ERROR:
       return {
         token: token,
         isAuthenticated: null,
         isLoading: false,
-        user: [],
-        profile: [],
+        user: null,
+        profile: null,
         type: "",
         type: "AUTH_ERROR",
+      };
+    case ADD_CARD:
+      return {
+       ...state,
+       type : action.type,
+       user : action.payload
+      };
+    case ADD_CARD_FAILED:
+      return {
+        ...state,
+        type: action.type,
       };
     default:
       return state;

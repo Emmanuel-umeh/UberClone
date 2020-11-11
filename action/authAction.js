@@ -18,7 +18,10 @@ import {
   CLEAR_TYPE,
   SET_USER_TOKEN,
   SET_LOADING,
-  END_LOADING
+  END_LOADING,
+
+  ADD_CARD_FAILED,
+  ADD_CARD
 } from "./types";
 
 
@@ -34,7 +37,7 @@ import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://dee6666e76be.ngrok.io";
+axios.defaults.baseURL = "http://8922a4216fe3.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -90,7 +93,7 @@ export const loadUser = () => (dispatch, getState) => {
   dispatch({ type: USER_LOADING }); // dispatch user loading
 
   console.log("token config ", tokenConfig(getState))
-  try {
+
     axios
       .get(`/api/auth/oneUser`, tokenConfig(getState))
       .then((res) => {
@@ -101,9 +104,9 @@ export const loadUser = () => (dispatch, getState) => {
           //   type: AUTH_ERROR,
           // });
           
-          console.log("login failed")
+         return console.log("login failed")
         }
-        // console.log("user data ", res)
+        console.log("user data!!! ", res.data)
         dispatch({
           type: USER_LOADED,
           payload: res.data,
@@ -119,12 +122,8 @@ export const loadUser = () => (dispatch, getState) => {
         // console.log("Eroor" , err.response.data)
         // console.clear()
       });
-  } catch (e) {
-    if (e) {
-      // console.clear()
-      console.log("error ", e);
-    }
-  }
+
+  
 };
 
 // BEGIN LOADING ANIMATON
@@ -183,9 +182,29 @@ export const textMessageAuth = (phoneNumber) => (dispatch) => {
       // console.log("this is the res ", res)
     )
     .catch((err) => {
-    
+
+      console.log(err.response.data.msg ?err.response.data.msg : err.response.data)
+      Notifier.showNotification({
+        title: "Signup Error",
+        description: `${"Something went wrong. Please check your network and try again" }`,
+        duration: 5000,
+        showAnimationDuration: 800,
+        showEasing: Easing.bounce,
+        onHidden: () => console.log("Hidden"),
+        onPress: () => console.log("Press"),
+        hideOnPress: true,
+      });
       console.log("error ", err);
+
+      return dispatch(
+        returnErrors(err.response.data, err.response.status, "AUTH_MESSAGE_FAILED"),
+        {
+          type: AUTH_MESSAGE_FAILED,
+        }
+      );
     });
+
+  
 };
 
 // Verify the OTP
@@ -251,6 +270,13 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
         },
       });
       console.log("error ", err);
+
+      return dispatch(
+        returnErrors(err.response.data, err.response.status, "AUTH_MESSAGE_FAILED"),
+        {
+          type: AUTH_MESSAGE_FAILED,
+        }
+      );
     });
 };
 
@@ -316,6 +342,95 @@ export const clearType = () => (dispatch) => {
   });
 };
 
+
+
+// Verify the OTP
+export const add_card = ({number, expiry,type , tokens}) => (
+  dispatch
+) => {
+  // console.log("data received ", email, password)
+
+  dispatch({
+    type : "SET_FETCHING"
+  })
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token" : tokens
+    },
+  };
+
+  // REQUEST BODY
+  const body = JSON.stringify({ number, expiry,type });
+  console.log({body})
+
+  axios
+    .post(`/api/users/add_card`, body, config)
+    .then(
+      (res) => {
+        
+
+        dispatch({
+          type : "END_FETCHING"
+        })
+   dispatch({
+     type : ADD_CARD,
+     payload : res.data
+   })
+
+         RootNavigation.navigate("add_card");
+        return         Notifier.showNotification({
+          title: "Updated Successfully",
+          description: `Your ATM card details were stored successfully. You can now make orders with your card. `,
+          duration: 5000,
+          showAnimationDuration: 800,
+          showEasing: Easing.bounce,
+          onHidden: () => console.log("Hidden"),
+          onPress: () => console.log("Press"),
+          hideOnPress: true,
+        });
+      }
+     
+    )
+    .catch((err) => {
+
+      dispatch({
+        type : "END_FETCHING"
+      })
+      // return dispatch(
+      //  returnErrors(
+      //     err.response.data,
+      //     err.response.status,
+      //     "AUTH_MESSAGE_FAILED"
+      //   ),
+      //   {
+      //     type: AUTH_MESSAGE_FAILED,
+      //   }
+
+      // );
+
+    
+      Notifier.showNotification({
+        title: 'The request was failed',
+        description: 'Check your internet connection, please',
+        Component: NotifierComponents.Alert,
+        componentProps: {
+          alertType: 'error',
+        },
+      });
+      console.log("error ", err);
+
+      return dispatch(
+        returnErrors(err.response.data, err.response.status, "ADD_CARD_FAILED"),
+        {
+          type: ADD_CARD_FAILED,
+        }
+      );
+    });
+};
+
+
+
 // logout
 export const logout = () =>(dispatch)=> {
   // AsyncStorage.removeItem('referral')
@@ -323,11 +438,19 @@ export const logout = () =>(dispatch)=> {
 
   
     // setTimeout(() => {
+
+      dispatch({
+        type : "SET_FETCHING"
+      })
       
       dispatch({
         type: LOGOUT_SUCCESS
       })
 
+
+      dispatch({
+        type : "END_FETCHING"
+      })
       // RootNavigation.reset({
       //   key: null,
       //   index: 0,

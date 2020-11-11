@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
+import {Button} from "native-base"
 
 import OTPInputView from '@twotalltotems/react-native-otp-input'
  import {connect} from "react-redux"
+ import CountDown from 'react-native-countdown-component';
+ 
 
  import AnimateLoadingButton from 'react-native-animate-loading-button';
- import {textMessageVerify, setLoading} from "../action/authAction"
+ import {textMessageVerify, setLoading, textMessageAuth} from "../action/authAction"
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 class Otp extends Component{
 
      constructor(props){
@@ -17,9 +25,18 @@ class Otp extends Component{
 }
 
 
-_onPressHandler=()=> {
+
+state = {
+  resendcode : false,
+  code : null
+}
+
+_onPressHandler=(code)=> {
+  const {request_id, phoneNumber}  = this.props.route.params
   this.loadingButton.showLoading(true);
 
+   this.props.textMessageVerify(request_id, code, phoneNumber)
+// console.log("value", this.otpInput)
   // mock
   // setTimeout(() => {
   //   this.loadingButton.showLoading(false);
@@ -27,19 +44,46 @@ _onPressHandler=()=> {
   // this.mobileNumber()
 }
 
+resendcode = async()=>{
+ await this.props.textMessageAuth(this.props.route.params.phoneNumber)
+ alert("OTP has been resent successfully")
+}
+
+
+componentDidUpdate(prevProps){
+
+  console.log("error ", this.props.error.id.length)
+  if(this.props.error.id.length > 0){
+    this.loadingButton.showLoading(false);
+  }
+}
+
   render(){
     
 
     const {request_id, phoneNumber}  = this.props.route.params
+
   
-    console.log("params ", this.props.route.params)
+    // console.log("params ", this.props.route.params)
     return (
       <View style={styles.container}>
-        
+
+        <ScrollView>
+     
+        <View style={styles.loremIpsumStack}>
+          <Text style={styles.loremIpsum}>
+            Enter the 4-digit otp code{"\n"}sent to you
+          </Text>
+  {/* <Text style={styles.loremIpsum2}>{phoneNumber}</Text> */}
+        </View>
+
+
+
 <OTPInputView
-    style={{width: '80%', height: 200}}
+    style={{width: wp("80%"), height: hp("30%") , color : "black"}}
     pinCount={4}
     placeholderTextColor = "#000000"
+    
     // ref={e => (otpInput = e)} 
     // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
     // onCodeChanged = {code => { this.setState({code})}}
@@ -49,20 +93,55 @@ _onPressHandler=()=> {
     onCodeFilled = {(code => {
         console.log(`Code is ${code}, you are good to go!`)
         // this.props.setLoading()
-        this._onPressHandler()
-        this.props.textMessageVerify(request_id, code, phoneNumber)
+        // this.setState({
+        //   code
+        // })
+        this._onPressHandler(code)
+       
     })}
 />
   
  
-        <View style={styles.loremIpsumStack}>
-          <Text style={styles.loremIpsum}>
-            Enter the 4-digit otp code{"\n"}sent to you
-          </Text>
-  <Text style={styles.loremIpsum2}>{phoneNumber}</Text>
-        </View>
-        {/* <Text style={styles.resendCodeIn0015}>Resend code in 00:15</Text> */}
+      
 
+{!this.state.resendcode? 
+<>
+
+<Text style={styles.resendCodeIn0015}>Resend code in </Text>
+        <CountDown
+        until={600}
+        timeToShow={['H', 'M', 'S']}
+        onFinish={() =>{
+          this.setState({
+            resendcode : true
+          })
+        }}
+        onPress={() => alert('Please wait for the time to request for a new OTP')}
+        size={20}
+      />
+
+
+
+</> : 
+<TouchableOpacity style={{
+  marginLeft : wp("35%"),
+  width : wp("30%")
+}}  onPress ={()=>{
+  this.resendcode()
+}}>
+<Button rounded warning style={{
+  width : "100%"
+}}>
+<Text style={{
+  fontSize : 15,
+  paddingLeft : 12
+}}>Resend OTP</Text>
+</Button>
+
+</TouchableOpacity>
+
+
+}
         <View style={styles.loremIpsum5Row}>
           <Text style={styles.loremIpsum5}>
             By continuing you may receive an{"\n"}SMS for verification. Message
@@ -96,6 +175,8 @@ _onPressHandler=()=> {
         </View>
      
       </View>
+           
+      </ScrollView>
       </View>
     );
   }
@@ -133,7 +214,7 @@ const styles = StyleSheet.create({
   rectRow: {
     height: 67,
     flexDirection: "row",
-    marginTop: 260,
+    marginTop: hp("30%"),
     marginLeft: 24,
     marginRight: 19
   },
@@ -154,18 +235,18 @@ const styles = StyleSheet.create({
     fontSize: 22
   },
   loremIpsumStack: {
-    width: 288,
+    width: wp("90%"),
     height: 54,
-    marginTop: -186,
+    marginTop: hp("10%"),
     marginLeft: 24
   },
   resendCodeIn0015: {
     fontFamily: "roboto-regular",
-    color: "#121212",
-    lineHeight: 18,
+    color: "black",
+    lineHeight: 30,
     fontSize: 22,
     opacity: 0.6,
-    marginTop: 175,
+    marginTop: 20,
     marginLeft: 24
   },
   borderStyleBase: {
@@ -181,6 +262,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 45,
     borderWidth: 0,
+    color : "black",
     borderBottomWidth: 1,
   },
   icon3: {
@@ -191,13 +273,13 @@ const styles = StyleSheet.create({
   loremIpsum5Row: {
     height: 54,
     flexDirection: "row",
-    marginTop: 373,
+    marginTop: hp("20&"),
     marginLeft: 24,
     marginRight: 37,
   },
  
   underlineStyleHighLighted: {
-    borderColor: "#000000",
+    borderColor: "coral",
   },
 });
 
@@ -207,6 +289,6 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {textMessageVerify,setLoading })(
+export default connect(mapStateToProps, {textMessageVerify,setLoading, textMessageAuth })(
   Otp
 );

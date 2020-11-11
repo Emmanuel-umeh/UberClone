@@ -173,15 +173,19 @@ export const makeOrder = ({
     )
     .catch((err) => {
       console.log("error ", err);
+      dispatch({
+        type : "END_FETCHING"
+      })
+    
       Notifier.showNotification({
-        title: 'John Doe',
-        description: `${err}`,
+        title: 'Create Order Error',
+        description: `Their was an error creating an order. Please try again`,
         duration: 0,
         showAnimationDuration: 800,
         showEasing: Easing.bounce,
         onHidden: () => console.log('Hidden'),
         onPress: () => console.log('Press'),
-        hideOnPress: false,
+        hideOnPress : true
       });
     });
 };
@@ -201,11 +205,11 @@ export const cancelOrder = () => (dispatch) => {
   const body = {}
 
   dispatch({
-    type : "END_FETCHING"
+    type : "SET_FETCHING"
   })
-dispatch({
-    type : "END_LOADING"
-  })
+// dispatch({
+//     type : "SET_LOADING"
+//   })
 
 
   // REQUEST BODY
@@ -219,9 +223,9 @@ console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         dispatch({
           type : "END_FETCHING"
         })
-      dispatch({
-          type : "END_LOADING"
-        })
+      // dispatch({
+      //     type : "END_LOADING"
+      //   })
       
 
         console.log("MESSAGE res ", res.data)
@@ -230,16 +234,23 @@ console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     )
     .catch((err) => {
       console.log("error ", err);
-      // Notifier.showNotification({
-      //   title: 'Error',
-      //   description: `Could not can`,
-      //   duration: 0,
-      //   showAnimationDuration: 800,
-      //   showEasing: Easing.bounce,
-      //   onHidden: () => console.log('Hidden'),
-      //   onPress: () => console.log('Press'),
-      //   hideOnPress: false,
-      // });
+      dispatch({
+        type : "END_FETCHING"
+      })
+      // dispatch({
+      //   type : "END_LOADING"
+      // })
+    
+      Notifier.showNotification({
+        title: 'Error',
+        description: `Could not cancel your order. Please check your internet connection`,
+        duration: 5000,
+        showAnimationDuration: 800,
+        showEasing: Easing.bounce,
+        onHidden: () => console.log('Hidden'),
+        onPress: () => console.log('Press'),
+        hideOnPress : true
+      });
     });
 };
 

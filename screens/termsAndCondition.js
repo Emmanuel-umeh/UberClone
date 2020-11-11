@@ -5,6 +5,8 @@ import Icon from "react-native-vector-icons/Entypo";
 import * as Animatable from "react-native-animatable"
 // import { NavigationContainer } from "@react-navigation/native";
 import { CommonActions } from '@react-navigation/native';
+import { ScrollView } from "react-native-gesture-handler";
+import store from "../store";
 function TermsAndCondition({navigation}) {
     // console.log(navigation)
   return (
@@ -12,6 +14,10 @@ function TermsAndCondition({navigation}) {
     <Animatable.View 
     animation = "fadeInUpBig"
     style={styles.container}>
+
+      <ScrollView>
+
+     
       <Svg viewBox="0 0 146.37 144.76" style={styles.ellipse}>
         {/* <Ellipse
           stroke="rgba(230, 230, 230,1)"
@@ -51,8 +57,12 @@ function TermsAndCondition({navigation}) {
       <Icon onPress ={()=>{
           
         //   navigation.pop()
-          navigation.navigate("Map")
+          // navigation.navigate("setLogisticsScreen")
+          store.dispatch({
+            type : "IS_AUTHENTICATED"
+          })
       }} name="chevron-with-circle-right" style={styles.icon1}></Icon>
+       </ScrollView>
     </Animatable.View>
   );
 }

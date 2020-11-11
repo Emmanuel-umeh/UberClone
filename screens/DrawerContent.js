@@ -8,13 +8,13 @@ import {
     Paragraph,
     Drawer,
     Text,
-    TouchableRipple,
     Switch
 } from 'react-native-paper';
 import {
     DrawerContentScrollView,
     DrawerItem
 } from '@react-navigation/drawer';
+import { Divider, TouchableRipple } from "react-native-paper";
 
 import {connect} from "react-redux"
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -22,6 +22,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from "react-native-animatable"
 import {logout, setLoading} from "../action/authAction"
+import { TouchableOpacity } from 'react-native-gesture-handler';
 // import{ AuthContext } from '../components/context';
 
  class  DrawerContent extends Component {
@@ -36,6 +37,12 @@ import {logout, setLoading} from "../action/authAction"
                 <DrawerContentScrollView {...this.props}>
                     <View style={styles.drawerContent}>
                         <View style={styles.userInfoSection}>
+
+                            <TouchableOpacity onPress={
+                                ()=>{
+                                    this.props.navigation.navigate("profileScreen")
+                                }
+                            }>
                             <View style={{flexDirection:'row',marginTop: 15}}>
                                 <Avatar.Image 
                                     source={{
@@ -44,10 +51,11 @@ import {logout, setLoading} from "../action/authAction"
                                     size={50}
                                 />
                                 <View style={{marginLeft:15, flexDirection:'column'}}>
-                                    <Title style={styles.title}>{user ? user.firstName : "John"} {user ? user.lastName : "Doe"}</Title>
-                                    <Caption style={styles.caption}>+{user ? user.phoneNumber: "2348178335973"}</Caption>
+                                    <Title style={styles.title}>{user ? user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) : "John"} </Title>
+                                    <Caption style={styles.caption}>View Profile</Caption>
                                 </View>
                             </View>
+                            </TouchableOpacity>
     
                             {/* <View style={styles.row}>
                                 <View style={styles.section}>
@@ -60,6 +68,14 @@ import {logout, setLoading} from "../action/authAction"
                                 </View>
                             </View> */}
                         </View>
+
+                        
+        <Divider
+        style={{
+          marginTop: 20,
+        }}
+      />
+
                             
                         <Drawer.Section style={styles.drawerSection}>
 
@@ -70,10 +86,15 @@ import {logout, setLoading} from "../action/authAction"
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="home-outline" 
-                                    color={color}
-                                    size={size}
+                                   color="black"
+                                     size={40}
                                     />
                                 )}
+                                labelStyle ={{
+                                    color : "black",
+                                    fontWeight : "300",
+                                    fontSize : 20
+                                }}
                                 label="Home"
                                 onPress={() => {this.props.navigation.navigate('Map')}}
                             />
@@ -82,19 +103,66 @@ import {logout, setLoading} from "../action/authAction"
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="account-outline" 
-                                    color={color}
-                                    size={size}
+                                   color="black"
+                                     size={40}
                                     />
                                 )}
+                                labelStyle ={{
+                                    color : "black",
+                                    fontWeight : "300",
+                                    fontSize : 20
+                                }}
                                 label="Profile"
                                 onPress={() => {this.props.navigation.navigate('profileScreen')}}
                             />
+
+
+
+<DrawerItem 
+                                icon={({color, size}) => (
+                                    <Icon 
+                                    name="car" 
+                                   color="black"
+                                     size={40}
+                                    />
+                                )}
+                                labelStyle ={{
+                                    color : "black",
+                                    fontWeight : "300",
+                                    fontSize : 20
+                                }}
+                                label="Ride History"
+                                onPress={() => {this.props.navigation.navigate('ride_history')}}
+                            />
+
+
+
+
+<DrawerItem 
+                                icon={({color, size}) => (
+                                    <Icon 
+                                    name="cash" 
+                                   color="black"
+                                     size={40}
+                                    />
+                                )}
+                                labelStyle ={{
+                                    color : "black",
+                                    fontWeight : "300",
+                                    fontSize : 20
+                                }}
+                                label="Payment Method"
+                                onPress={() => {this.props.navigation.navigate('add_card')}}
+                            />
+
+                            
                             {/* <DrawerItem 
+                            
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="bookmark-outline" 
-                                    color={color}
-                                    size={size}
+                                   color="black"
+                                     size={40}
                                     />
                                 )}
                                 label="Bookmarks"
@@ -104,21 +172,31 @@ import {logout, setLoading} from "../action/authAction"
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="settings-outline" 
-                                    color={color}
-                                    size={size}
+                                    color="black"
+                                    size={40}
                                     />
                                 )}
+                                labelStyle ={{
+                                    color : "black",
+                                    fontWeight : "300",
+                                    fontSize : 20
+                                }}
                                 label="Settings"
-                                onPress={() => {this.props.navigation.navigate('SettingsScreen')}}
+                                onPress={() => {this.props.navigation.navigate('settings')}}
                             />
                             <DrawerItem 
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="account-check-outline" 
-                                    color={color}
-                                    size={size}
+                                   color="black"
+                                     size={40}
                                     />
                                 )}
+                                labelStyle ={{
+                                    color : "black",
+                                    fontWeight : "300",
+                                    fontSize : 20
+                                }}
                                 label="Support"
                                 onPress={() => {this.props.navigation.navigate('SupportScreen')}}
                             />
@@ -131,10 +209,16 @@ import {logout, setLoading} from "../action/authAction"
                         icon={({color, size}) => (
                             <Icon 
                             name="exit-to-app" 
-                            color={color}
-                            size={size}
+                           color="black"
+                             size={40}
                             />
+                            
                         )}
+                        labelStyle ={{
+                            color : "black",
+                            fontWeight : "300",
+                            fontSize : 20
+                        }}
                         label="Sign Out"
                         
                         onPress={() => {
@@ -183,7 +267,7 @@ const styles = StyleSheet.create({
       paddingLeft: 20,
     },
     title: {
-      fontSize: 16,
+      fontSize: 20,
       marginTop: 3,
       fontWeight: 'bold',
     },

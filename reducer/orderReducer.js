@@ -22,8 +22,16 @@ import {
   END_LOADING
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
-import { isLoaded, isLoading } from "expo-font";
-import { add } from "react-native-reanimated";
+
+import { Dimensions } from "react-native";
+import { AnimatedRegion } from "react-native-maps";
+const WIDTH = Dimensions.get("window").width;
+const HEIGHT = Dimensions.get("window").height;
+const ASPECT_RATIO = WIDTH / HEIGHT;
+const LATITUDE_DELTA =    0.005858723958820065//Very high zoom level
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+
 var token;
 
 getToken = async () => {
@@ -76,12 +84,10 @@ const initialState = {
   type: "",
 
   region: {
-    latitude: 9.0765,
-    longitude: 7.3986,
-    latitudeDelta: 0.992,
-    longitudeDelta: 0.0421,
-
-    // destination the user is going to
+    latitude  : 9.0765,
+    longitude : 7.3986,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA
   },
 
   coming: null,

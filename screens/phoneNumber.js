@@ -1,11 +1,31 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, TextInput } from "react-native";
+import { StyleSheet, View, TextInput } from "react-native";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import * as Animatable from "react-native-animatable";
 import {connect} from "react-redux"
 import {textMessageAuth, setLoading} from "../action/authAction"
 import AnimateLoadingButton from 'react-native-animate-loading-button';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import {
+  Container,
+  Header,
+  Content,
+  Card,
+  CardItem,
+  Text,
+  Icon,
+  Right,
+  Left,
+  Body,
+  Title,
+  Button,
+  Switch,
+} from "native-base";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 class PhoneNumber extends Component {
   constructor(props) {
     super(props);
@@ -25,13 +45,13 @@ class PhoneNumber extends Component {
     this.mobileNumber()
   }
 
-  concatNumber=async(phoneNumber)=>{
+  concatNumber= (phoneNumber)=>{
   
     var number = "+234" + phoneNumber
 
     // console.log("concat number ", number)
     // this.props.setLoading()
-    const result = await this.props.textMessageAuth(number)
+     this.props.textMessageAuth(number)
 
     // console.log({result})
     // this.props.navigation.navigate("otp")
@@ -54,13 +74,55 @@ class PhoneNumber extends Component {
     alert("Please Enter Just Numbers")
     ) 
   };
+
+
+  componentDidUpdate(prevProps){
+
+    console.log("error ", this.props.error.id.length)
+    if(this.props.error.id.length > 0){
+      this.loadingButton.showLoading(false);
+    }
+  }
   render() {
     // console.log("number", this.state.number);
     // console.log("endpoint details ", this.props.auth)
    
     return (
       <Animatable.View animation="slideInUp" style={styles.container}>
-        <Text style={styles.loremIpsum}>Enter your mobile number</Text>
+
+       
+<Header
+        style={{
+          backgroundColor: "whitesmoke",
+        }}
+      >
+        <Left>
+          <TouchableOpacity onPress={() => {
+                this.props.navigation.pop();
+              }}> 
+          <Button transparent>
+            <Icon
+              name="arrow-back"
+              style={{color : "black"}}
+            />
+          </Button>
+
+          </TouchableOpacity>
+         
+        </Left>
+        <Body>
+                    <Title style ={{
+                      fontWeight : "bold",
+                      color : "black",
+                      marginLeft : wp("4%")
+                    }}>Phone Number</Title>
+                  </Body>
+                
+      </Header>
+
+
+      <ScrollView>
+      <Text style={styles.loremIpsum}>Enter your mobile number</Text>
         <View style={styles.rect}></View>
         <View style={styles.loremIpsum2Row}>
           <Text style={styles.loremIpsum2}>+234</Text>
@@ -73,28 +135,15 @@ class PhoneNumber extends Component {
              
               // console.log("value ", e)
             }}
-             placeholderTextColor = "#000000"
+             placeholderTextColor = "black"
             keyboardType="number-pad"
             maxLength={11}
             placeholder="phone number"
             style={styles.loremIpsum3}
           ></TextInput>
         </View>
-        <View style={styles.iconRow}>
-          <IoniconsIcon
-            name="ios-arrow-back"
-            style={styles.icon}
-          ></IoniconsIcon>
-          <Text
-            style={styles.back}
-            onPress={() => {
-              this.props.navigation.pop();
-            }}
-          >
-            Back
-          </Text>
-        </View>
-        <View style={styles.group}>
+
+      <View style={styles.group}>
           <View style={styles.loremIpsum4Row}>
             {/* <Text style={styles.loremIpsum4}>or connect with social</Text> */}
             {/* <IoniconsIcon
@@ -136,6 +185,10 @@ class PhoneNumber extends Component {
         </View>
 
         </View>
+          </ScrollView>
+        
+
+       
       </Animatable.View>
     );
   }
@@ -144,65 +197,68 @@ class PhoneNumber extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent : "space-evenly"
   },
   loremIpsum: {
     fontFamily: "roboto-regular",
-    color: "#121212",
+    color: "black",
     fontSize: 22,
-    marginTop: 123,
+    marginTop: hp("20%"),
     marginLeft: 24,
   },
   rect: {
-    width: 199,
+    width: wp("50%"),
     height: 1,
     backgroundColor: "rgba(0,0,0,1)",
+    fontWeight : "bold",
     marginTop: 62,
-    marginLeft: 123,
+    marginLeft: wp("35%"),
   },
   loremIpsum2: {
     fontFamily: "roboto-regular",
     color: "#121212",
     lineHeight: 22,
     fontSize: 22,
-    marginTop: 4,
+    marginTop: hp("1%"),
   },
   loremIpsum3: {
     fontFamily: "roboto-regular",
-    color: "#121212",
+    color: "black",
     fontSize: 22,
-    opacity: 0.19,
+    opacity: 0.6,
     marginLeft: 13,
   },
   loremIpsum2Row: {
-    height: 27,
+    height: hp("5%"),
     flexDirection: "row",
-    marginTop: -28,
+    marginTop: -hp("5%"),
     marginLeft: 61,
     marginRight: 113,
   },
   icon: {
     color: "rgba(0,0,0,1)",
-    fontSize: 40,
+    fontSize: 30,
+    top: hp("5%")
   },
   back: {
     fontFamily: "roboto-regular",
     color: "#121212",
     fontSize: 22,
     marginLeft: 13,
-    marginTop: 9,
+    marginTop: hp("5%"),
   },
   iconRow: {
     height: 44,
     flexDirection: "row",
-    marginTop: -190,
+    marginTop: 10,
     marginLeft: 9,
-    marginRight: 274,
+    marginRight: wp("80%"),
   },
   group: {
-    width: 266,
+    width: wp("80%"),
     height: 44,
     flexDirection: "row",
-    marginTop: 139,
+    marginTop: hp("20%"),
     marginLeft: 24,
   },
   loremIpsum4: {
@@ -224,19 +280,23 @@ const styles = StyleSheet.create({
   loremIpsum5: {
     fontFamily: "roboto-regular",
     color: "#121212",
+    fontSize : 15,
     marginTop: 3,
   },
   icon3: {
     color: "rgba(1,1,1,1)",
     fontSize: 50,
-    marginLeft: 36,
+    marginLeft: wp("2%"),
   },
   loremIpsum5Row: {
-    height: 54,
+    height: hp("20%"),
+    top : hp("10%"),
     flexDirection: "row",
-    marginTop: 373,
-    marginLeft: 24,
-    marginRight: 37,
+    width : wp("100%"),
+    marginBottom: hp("1%"),
+    
+    marginLeft: wp("5%"),
+    marginRight: wp("5%"),
   },
 });
 const mapStateToProps = (state) => ({

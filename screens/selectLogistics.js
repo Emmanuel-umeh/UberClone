@@ -4,6 +4,7 @@ import {
   View,
   Text,
   SafeAreaView,
+  Dimensions,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
@@ -11,13 +12,30 @@ import Car from "./material/Car";
 import Bike from "./material/Bike";
 import Truck from "./material/Truck";
 // import CupertinoButtonWarning from "./material/CupertinoButtonWarning";
+
+import * as Location from "expo-location";
+import * as Permissions from "expo-permissions";
 import { Button, Header } from "native-base";
 import plane from "./material/plane";
 import Plane from "./material/plane";
 import * as Animatable from "react-native-animatable";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { regionFrom, getLatLonDiffInMeters } from "../helpers/helper";
 import Tanker from "./material/Tanker";
- 
+import SearchInput from "../components/SearchInput";
+import Geocoder from "react-native-geocoding";
+
+import store from "../store"
+import google_api from "../keys/google_map";
+
+const WIDTH = Dimensions.get("window").width;
+const HEIGHT = Dimensions.get("window").height;
+const ASPECT_RATIO = WIDTH / HEIGHT;
+const latitudeDelta = 0.3358723958820065; //Very high zoom level
+const longitudeDelta = latitudeDelta * ASPECT_RATIO;
+
+const LATITUDE_DELTA = latitudeDelta
+const LONGITUDE_DELTA = longitudeDelta
 class SetLogistics extends Component {
   state = {
     isTruckSelected: null,
@@ -27,13 +45,117 @@ class SetLogistics extends Component {
     logistics : null
   };
 
+  componentDidMount(){
 
-  _next =()=>{
+    this._getLocationAsync()
+  }
+  
+
+  _getLocationAsync = async () => {
+    Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      console.log("Permission to access denied!!!.");
+    }
+    let location = await Location.getCurrentPositionAsync({
+      enableHighAccuracy: true,
+    });
+
+   
+    var my_location = regionFrom(
+      location.coords.latitude,
+      location.coords.longitude,
+      location.coords.accuracy
+    );
+
+
+    console.log("my location!!!!!!!!!!!!", my_location)
+    this.setState({
+      my_location : my_location
+    });
+
+    let region = {
+      latitude: my_location.latitude,
+      longitude: my_location.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    };
+
+    // console.log("region ", region);
+
+    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
+    // this.setState({
+
+    // });
+    
+
+    // Geocoder.from({
+    //   latitude: location.coords.latitude,
+    //   longitude: location.coords.longitude,
+    // })
+    //   .then((json) => {
+    //     var addressComponent = json.results[0].address_components[0].long_name;
+    //     // console.log(json.results[0].formatted_address);
+
+    //     // this.setState({
+
+       var data = {
+          region: region,
+          // address: json.results[0].formatted_address,
+          // addressShortName: addressComponent,
+        };
+        store.dispatch({
+          type: "GET_LOCATION",
+          payload: data,
+        });
+
+        this.watchId = location;
+
+    
+
+        // });
+        // y address  Object {
+        //   "long_name": "9",
+        //   "short_name": "9",
+        //   "types": Array [
+        //     "street_number",
+        //   ],
+        // }
+      // })
+      // .catch((error) => console.warn(error));
+   
+  };
+
+
+
+  
+  componentWillUnmount() {
+    console.log("Unmounting COmponents!!!!!!!");
+
+    navigator.geolocation.clearWatch(this.watchId);
+
+    // this.user_ride_channel.unbind("client-driver-response");
+
+    // this.user_ride_channel.unbind("client-found-driver");
+
+    // this.user_ride_channel.unbind("client-driver-location");
+
+    // this.user_ride_channel.unbind("client-driver-message");
+    // this.user_ride_channel && this.user_ride_channel.unbind_all()
+
+    // this.user_ride_channel.unbind_all()
+    // this.pusher &&
+    // this.pusher.unsubscribe(
+    //   "private-ride-" + this.props.order.passenger.phoneNumber
+    // );
+  }
+
+  _next =(logistic)=>{
     console.log("props passed!!!!!!!!!!!!!!!! ", this.props.navigation)
 
    
     this.props.navigation.navigate("Map", {
-      logistics : this.state.logistics
+      logistics : logistic
     })
     // this.props.route.params.selectDestination(this.props.route.params.destination)
   }
@@ -49,34 +171,9 @@ class SetLogistics extends Component {
         </SafeAreaView>
 
         <ScrollView>
-          <TouchableOpacity onPress ={()=>{
-            this.setState({
-              isCarSelected : true,
-              isTruckSelected:null,
-              isBikeSelected : null,
-              isTruckSelected:null,
-              logistics : "Car"
-            })
-          }}>
-            <Animatable.View 
-            animation = "slideInLeft"
-            >
-            <Car
-              style={
-                (styles.Car,
-                { backgroundColor: this.state.isCarSelected ? "gold" : null })
-              }
-            ></Car>
-            </Animatable.View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress ={()=>{
-            this.setState({
-              isCarSelected : null,
-              isTruckSelected:null,
-              isTankerSelected:null,
-              isBikeSelected : true,
-              logistics : "Bike"
-            })
+
+        <TouchableOpacity onPress ={()=>{
+         this._next("bike")
           }}>
 
 <Animatable.View 
@@ -92,16 +189,24 @@ class SetLogistics extends Component {
 </Animatable.View>
           </TouchableOpacity>
 
+          <TouchableOpacity onPress ={()=>{
+             this._next("car")
+          }}>
+            <Animatable.View 
+            animation = "slideInLeft"
+            >
+            <Car
+              style={
+                (styles.Car,
+                { backgroundColor: this.state.isCarSelected ? "gold" : null })
+              }
+            ></Car>
+            </Animatable.View>
+          </TouchableOpacity>
+        
           <TouchableOpacity 
           onPress ={()=>{
-            this.setState({
-              isCarSelected : null,
-              isTruckSelected:true,
-              isTankerSelected:null,
-              isBikeSelected : null,
-              logistics : "Truck"
-              
-            })
+            this._next("truck")
           }}>
             <Animatable.View 
             animation = "slideInUp"
@@ -120,14 +225,7 @@ class SetLogistics extends Component {
           
           <TouchableOpacity 
           onPress ={()=>{
-            this.setState({
-              isCarSelected : null,
-              isTruckSelected:null,
-              isTankerSelected:true,
-              isBikeSelected : null,
-              logistics : "Tanker"
-              
-            })
+            this._next("tanker")
           }}>
             <Animatable.View 
             animation = "slideInUp"
@@ -146,7 +244,7 @@ class SetLogistics extends Component {
         {/* <CupertinoButtonWarning
           style={styles.cupertinoButtonWarning}
         ></CupertinoButtonWarning> */}
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }} onPress ={
             ()=>{
               if(!this.state.logistics){
@@ -159,7 +257,7 @@ class SetLogistics extends Component {
               Select {this.state.logistics}
             </Text>
           </Button>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   }

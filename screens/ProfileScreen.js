@@ -1,470 +1,366 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, Image, ImageBackground, Dimensions, ScrollView, Alert } from "react-native";
-import IoniconsIcon from "react-native-vector-icons/Ionicons";
-import Svg, { Ellipse } from "react-native-svg";
-import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
-import MaterialFixedLabelTextbox from "./material/MaterialFixedLabelTextbox";
-import MaterialIconTextbox from "./material/MaterialIconTextbox";
-import MaterialIconTextbox1 from "./material/MaterialIconTextbox1";
+import { StyleSheet, View, SafeAreaView } from "react-native";
+import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import CupertinoButtonPurple from "./material/CupertinoButtonPurple";
+import MaterialUnderlineTextbox1 from "./material/MaterialUnderlineTextbox1";
+import MaterialUnderlineTextbox2 from "./material/MaterialUnderlineTextbox2";
+import MaterialUnderlineTextbox3 from "./material/MaterialUnderlineTextbox3";
+import MaterialUnderlineTextbox4 from "./material/MaterialUnderlineTextbox4";
 import EntypoIcon from "react-native-vector-icons/Entypo";
-import { Content, Item, Label,DatePicker, Picker , Form, Input, Button, Spinner} from "native-base";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Kohana } from 'react-native-textinput-effects';
-import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialStackedLabelTextbox8 from "./material/MaterialStackedLabelTextbox8";
+import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Body, Input,  List, ListItem, Title, Button,Picker, Switch } from 'native-base';
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+  } from "react-native-responsive-screen";
 import {connect} from "react-redux"
-import { Ionicons } from "@expo/vector-icons";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { Divider } from "react-native-paper";
 
-const {width,height} = Dimensions.get("window")
+class ProfileScreen extends Component{
 
+    render(){
+      const {user} = this.props.auth
+        return (
+            <SafeAreaView  style={styles.container}>
 
-class ProfileScreen extends Component {
-
-
-  constructor(props){
-    super(props)
-  }
-
-
-  state = {
-    dob : this.props.auth.user.dob? this.props.auth.user.dob : null,
-    gender :  this.props.auth.user.gender? this.props.auth.user.gender : "Male",
-    firstName : this.props.auth.user.firstName? this.props.auth.user.firstName : null,
-    lastName : this.props.auth.user.gender? this.props.auth.user.lastName : null,
-    loading : false
-
-  }
-
-  setDate =(e)=>{
-    console.log("date", e)
-    this.setState({
-      dob : e
-    })
-
-
-  }
-
-
-  onValueChange=(e)=>{
-    console.log("value ",e)
-    this.setState({
-      gender : e
-    })
-  }
-
-
-  save =async()=>{
-    this.setState({
-      loading:true
-    })
-
-    await
-     setTimeout(() => {
-      this.setState({
-        loading:false
-      })
-
-      Alert.alert(
-        "Successful!",
-        "Your Profile Has Been Updated"
-  			
-  		
-      )
-    }, 3000); 
-
-    // console.log("timeout completed")
-
-   
-  }
-  
-
-  render(){
-    console.log("props profile ", this.props)
-
-    const {user} = this.props.auth
-  
-    const phoneNumber = user.phoneNumber ? user.phoneNumber.toString() : null
-    
-
-    return (
-      
-
-
-      
-      <View style={styles.container}>
-
-{this.state.loading ?<Spinner style ={{position : "absolute", top : "50%", left : "40%"}} color='gold' />
-    : null }
-           <Content>
-     
-                 <ScrollView>
-     
-                 <View
-          style={{
-            height: 55,
-            width: 55,
-            backgroundColor: "white",
-            borderRadius: 50,
-            position: "absolute",
-            // display: inline-block;
-
-            top: 40,
-            left: 30,
-            zIndex: 999,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Ionicons
-            name="md-menu"
-            size={32}
-            color="black"
-            onPress={() => {
-              this.props.navigation.openDrawer();
-            }}
-          />
-        </View>
-           <View style={styles.rect3StackStack}>
-             <View style={styles.rect3Stack}>
-               <View style={styles.rect3}>
-                 <View style={styles.icon4Row}
-                  onPress={()=>{
-                    // props.navigation.goBack()
-                    console.log("clicked")
-                  }} >
+<Header style={{
+                          backgroundColor : "black",
+                          top : hp("5%")
+                        }}>
+                    <Left>
+                  <TouchableOpacity  onPress={() => {
+                        this.props.navigation.pop();
+                      }}> 
+                  <Button transparent > 
+                    <Icon
+                      name="arrow-back"
                    
-                   {/* <IoniconsIcon
-                     name="md-arrow-back"
-                     style={styles.icon4}
-                     onPress={()=>{
-                       // props.navigation.goBack()
-                       console.log("clicked")
-                     }}
-                   ></IoniconsIcon> */}
-                   <View  style={styles.icon4}></View>
-                   <Text style={styles.editProfile} onPress={()=>{
-                     console.log("clicked")
-                   }}>EDIT PROFILE</Text>
-                 </View>
-                 <Svg viewBox="0 0 223.39 221.89" style={styles.ellipse}>
-                   <Ellipse
-                     stroke="rgba(230, 230, 230,1)"
-                     strokeWidth={0}
-                     fill="rgba(255,255,255,1)"
-                     cx={112}
-                     cy={111}
-                     rx={112}
-                     ry={111}
-                   ></Ellipse>
-                 </Svg>
-               </View>
-               <Image
-                 source={require("../assets/images/4k-shraddha-kapoor-po-3840x2400.jpg")}
-                 resizeMode="contain"
-                 style={styles.image}
-               ></Image>
-     
-           
-               <ImageBackground
-                 source={require("../assets/images/iuyyioik0i9.png")}
-                 resizeMode="contain"
-                 style={styles.image3}
-                 imageStyle={styles.image3_imageStyle}
-               >
-                 <View style={styles.ellipse2Stack}>
-                   <Svg viewBox="0 0 60 60" style={styles.ellipse2}>
-                     <Ellipse
-                       stroke="rgba(230, 230, 230,1)"
-                       strokeWidth={0}
-                       fill="rgba(255,204,0,1)"
-                       cx={30}
-                       cy={30}
-                       rx={30}
-                       ry={30}
-                     ></Ellipse>
-                   </Svg>
-                   {/* <TouchableOpacity></TouchableOpacity> */}
-                   <EvilIconsIcon onPress={()=>{
-                     alert("Coming Soon")
-                   }} name="camera" style={styles.icon3}></EvilIconsIcon>
-                 </View>
-               </ImageBackground>
-             </View>
-             {/* <MaterialFixedLabelTextbox
-               style={styles.materialFixedLabelTextbox}
-             ></MaterialFixedLabelTextbox> */}
-     
-     
-     
-             
-           </View>
-           
-           <View style ={{flex : 3}}> 
-     
-           <Content>
-     
-           <Form>
-                 <Item stackedLabel>
-                   <Label style = {{fontSize : 20, fontWeight : "bold"}}>First Name</Label>
-                   <Input textContentType = "name"  placeholder = {user.firstName ? user.firstName : ""} />
-                 </Item>
-     
-                 <Item stackedLabel>
-                   <Label style = {{fontSize : 20, fontWeight : "bold"}}>Last Name</Label>
-                   <Input textContentType = "familyName"  placeholder = {user.lastName ? user.lastName : ""} />
-                 </Item>
-     
-                 <Item stackedLabel>
-                   <Label style = {{fontSize : 20, fontWeight : "bold"}}>Phone Number</Label>
-                   <Input disabled textContentType = "telephoneNumber" keyboardType = "number-pad"  placeholder = {user.phoneNumber? phoneNumber.slice(3)  : "Enter Phone Number"} />
-                 </Item>
-     
-                 <View style ={{
-                   flex : 1,
-                   flexDirection : "row"
-                 }}>
-     
-                   <Item style ={{width : "50%"}}>
-                   <DatePicker
-                 defaultDate={new Date(1999, 4, 4)}
-                 minimumDate={new Date(1920, 1, 1)}
-                 maximumDate={new Date(2010, 12, 31)}
-                 locale={"en"}
-                 timeZoneOffsetInMinutes={undefined}
-                 modalTransparent={false}
-                 animationType={"slide"}
-                 androidMode={"default"}
-                 placeHolderText="Date of Birth"
-                 textStyle={{ color: "gold" }}
-                 placeHolderTextStyle={{ color: "#d3d3d3" }}
-                 onDateChange={this.setDate}
-                 style={{width : "50%"}}
-                 disabled={false}
-                 />
-                     
-                   </Item>
-                  
-     
-                 <Item picker stackedLabel style ={{width : "50%"}}>
-                 {/* <Label>First Name</Label> */}
-                   <Picker
-                     mode="dropdown"
-                     iosIcon={<MaterialsIcon name="arrow-down" />}
-                     style={{ height: 50, width: 150 }}
-                     placeholder="Gender"
-                     placeholderStyle={{ color: "#bfc6ea" }}
-                     placeholderIconColor="#007aff"
-                     selectedValue={this.state.gender}
-                     onValueChange={this.onValueChange}
-                   >
-                     <Picker.Item label="Male" value="Male" />
-                     <Picker.Item label="Female" value="Female" />
-                     {/* <Picker.Item label="Debit Card" value="key2" />
-                     <Picker.Item label="Credit Card" value="key3" />
-                     <Picker.Item label="Net Banking" value="key4" /> */}
-                   </Picker>
-                 </Item>
-     
-     
-                 
-     
-            
-     
-                 </View>
-     
-     
-     
-                 <Button onPress={this.save} full warning style = {{height:70, top : 10, bottom : 10}}>
-                 <Text style ={{fontWeight : "bold", fontSize : 20, color : "white"}} >Save</Text>
-               </Button>
-               
-               
-                
-                </Form>
-          
-           </Content>
-     
-         
-             
-           </View>
-           </ScrollView>
-           </Content>
-         </View>
+                    />
+                  </Button>
         
-       );
-  }
+                  </TouchableOpacity>
+                 
+                </Left>
+
+                  <Body>
+                    <Title style ={{
+                      fontWeight : "bold",
+                      marginLeft : wp("10%")
+                    }}>Profile</Title>
+                  </Body>
+                
+
+                
+                </Header>  
+              {/* <View style={styles.icon4Row}>
+                <MaterialCommunityIconsIcon
+                  name="arrow-left"
+                  style={styles.icon4}
+                ></MaterialCommunityIconsIcon>
+                <Text style={styles.profile}>Profile</Text>
+                <Text style={styles.logOut}>Log out</Text>
+              </View> */}
+<ScrollView>
 
 
+
+<List style ={{marginTop : hp("10%") , backgroundColor : "white"}}>
+            <ListItem style={{
+              alignContent : "center"
+            }}>
+              <Text style ={{
+                fontSize : 18,
+                 fontWeight : "600",
+                 paddingLeft :wp("25%")
+              }}>{user && user.phoneNumber}</Text>
+            </ListItem>
+            <ListItem style ={{
+              flex : 1,
+              flexDirection : "row",
+              height : hp("8%"),
+              justifyContent:'flex-start'
+            }}>
+               <Input placeholder="First name" value = {user && user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)} style={{
+                 borderColor : "green",
+                 fontSize : 18,
+                 fontWeight : "600",
+               }} />
+               <View
+        style = {{
+          height: hp("8%"),
+          width: 1,
+          backgroundColor: '#cccccc'
+        }}
+      />
+               <Input placeholder="Last name" value = { user && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} />
+            </ListItem>
+          
+
+            <ListItem>
+            <Input placeholder="Email" value = { user &&user.email.charAt(0).toUpperCase() + user.email.slice(1)} />
+            </ListItem>
+          </List>
+          
+          <View  style={styles.loremIpsum}>
+          <Text style ={{
+            paddingTop : 20,
+            fontWeight : "300"
+          }}>
+                Ride recipts will be sent to your email.
+              </Text>
+        
+
+          </View>
+         
+        
+
+
+              <Card>
+            <TouchableOpacity  onPress ={()=>{
+               alert("Coming Soon!!")
+             }}>
+            <CardItem style={{
+              height : hp("8%")
+            }}>
+              
+              <Icon active name="md-home" />
+              <Text>Add Home Location</Text>
+              <Right style={{
+                  left : 0
+              }}>
+                <Icon name="arrow-forward" />
+              </Right>
+             </CardItem>
+
+             <Divider />
+             </TouchableOpacity>
+             <TouchableOpacity onPress ={()=>{
+               alert("Coming Soon!!")
+             }}>
+            <CardItem  style={{
+              height : hp("8%")
+            }}>
+              <Icon active name="ios-briefcase" />
+              <Text>Add Work Location</Text>
+              <Right
+              style={{
+                  left : -6
+              }}>
+                <Icon name="arrow-forward" />
+              </Right>
+            
+             </CardItem>
+             <Divider />
+             </TouchableOpacity>
+             <TouchableOpacity onPress ={()=>{
+               this.props.navigation.navigate("Contact Us")
+             }}>
+
+           
+
+             </TouchableOpacity>
+           </Card>
+
+
+
+
+<View style ={{
+  marginTop : "8%"
+}}>
+
+  <Card>
+
+    
+  <CardItem  style={{
+              height : hp("8%")
+            }}>
+              <Icon active name="md-flag" />
+              <Text>English - US</Text>
+              <Right style={{
+                  left : 1
+              }}>
+                <Icon name="arrow-down" />
+              </Right>
+              
+             </CardItem>
+
+             <Divider />
+  <CardItem  style={{
+              height : hp("8%")
+            }}>
+              <Icon active name="md-flag" />
+              <Text>Communication Preference</Text>
+              <Right style={{
+                  left : -21
+              }}>
+                <Icon name="arrow-forward" />
+              </Right>
+              
+             </CardItem>
+             <Divider />
+  </Card>
+</View>
+
+
+
+
+
+      
+<CupertinoButtonPurple
+                style={styles.cupertinoButtonPurple}
+              ></CupertinoButtonPurple>
+        
+              </ScrollView>
+
+            </SafeAreaView >
+          );
+    }
+  
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "rgba(255,255,255,1)"
-  },
-  rect3: {
-    top: 45,
-    left: 70,
-    width: wp("100%"),
-    height: hp("42%"),
-    position: "relative",
-    backgroundColor: "#E6E6E6"
+    flex: 1, 
+    backgroundColor : "#ededed"
   },
   icon4: {
-    color: "rgba(7,7,7,1)",
-    fontSize: wp("6.2%"),
-    height: 41,
-    width: 25
+    color: "rgba(0,0,0,1)",
+    fontSize: 38
   },
-  editProfile: {
+  profile: {
+    fontFamily: "roboto-700",
+    color: "#121212",
+    fontSize: 26,
+    marginLeft: 3,
+    marginTop: 5
+  },
+  logOut: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    fontSize: wp("6.2%"),
-    marginLeft: 61,
-    marginTop: 6
+    fontSize: 18,
+    marginLeft: 156,
+    marginTop: 10
   },
   icon4Row: {
-    height: 41,
+    height: 42,
     flexDirection: "row",
-    marginTop: 18,
-    marginLeft: 22,
-    marginRight: 104
+    marginTop: 42,
+    marginLeft: 5,
+    marginRight: 21
   },
-  ellipse: {
-    width: wp("50%"),
-    height: wp("50%"),
-    marginTop: 4,
-    marginLeft: wp("25%")
+  cupertinoButtonPurple: {
+    height: 44,
+    width: wp("90%"),
+    borderRadius: 11,
+    marginTop: hp("2%"),
+    marginLeft: 21,
+    alignSelf: "center"
   },
-  image: {
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-    opacity: 0.09
-  },
-  image3: {
-    top: hp("7%"),
-    left: wp("25%"),
-    width: wp("80%"),
-    height: hp("45%"),
-    position: "absolute"
-  },
-  image3_imageStyle: {},
-  ellipse2: {
-    top: 0,
-    left: 0,
-    width: 60,
-    height: 60,
-    position: "absolute"
-  },
-  icon3: {
-    top: "15%",
-    left: 4,
-    position: "absolute",
-    color: "rgba(128,128,128,1)",
-    fontSize: 52,
-    height: 58,
-    width: 52
-  },
-  ellipse2Stack: {
-    width: 60,
-    height: 60,
-    marginTop: 194,
-    marginLeft: 205
-  },
-  rect3Stack: {
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: 360,
-    position: "relative"
-  },
-  materialFixedLabelTextbox: {
+  materialUnderlineTextbox1: {
     height: 43,
-    width: 310,
-    position: "relative",
-    left: 104,
-    // top: 324
+    width: wp("80%"),
+    marginTop: hp("7%"),
+    marginLeft: 32
   },
-  rect3StackStack: {
-    // width: 474,
-    // height: 367,
-    flex : 1,
-    marginTop: -21,
-    marginLeft: -72
+  materialUnderlineTextbox2: {
+    height: 43,
+    width: wp("80%"),
+    marginTop: 11,
+    marginLeft: 35,
+    alignSelf: "center"
   },
- 
-  // rect: {
-  //   width: 163,
-  //   height: 68,
-  //   backgroundColor: "rgba(255,255,255,1)",
-  //   borderWidth: 1,
-  //   borderColor: "#000000",
-  //   borderRadius: 6,
-  //   flexDirection: "row"
-  // },
- 
-  icon: {
-    color: "rgba(0,0,0,1)",
-    fontSize: 25,
-    height: 27,
-    width: 25,
-    marginLeft: 8
-  },  
-
-
-  female: {
+  materialUnderlineTextbox3: {
+    height: 43,
+    width: wp("80%"),
+    marginTop: 19,
+    marginLeft: 36,
+    alignSelf: "center"
+  },
+  materialUnderlineTextbox4: {
+    height: 43,
+    width: wp("80%"),
+    marginTop: 12,
+    marginLeft: 38,
+    alignSelf: "center"
+  },
+  loremIpsum: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    fontSize: 20,
-    marginTop: 2
+    fontSize: 16,
+    fontWeight : "300",
+    marginTop: hp("2%"),
+    height : hp("10%"),
+    marginLeft: 39
   },
   icon2: {
-    color: "rgba(1,1,1,1)",
-    fontSize: 25,
-    height: 27,
-    width: 25,
-    marginLeft: 19
+    color: "rgba(0,0,0,1)",
+    fontSize: 38
   },
-  femaleRow: {
-    height: 27,
-    flexDirection: "row",
-    flex: 1,
-    marginRight: 6,
-    marginLeft: 9,
-    marginTop: 24
-  },
-  rectRow: {
-    height: 68,
-    flexDirection: "row",
-    marginTop: 79,
-    marginLeft: 32,
-    marginRight: 18
-  },
-  birthDate: {
+  loremIpsum2: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    fontSize: 20
+    marginLeft: 86
   },
-  gender: {
+  addAddress: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    fontSize: 20,
-    marginLeft: 92
+    fontSize: 18,
+    marginTop: 1
   },
-  birthDateRow: {
-    height: 24,
+  loremIpsum2Column: {
+    width: 103,
+    marginLeft: 13,
+    marginTop: 9,
+    marginBottom: 10
+  },
+  icon2Row: {
+    height: 42,
     flexDirection: "row",
-    // marginTop: -96,
-    marginLeft: 40,
-    marginRight: 76
+    marginTop: 89,
+    marginLeft: 31,
+    marginRight: 175
+  },
+  icon: {
+    color: "rgba(0,0,0,1)",
+    fontSize: 38,
+    marginTop: 14
+  },
+  materialStackedLabelTextbox8: {
+    height: 60,
+    width: 233,
+    marginLeft: 12
+  },
+  iconRow: {
+    height: 60,
+    flexDirection: "row",
+    marginTop: -112,
+    marginLeft: 31,
+    marginRight: 46
+  },
+  englishUs: {
+    fontFamily: "roboto-regular",
+    color: "#121212",
+    fontSize: 18,
+    marginTop: 11
+  },
+  icon3: {
+    color: "rgba(0,0,0,1)",
+    fontSize: 40,
+    marginLeft: 145
+  },
+  englishUsRow: {
+    height: 45,
+    flexDirection: "row",
+    marginTop: 85,
+    marginLeft: 31,
+    marginRight: 49
   }
 });
 const mapStateToProps = (state) => ({
   auth: state.auth,
   error: state.error,
+  order: state.order,
 });
 
 // export default ProjectForm

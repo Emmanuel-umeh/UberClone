@@ -10,6 +10,9 @@ import MapDestination from "./MapDestination";
 import ProfileScreen from "./ProfileScreen";
 import SetLogistics from "./selectLogistics";
 import CreditCard from "./CreditCard";
+import Settings from "./Settings";
+import Add_Card from "./Add_Card";
+import Ride_History from "./Ride_History";
 
 const AuthStack = createStackNavigator();
 
@@ -29,6 +32,12 @@ const AuthenticatedStack = ({ navigation }) => (
     <AuthStack.Screen name="creditCardScreen" component={CreditCard} />
 
     <AuthStack.Screen name="profileScreen" component={ProfileScreen} />
+
+    <AuthStack.Screen name="settings" component={Settings} />
+    <AuthStack.Screen name="add_card" component={Add_Card} />
+
+  
+    <AuthStack.Screen name="ride_history" component={Ride_History} />
 
   
     {/* 

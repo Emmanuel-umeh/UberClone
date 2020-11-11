@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, TextInput } from "react-native";
-import Icon from "react-native-vector-icons/Entypo";
+
 import {connect} from "react-redux"
 import { registerDetails, setLoading,endLoading} from "../action/authAction"
 import * as EmailValidator from 'email-validator';
@@ -8,8 +8,28 @@ import AsyncStorage from "@react-native-community/async-storage";
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import { Kohana } from 'react-native-textinput-effects';
 import AnimateLoadingButton from 'react-native-animate-loading-button';
-import { Container, Header, Content, Item, Input } from 'native-base';
+import { Container, Header, Content, Item,
+  
+  Card,
+  CardItem,
+Button,
+  Right,
+  Icon,
+  Left,
+  Body,
+  Title, } from 'native-base';
+import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 class NameScreen extends Component{
+
+  constructor(props){
+    super(props)
+
+    console.ignoredYellowBox = ["Animated: `useNativeDriver` was not specified."];
+  }
 
 
 
@@ -97,6 +117,35 @@ this.submit()
     // console.log("firstname ", this.state.email)
     return (
       <Container style ={styles.container}>
+
+<Header
+        style={{
+          backgroundColor: "whitesmoke",
+        }}
+      >
+        <Left>
+          <TouchableOpacity onPress={() => {
+                this.props.navigation.pop();
+              }}> 
+          {/* <Button transparent>
+            <Icon
+              name="arrow-back"
+              style={{color : "black"}}
+            />
+          </Button> */}
+
+          </TouchableOpacity>
+         
+        </Left>
+        <Body>
+                    <Title style ={{
+                      fontWeight : "bold",
+                      color : "black",
+                      marginLeft : wp("3%")
+                    }}>Personal Details</Title>
+                  </Body>
+                
+      </Header>
       {/* <Header /> */}
       <Content>
         <Item rounded  style={{ backgroundColor: 'transparent', marginTop : "10%"  }}>
@@ -172,8 +221,7 @@ this.submit()
 
         <View style={styles.loremIpsum5Row}>
           <Text style={styles.loremIpsum5}>
-            By continuing you may receive an{"\n"}SMS for verification. Message
-            and{"\n"}data rates may apply.
+            By continuing your data provided{"\n"} to us will be safeguarded {"\n"}and used to address you.
           </Text>
           {/* <EntypoIcon
             onPress={() => {
@@ -220,23 +268,23 @@ const styles = StyleSheet.create({
     fontFamily: "roboto-regular",
     color: "#121212",
     fontSize: 22,
-    marginTop: 123,
+    marginTop: hp("20%"),
     marginLeft: 24
   },
   rect: {
-    width: 306,
+    width: wp("90$"),
     height: 4,
     backgroundColor: "rgba(0,0,0,1)",
     marginTop: 61,
     marginLeft: 24
   },
   rect4: {
-    width: 306,
+    width: wp("90$"),
     height: 4,
     backgroundColor: "rgba(0,0,0,1)"
   },
   rect5: {
-    width: 306,
+    width: wp("90$"),
     height: 4,
     backgroundColor: "rgba(0,0,0,1)"
   },
@@ -262,11 +310,11 @@ const styles = StyleSheet.create({
   icon1: {
     color: "rgba(1,1,1,1)",
     fontSize: 50,
-    marginTop: 439,
-    marginLeft: 281
+    marginTop: hp("70%"),
+    marginLeft: wp("80%")
   },
   rect3: {
-    width: 306,
+    width: wp("90$"),
     height: 3,
     backgroundColor: "rgba(0,0,0,1)",
     marginTop: -283,
@@ -282,7 +330,7 @@ const styles = StyleSheet.create({
     marginLeft: 24
   },
   rect6: {
-    width: 306,
+    width: wp("100%"),
     height: 4,
     backgroundColor: "rgba(0,0,0,1)",
     marginTop: 10,
@@ -304,7 +352,7 @@ const styles = StyleSheet.create({
   loremIpsum5Row: {
     height: 54,
     flexDirection: "row",
-    marginTop: "90%",
+    marginTop: hp("30%"),
     marginLeft: 24,
     marginRight: 37,
   },

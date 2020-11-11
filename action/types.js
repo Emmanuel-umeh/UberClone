@@ -47,6 +47,10 @@ export const SET_USER_TOKEN="SET_USER_TOKEN"
 export const SET_LOADING="SET_LOADING"
 export const END_LOADING="END_LOADING"
 
+export const IS_AUTHENTICATED="IS_AUTHENTICATED"
+
+
+
 
 
 
@@ -92,4 +96,11 @@ export const PRICE_UPDATED="PRICE_UPDATED"
 
 export const SET_FETCHING="SET_FETCHING"
 export const END_FETCHING="END_FETCHING"
+
+export const ADD_CARD="ADD_CARD"
+export const ADD_CARD_FAILED="ADD_CARD_FAILED"
+
+
+export const GET_REGION="GET_REGION"
+
 

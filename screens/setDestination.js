@@ -4,6 +4,7 @@ import {
   View,
   StatusBar,
   ScrollView,
+  Dimensions,
   TextInput,
   TouchableOpacity,
   Text,
@@ -21,7 +22,21 @@ import {
 
 import  FloatingActionButton  from "react-native-floating-action-button";
 import { Spinner } from "native-base";
+ import { connect } from 'react-redux'
 
+ import Geocoder from "react-native-geocoding";
+
+import store from "../store"
+
+const WIDTH = Dimensions.get("window").width;
+const HEIGHT = Dimensions.get("window").height;
+const ASPECT_RATIO = WIDTH / HEIGHT;
+const latitudeDelta = 0.3358723958820065; //Very high zoom level
+const longitudeDelta = latitudeDelta * ASPECT_RATIO;
+
+const LATITUDE_DELTA = latitudeDelta
+const LONGITUDE_DELTA = longitudeDelta
+ 
 class setDestination extends Component {
   constructor(props) {
     super(props);
@@ -34,8 +49,26 @@ class setDestination extends Component {
   state = {
     destination: null,
     predictions: [],
-    visible : false
+    visible : false,
+    my_address : null
   };
+
+
+ async componentDidMount(){
+
+    let location = await  Geocoder.from({
+      latitude: this.props.order.region.latitude,
+      longitude:  this.props.order.region.longitude,
+    })
+    // const json = await location.json()
+    var addressComponent = location.results[0].address_components[0].long_name;
+    console.log("myaddress name ", addressComponent)
+    this.setState({
+      my_address : addressComponent
+    })
+    //   .then((json) => {
+    //     var addressComponent = json.results[0].address_components[0].long_name;
+  }
 
   destinationChange = async (destination) => {
     // console.log("longitude ", this.props.route.params.longitude);
@@ -72,9 +105,9 @@ this.setState({
 
     const predictions = this.state.predictions.map((prediction,key) => (
 
-      <KeyboardAwareScrollView>
+      <ScrollView   keyboardShouldPersistTaps='always'   key={key}>
       <TouchableOpacity
-        key={key}
+     
         onPress={async () => {
           // console.log("id , ",prediction.place_id)
 
@@ -82,13 +115,13 @@ this.setState({
           const result = await fetch(place_url);
           const json = await result.json();
 
-          console.log("latitude, longitude ", json.result.geometry.location);
+         
 
           const destination = {
             latitude: json.result.geometry.location.lat,
             longitude: json.result.geometry.location.lng,
           };
-
+          console.log("latitude, longitude ", destination);
         
           // this.props.navigation.navigate("Map", {
           //   destination :{
@@ -96,16 +129,17 @@ this.setState({
           //     longitude : json.result.geometry.location.lng
           //   }
           // })
+
           console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
 
           this.props.navigation.navigate("Map", {
             destination,
             logistics : this.props.route.params.logistics
           });
+           const going = destination
 
 
-
-          this.props.route.params.selectDestination(destination)
+          this.props.route.params.selectDestination(going)
           // returns
           // Object {
           //   "lat": 8.969173699999999,
@@ -117,9 +151,10 @@ this.setState({
         <View style={styles.icon7Row}>
           <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
           <Text style={styles.addHome}>{prediction.description}</Text>
+          
         </View>
       </TouchableOpacity>
-      </KeyboardAwareScrollView>
+      </ScrollView>
     ));
     // console.log("predictions", predictions)
     return (
@@ -168,8 +203,8 @@ this.setState({
               <View style={styles.textInputColumn}>
                 <TextInput
                   defaultValue={
-                    this.props.route.params && this.props.route.params.address
-                      ? this.props.route.params.address.length !=0 && this.props.route.params.address
+                    this.state.my_address
+                      ?    this.state.my_address
                       : "Unknown Road"
                   }
                   style={styles.textInput}
@@ -256,7 +291,7 @@ const styles = StyleSheet.create({
   rect: {
     top: 0,
     left: 0,
-    height: 181,
+    height: hp("20%"),
     width: wp("100%"),
     position: "absolute",
     backgroundColor: "rgba(255,255,255,0.21)",
@@ -321,6 +356,7 @@ const styles = StyleSheet.create({
     height: hp("6.5%"),
     width: wp("70%"),
     fontSize: 15,
+    fontWeight : "600",
     opacity: 0.94,
     paddingLeft: 10,
     backgroundColor: "whitesmoke",
@@ -332,6 +368,7 @@ const styles = StyleSheet.create({
     width: wp("70%"),
     fontSize: 15,
     opacity: 0.94,
+    fontWeight : "600",
     backgroundColor: "whitesmoke",
     paddingLeft: 10,
     marginTop: 12,
@@ -349,14 +386,14 @@ const styles = StyleSheet.create({
     marginTop: 60,
   },
   icon3StackStackRow: {
-    height: 100,
+    height: hp("17%"),
     flexDirection: "row",
     marginTop: 57,
     marginLeft: 1,
     marginRight: 19,
   },
   button: {
-    top: 684,
+    top: hp("70%"),
     left: 0,
     position: "absolute",
     backgroundColor: "#E6E6E6",
@@ -383,15 +420,15 @@ const styles = StyleSheet.create({
     height: 29,
     flexDirection: "row",
     flex: 1,
-    marginRight: 108,
+    marginRight: wp("10%"),
     marginLeft: 79,
     marginTop: 11,
   },
   button2: {
     // top: 181,
     left: 0,
-    width: "100%",
-    height: 54,
+    width: wp("100%"),
+    height: hp("10%"),
     borderBottomColor: "whitesmoke",
     borderBottomWidth: 1,
     // position: "absolute",
@@ -410,24 +447,20 @@ const styles = StyleSheet.create({
     color: "#121212",
     fontSize: 15,
     marginLeft: 32,
+    fontWeight : "600",
     marginTop: 3,
   },
   icon7Row: {
-    height: 329,
+    height: hp("30%"),
     flexDirection: "row",
     flex: 1,
-    width: "100%",
-    marginRight: 187,
+    width: wp("100%"),
+    marginRight: wp("50%"),
 
     marginLeft: 20,
     marginTop: 16,
   },
-  scrollAreaStack: {
-    flex: 1,
-    marginRight: -1,
-    marginLeft: -742,
-    marginTop: 1,
-  },
+ 
 
   header: {
     flex: 1,
@@ -453,4 +486,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default setDestination;
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+  order: state.order,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, {})(setDestination);
