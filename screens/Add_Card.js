@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   rect1Stack: {
     width: wp("100%"),
     height: hp("25%"),
-    marginLeft: 0,
+    marginLeft: -10,
   },
   rect3: {
     width: wp("90%"),

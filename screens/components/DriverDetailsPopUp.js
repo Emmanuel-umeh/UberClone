@@ -8,6 +8,7 @@ import {
   FlatList,
   Dimensions,
   Alert,
+  Linking,
   ScrollView,
 } from "react-native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
@@ -16,6 +17,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { Icon } from "native-base";
 
 export default class DriverDetailsPopUp extends Component {
   constructor(props) {
@@ -38,44 +40,63 @@ export default class DriverDetailsPopUp extends Component {
     };
   }
 
-  clickEventListener = (item) => {
-    Alert.alert("Message", "Item clicked. " + item.name);
+
+  makeCall = () => {
+
+    const {driver} = this.props
+    let phoneNumber = '';
+
+    if (Platform.OS === 'android') {
+      phoneNumber = `tel:${driver.phoneNumber}`;
+    } else {
+      phoneNumber = `telprompt:${driver.phoneNumber}`;
+    }
+
+    Linking.openURL(phoneNumber);
   };
 
   render() {
+
+    const {driver} = this.props
+
+    console.log("props recieved to driver details popup ", this.props)
     return (
       <View style={styles.container}>
-        <FlatList
+        {/* <FlatList
           style={styles.contentList}
           columnWrapperStyle={styles.listContainer}
           data={this.state.data}
           keyExtractor={(item) => {
             return item.id;
           }}
-          renderItem={({ item }) => {
-            return (
+          renderItem={({ item }) => { */}
+            {/* return ( */}
               <TouchableOpacity
                 style={styles.card}
                 onPress={() => {
-                  this.clickEventListener(item);
+                  // this.clickEventListener(item);
+                  null
                 }}
               >
-                <Image style={styles.image} source={{ uri: item.image }} />
+                <Image style={styles.image} source={{ uri: driver.profile_picture }} />
 
                 <View style={styles.cardContent}>
-                  <Text style={styles.name}>{item.name}</Text>
-                  <Text style={styles.count}>{item.count} Rides</Text>
+              <Text style={styles.name}>{driver.firstname.charAt(0).toUpperCase() + driver.firstname.slice(1)} {driver.lastname.charAt(0).toUpperCase() + driver.lastname.slice(1)} </Text>
+                  <Text style={styles.count}>{driver.orders.length} Rides</Text>
 
-                  <View style={{ flex: 4, flexDirection: "row" , marginLeft : 12}}>
+                  <View style={{ flex: 4, flexDirection: "row" , marginLeft : wp("10%")}}>
+                    
+                    {/* To do !!! */}
+                    {/* {driver.rating} */}
                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+                    {/* <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon> */}
 
                     <View style={{position : "absolute", marginLeft : wp("30%")}}>
                     {/* <Text>Time till Arrival</Text> */}
-              <Text style ={{ fontSize : 30, fontWeight : "bold", marginTop : -10}}>2:00</Text>
+              {/* <Text style ={{ fontSize : 30, fontWeight : "bold", marginTop : -10}}>2:00</Text> */}
 
                     </View>
                    
@@ -83,17 +104,18 @@ export default class DriverDetailsPopUp extends Component {
 
                   <TouchableOpacity
                     style={styles.followButton}
-                    onPress={() => this.clickEventListener(item)}
+                    onPress={this.makeCall} 
                   >
-                    <Text style={styles.followButtonText}>View Profile</Text>
+                    <Icon name = "ios-call"></Icon>
+                    <Text style={styles.followButtonText}>  Call Driver</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     style={styles.cancelButton}
                     onPress={() => this.clickEventListener(item)}
                   >
                     <Text style={styles.cancelButtonText}>Cancel Order</Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                   <View>
 
                
@@ -108,9 +130,9 @@ export default class DriverDetailsPopUp extends Component {
 
            
               </TouchableOpacity>
-            );
-          }}
-        />
+            {/* ); */}
+          {/* }} */}
+        {/* /> */}
       </View>
     );
   }
@@ -133,11 +155,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   image: {
-    width: 90,
-    height: 90,
+    width: wp("25%"),
+    height: hp("13%"),
     borderRadius: 45,
     borderWidth: 2,
-    top :hp("4%"),
+    top :hp("1%"),
     borderColor: "#ebf0f7",
   },
 
@@ -175,8 +197,8 @@ const styles = StyleSheet.create({
   },
   followButton: {
     marginTop: 10,
-    height: hp("4%"),
-    width: wp("25%"),
+    height: hp("5%"),
+    width: wp("35%"),
     padding: 10,
     flexDirection: "row",
     justifyContent: "center",
@@ -194,7 +216,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginTop: 10,
     height: hp("4%"),
-    width: wp("25%"),
+    width: wp("35%"),
     padding: 10,
     flexDirection: "row",
     justifyContent: "center",

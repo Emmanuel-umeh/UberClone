@@ -20,13 +20,18 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
+
 import  FloatingActionButton  from "react-native-floating-action-button";
-import { Spinner } from "native-base";
  import { connect } from 'react-redux'
+ import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
 
  import Geocoder from "react-native-geocoding";
-
 import store from "../store"
+
+import { Spinner as Loading } from "native-base";
+import Spinner  from 'react-native-loading-spinner-overlay';
+import { Divider } from "react-native-paper";
+
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -43,14 +48,15 @@ class setDestination extends Component {
 
     this.onChangeDestinationDebounced = _.debounce(
       this.destinationChange,
-      1000
+      500
     );
   }
   state = {
     destination: null,
     predictions: [],
     visible : false,
-    my_address : null
+    my_address : null,
+    loading : false
   };
 
 
@@ -61,8 +67,8 @@ class setDestination extends Component {
       longitude:  this.props.order.region.longitude,
     })
     // const json = await location.json()
-    var addressComponent = location.results[0].address_components[0].long_name;
-    console.log("myaddress name ", addressComponent)
+    var addressComponent =  location.results[0].address_components[0].long_name + " " +location.results[0].address_components[1].long_name  + " " + location.results[0].address_components[2].long_name;;
+    // console.log("myaddress name ", location.results[0].address_components)
     this.setState({
       my_address : addressComponent
     })
@@ -76,8 +82,13 @@ this.setState({
   visible : true
 })
     const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=500`;
+    const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + ${this.props.route.params.latitude} + ',' + ${this.props.route.params.longitude} + '&radius=' + ${1000} + '&key=' + ${google_api}`
+        
     const result = await fetch(api_url);
     const json = await result.json();
+    
+
+    // console.log("predictions ", json.predictions)
     this.setState({
       destination,
       predictions: json.predictions,
@@ -105,14 +116,19 @@ this.setState({
 
     const predictions = this.state.predictions.map((prediction,key) => (
 
-      <ScrollView   keyboardShouldPersistTaps='always'   key={key}>
-      <TouchableOpacity
      
+
+      <TouchableOpacity
+     key={key}
         onPress={async () => {
+
+          this.setState({
+            loading : true
+          })
           // console.log("id , ",prediction.place_id)
 
           const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${prediction.place_id}&key=${google_api}`;
-          const result = await fetch(place_url);
+         const result = await fetch(place_url);
           const json = await result.json();
 
          
@@ -121,7 +137,7 @@ this.setState({
             latitude: json.result.geometry.location.lat,
             longitude: json.result.geometry.location.lng,
           };
-          console.log("latitude, longitude ", destination);
+          // console.log("latitude, longitude ", destination);
         
           // this.props.navigation.navigate("Map", {
           //   destination :{
@@ -130,7 +146,7 @@ this.setState({
           //   }
           // })
 
-          console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
+          // console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
 
           this.props.navigation.navigate("Map", {
             destination,
@@ -140,25 +156,74 @@ this.setState({
 
 
           this.props.route.params.selectDestination(going)
+          this.setState({
+            loading : false
+          })
           // returns
           // Object {
           //   "lat": 8.969173699999999,
           //   "lng": 7.440240199999998,
           // }
         }}
-        style={styles.button2}
+        // style={styles.button2}
       >
-        <View style={styles.icon7Row}>
+        {/* <View style={styles.icon7Row}>
           <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
           <Text style={styles.addHome}>{prediction.description}</Text>
           
-        </View>
-      </TouchableOpacity>
-      </ScrollView>
+        </View> */}
+
+
+           
+ 
+           
+            <CardItem style ={{top : 10}} >
+            <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
+
+              <Body style ={{
+                left : wp("10%"),
+                width : "70%"
+              }}>
+              <Text style ={{fontWeight : "500", fontSize : 15}}>{prediction.structured_formatting.main_text}</Text>
+              <Text style ={{fontWeight : "500", fontSize : 15}}>{prediction.structured_formatting.secondary_text}</Text>
+              </Body>
+       
+              <Right style={{
+                  right : wp("10%")
+              }}>
+                <Icon name="arrow-forward"  style ={{
+                  color : "black"
+                }}/>
+              </Right>
+             </CardItem>
+            <Divider
+            
+            
+            
+            style={{
+
+              marginTop: 20,
+              height : 1
+            }}/>
+            
+             </TouchableOpacity>
+      
+
+
     ));
     // console.log("predictions", predictions)
     return (
       <View style={styles.container}>
+
+<ScrollView   keyboardShouldPersistTaps='always'   >
+
+
+<Spinner
+visible={this.state.loading}
+textContent="Loading..."
+textStyle={{ color: '#fff' }}
+animation="fade"
+/>
 
 
 
@@ -183,7 +248,7 @@ this.setState({
     rippleColor="gold"
 />
            </View> 
-        <KeyboardAwareScrollView>
+        <View style = {styles.container}>
           <Animatable.View animation="bounceIn" style={styles.header}>
             <View style={styles.icon3StackStackRow}>
               <View style={styles.icon3StackStack}>
@@ -216,17 +281,18 @@ this.setState({
                 ></TextInput>
               </View>
 
-  {/* <EntypoIcon name="plus" style={styles.icon}></EntypoIcon> */}
-  {this.state.visible && 
-            <Spinner
-            visible={this.state.visible}
-            style={styles.icon}
-           
-            color = "#d1ab21"
-            animation="fade"
-          />
-  
-  }
+{this.state.visible &&
+     <Loading
+     visible={this.state.visible}
+     style={styles.icon}
+    
+     color = "#d1ab21"
+     animation="fade"
+   />
+
+}
+       
+
   
     
             </View>
@@ -252,13 +318,20 @@ this.setState({
               </View>
             </TouchableOpacity>
 
+
+            <Card style ={{width : wp("100%"), elevation : 0, borderColor : "white"}}> 
             {predictions}
+</Card>
+
+
+
 
             {/* </ScrollView> */}
           </Animatable.View>
 
 
-        </KeyboardAwareScrollView>
+        </View>
+        </ScrollView>
       </View>
     );
   }
@@ -428,7 +501,7 @@ const styles = StyleSheet.create({
     // top: 181,
     left: 0,
     width: wp("100%"),
-    height: hp("10%"),
+    height: hp("8%"),
     borderBottomColor: "whitesmoke",
     borderBottomWidth: 1,
     // position: "absolute",
@@ -437,8 +510,8 @@ const styles = StyleSheet.create({
     // flexDirection: "row"
   },
   icon7: {
-    color: "rgba(155,145,145,1)",
-    fontSize: 27,
+    color: "black",
+    fontSize: 20,
     height: 29,
     width: 27,
   },

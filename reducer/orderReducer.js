@@ -19,7 +19,8 @@ import {
   CLEAR_TYPE,
   SET_USER_TOKEN,
   SET_LOADING,
-  END_LOADING
+  END_LOADING,
+  PUSHER_AUTH
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -103,6 +104,7 @@ const initialState = {
   destination: null,
   driver: null,
   origin: null,
+  // loader when the user is searching for a ride
   is_searching: false,
   has_ridden: false,
   totalPriceVisible: false,
@@ -111,8 +113,30 @@ const initialState = {
   price: 0,
 
   // name of the accepted driver
-  driverName: null,
+  driver_details: null,
   //  auth_msg_details : null
+
+
+// redux details
+
+
+  available_drivers_channel : null,
+  user_ride_channel : null,
+  pusher: null
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
 export default function (state = initialState, action) {
@@ -220,12 +244,14 @@ export default function (state = initialState, action) {
   
 
     case FOUND_DRIVER:{
+
+      console.log("driver found!!!!!!!!!!!!!!!!!!!! ", action.payload)
       const {
         has_ride,
         is_searching,
         location,
         driver,
-        driverName,
+        driver_details,
       } = action.payload
       return {
         ...state,
@@ -234,7 +260,7 @@ export default function (state = initialState, action) {
         is_searching: is_searching,
         location: location,
         driver: driver,
-        driverName: driverName,
+        driver_details: driver_details,
         type: "FOUND_DRIVER",
       };
     }
@@ -253,6 +279,7 @@ export default function (state = initialState, action) {
 
 
     case DRIVER_LOCATION:
+      console.log("Driver location updatinmg!!!!!!!!!!")
       {
         const { location, driver } = action.payload;
         return {

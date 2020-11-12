@@ -10,11 +10,11 @@ export const colors = {
 export default StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: colors.black
+        // backgroundColor: colors.black
     },
     container: {
         flex: 1,
-        backgroundColor: colors.background1
+        // backgroundColor: colors.background1
     },
     gradient: {
         ...StyleSheet.absoluteFillObject

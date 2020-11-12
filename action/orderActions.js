@@ -14,7 +14,7 @@ import Pusher from "pusher-js/react-native";
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://dee6666e76be.ngrok.io";
+axios.defaults.baseURL = "http://3fddec3dff12.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -25,17 +25,7 @@ axios.defaults.baseURL = "http://dee6666e76be.ngrok.io";
 //
 
 var token;
-var orderID
-var pusher = new Pusher("eead8d5075773e7aca0a", {
-    authEndpoint: "http://dee6666e76be.ngrok.io/api/pusher/auth",
-    cluster: "eu",
-    auth: {
-      headers : { 'x-auth-token':token }
-    },
-    encrypted: true,
-  });
-  Pusher.logToConsole = true
-
+// var orderID
 
 export const saveToken = async (token) => {
   try {
@@ -59,15 +49,26 @@ getToken = async () => {
 };
 
 
-// Get the orders ID
-getOrder = async () => {
-  orderID = await AsyncStorage.getItem("order_id");
-  console.log("redux action js ", orderID);
 
-  // this.props.setUserToken(token)
-  // token = token
-  return orderID;
+// save the orders ID
+saveOrder = async (id) => {
+
+  console.log("redux action js saving order id ", id);
+ await AsyncStorage.saveItem("order_id", id);
+ 
+
+
 };
+
+// Get the orders ID
+// getOrder = async () => {
+//   orderID = await AsyncStorage.getItem("order_id");
+//   console.log("redux action js ", orderID);
+
+//   // this.props.setUserToken(token)
+//   // token = token
+//   return orderID;
+// };
 
 
 // Clear the orders ID
@@ -80,7 +81,7 @@ clearOrder = async () => {
 
 
 getToken();
-getOrder()
+// getOrder()
 export const setUserToken = (token) => (dispatch) => {
   dispatch({
     type: SET_USER_TOKEN,
@@ -107,17 +108,28 @@ export const makeOrder = ({
   endLongitude,
   endLatitude,
   trigger,
+  userID,
+  pickup,
+  dropoff,
+  available_drivers_channel,
 
 //   endLocationName,
   price,
-}) => (dispatch) => {
-  console.log("trigger received ", trigger)
+}, tokens) => (dispatch) => {
+
+    // trigger Loader
+    dispatch({
+      type : "SET_FETCHING"
+    })
+  console.log("token received ", tokens)
   const config = {
     headers: {
       "Content-Type": "application/json",
-      "x-auth-token" : token
+      "x-auth-token" : tokens
     },
   };
+
+  // console.log("available drivers channel !!!!!!!!!!!!!!!!!!!!!!!!!!!", available_drivers_channel)
 
   // REQUEST BODY
   const body = JSON.stringify({
@@ -134,22 +146,36 @@ export const makeOrder = ({
   // console.log("body recieved ", body);
 
 
-  // trigger Loader
-  dispatch({
-    type : "SET_FETCHING"
-  })
 
+console.log("making order!!!!!!!!!!!!!!!!!!!!!")
   axios
     .post(`/api/order/makeOrder`, body, config)
     .then(
       (res) => {
         //
         // endLoading()
-        trigger()
+
+        // sends the pusher trigger to available driver
+      
+
+        
         dispatch({
           type : MAKE_ORDER,
           payload : res.data
         })
+
+
+
+        console.log("response received for make order ", userID,pickup,dropoff, available_drivers_channel)
+  // trigger()
+
+  available_drivers_channel.trigger("client-driver-request", {
+    userID,
+    pickup: pickup,
+    dropoff: dropoff,
+    orderID : res.data._id
+    // triggered : "Yes!"
+  });
 
 
         // trigger pusher js
@@ -159,28 +185,19 @@ export const makeOrder = ({
         })
       
 
-        // status code 10 means otp has already been sent
-        // status code 6 means the otp has timed out or more of it has been completed
-        // return RootNavigation.navigate("otp", {
-        //   request_id: res.data.request_id,
-        //   status: res.data.status,
-        //   phoneNumber: phoneNumber,
-        // });
-
-        console.log("MESSAGE res ", res.data)
       }
       // console.log("this is the res ", res)
     )
     .catch((err) => {
-      console.log("error ", err);
+      console.log("error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", err);
       dispatch({
         type : "END_FETCHING"
       })
     
-      Notifier.showNotification({
+     return Notifier.showNotification({
         title: 'Create Order Error',
         description: `Their was an error creating an order. Please try again`,
-        duration: 0,
+        duration: 5000,
         showAnimationDuration: 800,
         showEasing: Easing.bounce,
         onHidden: () => console.log('Hidden'),
@@ -192,13 +209,13 @@ export const makeOrder = ({
 
 
 // cancel an order  and clkear from asyncstorage
-export const cancelOrder = () => (dispatch) => {
+export const cancelOrder = (tokens,orderID) => (dispatch) => {
   
   const config = {
     headers: {
       "Content-Type": "application/json",
   
-      "x-auth-token" : token
+      "x-auth-token" : tokens
     },
   };
 

@@ -59,11 +59,11 @@ export default class Driver extends Component{
 
 
 >
-            <Image source = {require("../assets/car.png")}
+            <Image source = {require("../assets/bike.png")}
 
             style ={{
-                width : 32,
-                 height : 32
+                width : 40,
+                 height : 40
             }}
 
             />
