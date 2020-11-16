@@ -18,25 +18,15 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { Icon } from "native-base";
+import { Divider } from "react-native-paper";
 
 export default class DriverDetailsPopUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
       modalVisible: false,
-      userSelected: [],
-      data: [
-        {
-          id: 1,
-          name: "John Doe",
-          image: "https://www.driverg.com/work/images/driverimage.jpg",
-          count: 1211,
-        },
-        // {id:2,  name: "Housing",    image:"https://img.icons8.com/color/100/000000/real-estate.png",       count:234.722},
-        // {id:3,  name: "Jobs",       image:"https://img.icons8.com/color/100/000000/find-matching-job.png", count:324.723} ,
-        // {id:4,  name: "Personal",   image:"https://img.icons8.com/clouds/100/000000/employee-card.png",    count:154.573} ,
-        // {id:5,  name: "For sale",   image:"https://img.icons8.com/color/100/000000/land-sales.png",        count:124.678} ,
-      ],
+    
+   
     };
   }
 
@@ -62,6 +52,8 @@ export default class DriverDetailsPopUp extends Component {
     console.log("props recieved to driver details popup ", this.props)
     return (
       <View style={styles.container}>
+
+
         {/* <FlatList
           style={styles.contentList}
           columnWrapperStyle={styles.listContainer}
@@ -70,6 +62,23 @@ export default class DriverDetailsPopUp extends Component {
             return item.id;
           }}
           renderItem={({ item }) => { */}
+
+          
+{/*                 
+<Divider
+        style={{
+          // marginTop: 10,
+          color : "black"
+        }}
+      /> */}
+             <View style ={{
+               marginTop : hp("2%")
+             }}>
+
+             <Text>Your Ride is on its way</Text>
+
+             </View>
+
             {/* return ( */}
               <TouchableOpacity
                 style={styles.card}
@@ -78,11 +87,13 @@ export default class DriverDetailsPopUp extends Component {
                   null
                 }}
               >
-                <Image style={styles.image} source={{ uri: driver.profile_picture }} />
+
+         
+   <Image style={styles.image} source={{ uri: (driver ? driver.profile_picture : "https://www.kindpng.com/picc/m/78-785975_icon-profile-bio-avatar-person-symbol-chat-icon.png") }} />
 
                 <View style={styles.cardContent}>
-              <Text style={styles.name}>{driver.firstname.charAt(0).toUpperCase() + driver.firstname.slice(1)} {driver.lastname.charAt(0).toUpperCase() + driver.lastname.slice(1)} </Text>
-                  <Text style={styles.count}>{driver.orders.length} Rides</Text>
+              <Text style={styles.name}> { driver ? driver.firstname.charAt(0).toUpperCase() + driver.firstname.slice(1) : "John"} {driver ? driver.lastname.charAt(0).toUpperCase() + driver.lastname.slice(1) : "Doe"} </Text>
+                  <Text style={styles.count}>{driver? driver.rides : 0} Rides</Text>
 
                   <View style={{ flex: 4, flexDirection: "row" , marginLeft : wp("10%")}}>
                     
@@ -101,6 +112,9 @@ export default class DriverDetailsPopUp extends Component {
                     </View>
                    
                   </View>
+
+
+                  <View></View>
 
                   <TouchableOpacity
                     style={styles.followButton}
@@ -175,7 +189,7 @@ const styles = StyleSheet.create({
 
     marginLeft: 20,
     marginRight: 20,
-    marginTop: 20,
+    marginTop: 0,
     backgroundColor: "white",
     padding: 10,
     flexDirection: "row",

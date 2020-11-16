@@ -14,7 +14,7 @@ import Pusher from "pusher-js/react-native";
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://3fddec3dff12.ngrok.io";
+axios.defaults.baseURL = "http://38195a0fbce6.ngrok.io";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -166,7 +166,7 @@ console.log("making order!!!!!!!!!!!!!!!!!!!!!")
 
 
 
-        console.log("response received for make order ", userID,pickup,dropoff, available_drivers_channel)
+        // console.log("response received for make order ", userID,pickup,dropoff, available_drivers_channel)
   // trigger()
 
   available_drivers_channel.trigger("client-driver-request", {

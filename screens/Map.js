@@ -10,6 +10,7 @@ import {
   Alert,
   Vibration,
   YellowBox,
+  Image,
   Platform,
 } from "react-native";
 import store from "../store";
@@ -38,7 +39,7 @@ import { LogBox } from "react-native";
 
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
-import { Button, Content, Header, Icon, Image } from "native-base";
+import { Button, Content, Header, Icon } from "native-base";
 import MaterialButtonPink from "./material/MaterialButtonPink";
 import MaterialButtonPink1 from "./material/MaterialButtonPink1";
 import * as Animatable from "react-native-animatable";
@@ -132,13 +133,19 @@ class Map extends Component {
 
   state = {
     my_location: null,
+    coordinate : new AnimatedRegion ({
+      latitude  : 9.0765,
+      longitude : 7.3986,
+        latitudeDelta : 0.3,
+        longitudeDelta :0.3
+    })
   };
 
   componentDidMount() {
 
 
 
-    this.pusher_actions()
+    // this.pusher_actions()
     // console.log("users details!!!!!!!!!!!1", this.props.auth)
     // console.log("initial region ", this.props.order.region);\
 
@@ -153,15 +160,14 @@ class Map extends Component {
 
     // console.log("Mounted with props, ", this.props.navigation)
   }
-
   pusher_actions = async () => {
     const {token, user} = this.props.auth
     // let pusher
  
     if (!this.pusher && user) {
       console.log("creating a new pusher connection")
-      this.pusher =  new Pusher("408c824d8bed77ca6684", {
-      authEndpoint: "http://3fddec3dff12.ngrok.io/api/pusher/auth",
+      this.pusher =  new Pusher("41e0bb8609122b8b5c71", {
+      authEndpoint: "http://38195a0fbce6.ngrok.io/api/pusher/auth",
       cluster: "eu",
       auth: {
         headers: { "x-auth-token": `${token}` },
@@ -237,7 +243,8 @@ class Map extends Component {
           // })
 
            user_ride_channel.bind("client-driver-response", (data) => {
-             console.log("clients driver response!!!!!", this.props.ore)
+             console.log("clients driver response!!!!!",)
+             console.log("driver has ride  ??? ",this.props.order.has_ride)
             let passenger_response = "no";
             if (!this.props.order.has_ride) {
               passenger_response = "yes";
@@ -261,6 +268,14 @@ class Map extends Component {
               data.location.accuracy
             );
 
+            this.setState({
+              coordinate : {
+                ...this.state.coordinate,
+                longitude :driverLocation.longitude,
+                latitude : driverLocation.latitude
+              }
+            })
+
             const found_driver = {
               has_ride: true,
               is_searching: false,
@@ -271,7 +286,7 @@ class Map extends Component {
                 accuracy: data.location.accuracy,
               },
               
-              driver_details : data.driver.driver_details
+              driver_details : data.driver
             };
 
             store.dispatch({
@@ -329,12 +344,14 @@ class Map extends Component {
                 },
               };
 
+            
+
               store.dispatch({
                 type: "DRIVER_LOCATION",
                 payload: data,
               });
 
-              console.log("old region ", this.props.order.region)
+              // console.log("old region ", this.props.order.region)
 
               // this.props.order.region.timing(newCoordinate).start();
 
@@ -344,17 +361,20 @@ class Map extends Component {
 
               // if (Platform.OS === "android") {
               //   if (this.driver_marker && newCoordinate) {
-              //     console.log( this.driver_marker );
+              //     // console.log( this.driver_marker );
               //     console.log("ANIMATING TO NEW POSITION ", newCoordinate);
 
               //     // this.driver_marker &&
-              //       this.driver_marker.animateMarkerToCoordinate(newCoordinate, 500); // 500 is the duration to animate the marker
+              //       // this.driver_marker.animateMarkerToCoordinate(newCoordinate, 500); // 500 is the duration to animate the marker
+              //       this.state.coordinate.timing(newCoordinate).start();
               //   }
               // } else {
-              //   coordinate.timing(newCoordinate).start();
+              //   this.state.coordinate.timing(newCoordinate).start();
               // }
-              // this.driverLocation()   
+              // // this.driverLocation()   
             
+
+              this.animate(latitude,longitude)
             
             }
           });
@@ -381,7 +401,7 @@ class Map extends Component {
               data.msg,
               [
                 {
-                  text: "Aye sir!",
+                  text: "Okay!",
                 },
               ],
               { cancelable: false }
@@ -392,22 +412,24 @@ class Map extends Component {
  
   };
 
-  driverLocation =()=>{
-    return      <Driver
-    driver={{
-      uid: null,
-      location: {
-        latitude: this.props.order.driver.latitude,
-        longitude: this.props.order.driver.longitude,
-        // latitudeDelta :0.3,
-        // longitudeDelta : 0.3,
-      },
-    }}
-    innerRef={(driver_marker) => {
-      this.driver_marker = driver_marker;
-    }}
-  />
+
+
+  animate=(latitude, longitude)=> {
+    const { coordinate } = this.state;
+    const newCoordinate = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+
+    if (Platform.OS === 'android') {
+      if (this.driver_marker) {
+        (this.state.coordinate).timing(newCoordinate).start();
+      }
+    } else {
+      (this.state.coordinate).timing(newCoordinate).start();
+    }
   }
+
 
   centerMap = () => {
     const {
@@ -797,9 +819,9 @@ const tokens = this.props.auth.token
 
         {/* if the user has a driver, show the driver details */}
 
-        {this.props.order.has_ride ?
+        {/* {this.props.order.has_ride ? */}
          <DriverDetailsPopUp driver = {this.props.order.driver_details}  /> 
-        : null} 
+        {/* : null}  */}
 
         <View
           style={{
@@ -940,7 +962,10 @@ user.firstName.slice(1) :
               ></Marker.Animated>
             )}
 
-            {this.props.order.destinationRequested ? (
+
+            {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
+
+            {this.props.order.destinationRequested && !this.props.order.driver ? (
               <>
                 <MapViewDirections
                   origin={this.props.order.region}
@@ -986,20 +1011,43 @@ user.firstName.slice(1) :
             ) : null}
 
             {this.props.order.driver && (
-              <Driver
-                driver={{
-                  uid: null,
-                  location: {
-                    latitude: this.props.order.driver.latitude,
-                    longitude: this.props.order.driver.longitude,
-                    // latitudeDelta :0.3,
-                    // longitudeDelta : 0.3,
-                  },
-                }}
-                innerRef={(driver_marker) => {
-                  this.driver_marker = driver_marker;
-                }}
+              // <Driver
+              //   driver={{
+              //     uid: null,
+              //     location: {
+              //       latitude: this.props.order.driver.latitude,
+              //       longitude: this.props.order.driver.longitude,
+              //       // latitudeDelta :0.3,
+              //       // longitudeDelta : 0.3,
+              //     },
+              //   }}
+              //   innerRef={(driver_marker) => {
+              //     this.driver_marker = driver_marker;
+              //   }}
+              // />
+
+              <Marker.Animated 
+            
+              coordinate = {this.state.coordinate} 
+              anchor = {{x : 0.35, y:0.32}}
+              ref={(marker) => {
+                this.driver_marker = marker;
+              }}
+              style = {{width : 50, height   :50 }}
+          
+  
+  
+  >
+              <Image source = {require("../assets/bike.png")}
+  
+              style ={{
+                  width : 40,
+                   height : 40
+              }}
+  
               />
+  
+              </Marker.Animated>
               // this.driverLocation()
             )}
           </MapView>
