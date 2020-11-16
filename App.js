@@ -56,6 +56,7 @@ class App extends React.Component {
       "charm-bold": require("./assets/fonts/Charm-Bold.ttf"),
       //   // 'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       "charm-regular": require("./assets/fonts/Charm-Regular.ttf"),
+      "Righteous-Regular": require("./assets/fonts/Righteous-Regular.ttf"),
 
       "roboto-700": require("./assets/fonts/roboto-700.ttf"),
       "roboto-900": require("./assets/fonts/roboto-900.ttf"),

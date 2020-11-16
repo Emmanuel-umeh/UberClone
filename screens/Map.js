@@ -167,7 +167,7 @@ class Map extends Component {
     if (!this.pusher && user) {
       console.log("creating a new pusher connection")
       this.pusher =  new Pusher("41e0bb8609122b8b5c71", {
-      authEndpoint: "http://38195a0fbce6.ngrok.io/api/pusher/auth",
+      authEndpoint: "http://3b2bc8be111b.ngrok.io/api/pusher/auth",
       cluster: "eu",
       auth: {
         headers: { "x-auth-token": `${token}` },

@@ -12,13 +12,16 @@ import {
   ScrollView,
 } from "react-native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
+import BottomSheet from "reanimated-bottom-sheet";
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Icon } from "native-base";
+import { Body, Button, Icon, Left, Right } from "native-base";
 import { Divider } from "react-native-paper";
+
+
 
 export default class DriverDetailsPopUp extends Component {
   constructor(props) {
@@ -26,8 +29,9 @@ export default class DriverDetailsPopUp extends Component {
     this.state = {
       modalVisible: false,
     
-   
+  
     };
+    this.sheetRef = React.createRef();
   }
 
 
@@ -45,110 +49,202 @@ export default class DriverDetailsPopUp extends Component {
     Linking.openURL(phoneNumber);
   };
 
+
+
+   renderContent = (driver) => (
+    <View
+      style={{
+        backgroundColor: 'white',
+        padding: 16,
+        height: hp("80%"),
+      }}
+    >
+
+      <View style = {{
+        width : wp("10%"),
+        backgroundColor : "#515357",
+        padding: 3,
+        // left  : wp("40%"),
+        alignSelf : "center",
+        // height : 2,
+        borderRadius : 50
+      }}>
+
+      </View>
+      <Text style = {styles.on_the_way}>Your Ride Is On Its Way</Text>
+
+      <Divider />
+
+<View style ={{flex : 1, flexDirection : "row", justifyContent : "flex-start"}}>
+
+
+<View>
+<Image style={styles.image} source={{ uri: (driver ? driver.profile_picture : "https://www.kindpng.com/picc/m/78-785975_icon-profile-bio-avatar-person-symbol-chat-icon.png") }} />
+
+
+<View style ={{flex :1, flexDirection : "row",top : 5, justifyContent : "center"}}>
+<EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+                 <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+                  <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+</View>
+
+</View>
+
+<View>
+<Text style = {styles.plate_number}>635-2GS-RB36</Text>
+<Text style = {styles.car_color}>Red Car</Text>
+<Text style = {styles.rider_name}>Your Rider Is Emmanuel</Text>
+<Text style = {styles.meters_away}>100 Meters Away</Text>
+</View>
+
+
+</View>
+
+
+<Divider/>
+
+<View style = {{flex : 1, flexDirection : "row"}}>
+  <Left>
+  <EntypoIcon name="location-pin" style={styles.icon1}></EntypoIcon>
+  </Left>
+  <Body><View>
+  <Text style = {styles.location}>Same Global Housing Estate</Text>
+    </View></Body>
+  <Right>
+  <EntypoIcon name="arrow-right" style={styles.icon1}></EntypoIcon>
+  </Right>
+
+</View>
+
+    </View>
+  );
+
   render() {
+
+   
+
 
     const {driver} = this.props
 
     console.log("props recieved to driver details popup ", this.props)
     return (
-      <View style={styles.container}>
+//       <View style={styles.container}>
 
 
-        {/* <FlatList
-          style={styles.contentList}
-          columnWrapperStyle={styles.listContainer}
-          data={this.state.data}
-          keyExtractor={(item) => {
-            return item.id;
-          }}
-          renderItem={({ item }) => { */}
+//         {/* <FlatList
+//           style={styles.contentList}
+//           columnWrapperStyle={styles.listContainer}
+//           data={this.state.data}
+//           keyExtractor={(item) => {
+//             return item.id;
+//           }}
+//           renderItem={({ item }) => { */}
 
           
-{/*                 
-<Divider
-        style={{
-          // marginTop: 10,
-          color : "black"
-        }}
-      /> */}
-             <View style ={{
-               marginTop : hp("2%")
-             }}>
+// {/*                 
+// <Divider
+//         style={{
+//           // marginTop: 10,
+//           color : "black"
+//         }}
+//       /> */}
+//              <View style ={{
+//                marginTop : hp("2%")
+//              }}>
 
-             <Text>Your Ride is on its way</Text>
+//              <Text>Your Ride is on its way</Text>
 
-             </View>
+//              </View>
 
-            {/* return ( */}
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() => {
-                  // this.clickEventListener(item);
-                  null
-                }}
-              >
+//             {/* return ( */}
+//               <TouchableOpacity
+//                 style={styles.card}
+//                 onPress={() => {
+//                   // this.clickEventListener(item);
+//                   null
+//                 }}
+//               >
 
          
-   <Image style={styles.image} source={{ uri: (driver ? driver.profile_picture : "https://www.kindpng.com/picc/m/78-785975_icon-profile-bio-avatar-person-symbol-chat-icon.png") }} />
+//    <Image style={styles.image} source={{ uri: (driver ? driver.profile_picture : "https://www.kindpng.com/picc/m/78-785975_icon-profile-bio-avatar-person-symbol-chat-icon.png") }} />
 
-                <View style={styles.cardContent}>
-              <Text style={styles.name}> { driver ? driver.firstname.charAt(0).toUpperCase() + driver.firstname.slice(1) : "John"} {driver ? driver.lastname.charAt(0).toUpperCase() + driver.lastname.slice(1) : "Doe"} </Text>
-                  <Text style={styles.count}>{driver? driver.rides : 0} Rides</Text>
+//                 <View style={styles.cardContent}>
+//               <Text style={styles.name}> { driver ? driver.firstname.charAt(0).toUpperCase() + driver.firstname.slice(1) : "John"} {driver ? driver.lastname.charAt(0).toUpperCase() + driver.lastname.slice(1) : "Doe"} </Text>
+//                   <Text style={styles.count}>{driver? driver.rides : 0} Rides</Text>
 
-                  <View style={{ flex: 4, flexDirection: "row" , marginLeft : wp("10%")}}>
+//                   <View style={{ flex: 4, flexDirection: "row" , marginLeft : wp("10%")}}>
                     
-                    {/* To do !!! */}
-                    {/* {driver.rating} */}
-                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-                    {/* <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-                    <EntypoIcon name="star" style={styles.icon3}></EntypoIcon> */}
+//                     {/* To do !!! */}
+//                     {/* {driver.rating} */}
+//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+//                     {/* <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon> */}
 
-                    <View style={{position : "absolute", marginLeft : wp("30%")}}>
-                    {/* <Text>Time till Arrival</Text> */}
-              {/* <Text style ={{ fontSize : 30, fontWeight : "bold", marginTop : -10}}>2:00</Text> */}
+//                     <View style={{position : "absolute", marginLeft : wp("30%")}}>
+//                     {/* <Text>Time till Arrival</Text> */}
+//               {/* <Text style ={{ fontSize : 30, fontWeight : "bold", marginTop : -10}}>2:00</Text> */}
 
-                    </View>
+//                     </View>
                    
-                  </View>
+//                   </View>
 
 
-                  <View></View>
+//                   <View></View>
 
-                  <TouchableOpacity
-                    style={styles.followButton}
-                    onPress={this.makeCall} 
-                  >
-                    <Icon name = "ios-call"></Icon>
-                    <Text style={styles.followButtonText}>  Call Driver</Text>
-                  </TouchableOpacity>
+//                   <TouchableOpacity
+//                     style={styles.followButton}
+//                     onPress={this.makeCall} 
+//                   >
+//                     <Icon name = "ios-call"></Icon>
+//                     <Text style={styles.followButtonText}>  Call Driver</Text>
+//                   </TouchableOpacity>
 
-                  {/* <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={() => this.clickEventListener(item)}
-                  >
-                    <Text style={styles.cancelButtonText}>Cancel Order</Text>
-                  </TouchableOpacity> */}
-                  <View>
+//                   {/* <TouchableOpacity
+//                     style={styles.cancelButton}
+//                     onPress={() => this.clickEventListener(item)}
+//                   >
+//                     <Text style={styles.cancelButtonText}>Cancel Order</Text>
+//                   </TouchableOpacity> */}
+//                   <View>
 
                
             
-            </View>
-                </View>
-                {/* <View style={styles.icon3Row}>
-              <Text> Rating</Text>
-              <Text style={styles.loremIpsum1}> 4.5</Text>
-              <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-            </View> */}
+//             </View>
+//                 </View>
+//                 {/* <View style={styles.icon3Row}>
+//               <Text> Rating</Text>
+//               <Text style={styles.loremIpsum1}> 4.5</Text>
+//               <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
+//             </View> */}
 
            
-              </TouchableOpacity>
-            {/* ); */}
-          {/* }} */}
-        {/* /> */}
-      </View>
-    );
+//               </TouchableOpacity>
+//             {/* ); */}
+//           {/* }} */}
+//         {/* /> */}
+//       </View>
+   
+<>
+{/* <View
+  style={styles.container}
+>
+  <Button
+    title="Open Bottom Sheet"
+    onPress={() => sheetRef.current.snapTo(1)}
+  />
+</View> */}
+<BottomSheet
+  ref={this.sheetRef}
+  snapPoints={[hp("50%"), hp("30%")]}
+  borderRadius={50}
+  renderContent={()=>this.renderContent(this.props.driver)}
+/>
+</>
+
+
+   );
   }
 }
 
@@ -161,6 +257,67 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     position: "absolute",
   },
+
+
+
+  on_the_way: {
+  padding : 20,
+  fontFamily : "Righteous-Regular",
+  fontSize : 20,
+  alignSelf : "center"
+  },
+
+  plate_number: {
+  paddingLeft : wp("10%"),
+  // alignSelf : "flex-end",
+  top : 15,
+  fontFamily : "Righteous-Regular",
+  fontSize : 20,
+  alignSelf : "center"
+  },
+
+
+
+  car_color : {
+    paddingLeft : wp("26%"),
+    top : 10
+  },
+  rider_name : {
+    paddingLeft : wp("11%"),
+    top : 10,
+    fontSize : 15,
+    fontFamily : "Righteous-Regular",
+  },
+  meters_away : {
+    paddingLeft : wp("20%"),
+    top : 10,
+    // fontSize : 13,
+    // fontFamily : "Righteous-Regular",
+  },
+
+  icon1 : {
+    fontSize : 30,
+    color : "#ed922b"
+    // fontSize : 13,
+    // fontFamily : "Righteous-Regular",
+  },
+  icon2 : {
+    fontSize : 30,
+    color : "#ed922b"
+    // fontSize : 13,
+    // fontFamily : "Righteous-Regular",
+  },
+  location : {
+    // fontSize : 20,
+    // color : "#ed922b",
+    fontSize : 17,
+    fontFamily : "Righteous-Regular",
+  },
+
+
+
+
+  
   contentList: {
     flex: 1,
   },

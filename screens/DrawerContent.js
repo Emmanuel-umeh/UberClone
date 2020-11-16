@@ -93,7 +93,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 labelStyle ={{
                                     color : "black",
                                     fontWeight : "300",
-                                    fontSize : 20
+                          fontSize : 17
+                                    ,
+  fontFamily : "Righteous-Regular"
                                 }}
                                 label="Home"
                                 onPress={() => {this.props.navigation.navigate('Map')}}
@@ -110,7 +112,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 labelStyle ={{
                                     color : "black",
                                     fontWeight : "300",
-                                    fontSize : 20
+                          fontSize : 17
+                                    ,
+  fontFamily : "Righteous-Regular"
                                 }}
                                 label="Profile"
                                 onPress={() => {this.props.navigation.navigate('profileScreen')}}
@@ -129,7 +133,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 labelStyle ={{
                                     color : "black",
                                     fontWeight : "300",
-                                    fontSize : 20
+                          fontSize : 17,
+                                    fontFamily : "Righteous-Regular"
                                 }}
                                 label="Ride History"
                                 onPress={() => {this.props.navigation.navigate('ride_history')}}
@@ -149,7 +154,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 labelStyle ={{
                                     color : "black",
                                     fontWeight : "300",
-                                    fontSize : 20
+                          fontSize : 17,
+                                    fontFamily : "Righteous-Regular"
                                 }}
                                 label="Payment Method"
                                 onPress={() => {this.props.navigation.navigate('add_card')}}
@@ -179,7 +185,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 labelStyle ={{
                                     color : "black",
                                     fontWeight : "300",
-                                    fontSize : 20
+                          fontSize : 17,
+                                    
+  fontFamily : "Righteous-Regular"
                                 }}
                                 label="Settings"
                                 onPress={() => {this.props.navigation.navigate('settings')}}
@@ -195,7 +203,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 labelStyle ={{
                                     color : "black",
                                     fontWeight : "300",
-                                    fontSize : 20
+                          fontSize : 17
+                                    ,
+  fontFamily : "Righteous-Regular"
                                 }}
                                 label="Support"
                                 onPress={() => {this.props.navigation.navigate('SupportScreen')}}
@@ -217,7 +227,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                         labelStyle ={{
                             color : "black",
                             fontWeight : "300",
-                            fontSize : 20
+                  fontSize : 17
+                            ,
+  fontFamily : "Righteous-Regular"
                         }}
                         label="Sign Out"
                         
@@ -274,6 +286,8 @@ const styles = StyleSheet.create({
     caption: {
       fontSize: 14,
       lineHeight: 14,
+    
+  fontFamily : "Righteous-Regular"
     },
     row: {
       marginTop: 20,
