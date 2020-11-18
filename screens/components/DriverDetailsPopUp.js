@@ -21,9 +21,10 @@ import {
 import { Body, Button, Icon, Left, Right } from "native-base";
 import { Divider } from "react-native-paper";
 
+import { connect } from 'react-redux'
 
 
-export default class DriverDetailsPopUp extends Component {
+ class DriverDetailsPopUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,7 +38,7 @@ export default class DriverDetailsPopUp extends Component {
 
   makeCall = () => {
 
-    const {driver} = this.props
+    const {driver, distance} = this.props
     let phoneNumber = '';
 
     if (Platform.OS === 'android') {
@@ -51,12 +52,12 @@ export default class DriverDetailsPopUp extends Component {
 
 
 
-   renderContent = (driver) => (
+   renderContent = (driver, distance, order) => (
     <View
       style={{
         backgroundColor: 'white',
         padding: 16,
-        height: hp("80%"),
+        height: hp("50%"),
       }}
     >
 
@@ -71,7 +72,14 @@ export default class DriverDetailsPopUp extends Component {
       }}>
 
       </View>
-      <Text style = {styles.on_the_way}>Your Ride Is On Its Way</Text>
+      <Text style = {styles.on_the_way}>{
+        
+
+order.state === "Started" ?
+"The Ride Has Begun" :
+order.state === "Accepted" || "Pending" ? "Your Ride Is On Its Way" : 
+ order.state === "Ended" ? "This Ride Has Ended" : order.state === "Completed" ? "Ride Has Been Completed" : null}</Text>
+
 
       <Divider />
 
@@ -90,16 +98,24 @@ export default class DriverDetailsPopUp extends Component {
 
 </View>
 
-<View>
-<Text style = {styles.plate_number}>635-2GS-RB36</Text>
-<Text style = {styles.car_color}>Red Car</Text>
-<Text style = {styles.rider_name}>Your Rider Is Emmanuel</Text>
-<Text style = {styles.meters_away}>100 Meters Away</Text>
+<View style ={{flex : 1}}>
+<Text style = {styles.plate_number}> {driver ? driver.lisence_number : "635-2GS-RB36"}</Text>
+    <Text style = {styles.car_color}>{driver ? driver.vehicle_color : "Red"} {driver ? driver.logistic_type : "Car"}</Text>
+<Text style = {styles.rider_name}>Your Rider Is {driver.firstname}</Text>
+
+{order.state === "Accepted" || order.state === "Pending" ? 
+<Text style = {styles.meters_away}>{distance ? Math.ceil(distance) : 100} Meters Away</Text>:null }
 </View>
 
 
 </View>
 
+
+<Divider style ={{ top :hp("4%")}}/>
+
+<View style = {{margin : 20, alignSelf  :"center"}}>
+  <Text style = {styles.rider_name}>Destination</Text>
+</View>
 
 <Divider/>
 
@@ -107,12 +123,12 @@ export default class DriverDetailsPopUp extends Component {
   <Left>
   <EntypoIcon name="location-pin" style={styles.icon1}></EntypoIcon>
   </Left>
-  <Body><View>
-  <Text style = {styles.location}>Same Global Housing Estate</Text>
+  <Body style ={{marginLeft : wp("-70%")}}><View>
+  <Text style = {styles.location} numberOfLines ={1} ellipsizeMode='tail'>Same Global Housing Estate</Text>
     </View></Body>
-  <Right>
+  {/* <Right>
   <EntypoIcon name="arrow-right" style={styles.icon1}></EntypoIcon>
-  </Right>
+  </Right> */}
 
 </View>
 
@@ -124,125 +140,18 @@ export default class DriverDetailsPopUp extends Component {
    
 
 
-    const {driver} = this.props
+    const {driver, distance} = this.props
+    const {order} = this.props.order
 
-    console.log("props recieved to driver details popup ", this.props)
+    console.log("props recieved to driver details popup ", order)
     return (
-//       <View style={styles.container}>
-
-
-//         {/* <FlatList
-//           style={styles.contentList}
-//           columnWrapperStyle={styles.listContainer}
-//           data={this.state.data}
-//           keyExtractor={(item) => {
-//             return item.id;
-//           }}
-//           renderItem={({ item }) => { */}
-
-          
-// {/*                 
-// <Divider
-//         style={{
-//           // marginTop: 10,
-//           color : "black"
-//         }}
-//       /> */}
-//              <View style ={{
-//                marginTop : hp("2%")
-//              }}>
-
-//              <Text>Your Ride is on its way</Text>
-
-//              </View>
-
-//             {/* return ( */}
-//               <TouchableOpacity
-//                 style={styles.card}
-//                 onPress={() => {
-//                   // this.clickEventListener(item);
-//                   null
-//                 }}
-//               >
-
-         
-//    <Image style={styles.image} source={{ uri: (driver ? driver.profile_picture : "https://www.kindpng.com/picc/m/78-785975_icon-profile-bio-avatar-person-symbol-chat-icon.png") }} />
-
-//                 <View style={styles.cardContent}>
-//               <Text style={styles.name}> { driver ? driver.firstname.charAt(0).toUpperCase() + driver.firstname.slice(1) : "John"} {driver ? driver.lastname.charAt(0).toUpperCase() + driver.lastname.slice(1) : "Doe"} </Text>
-//                   <Text style={styles.count}>{driver? driver.rides : 0} Rides</Text>
-
-//                   <View style={{ flex: 4, flexDirection: "row" , marginLeft : wp("10%")}}>
-                    
-//                     {/* To do !!! */}
-//                     {/* {driver.rating} */}
-//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-//                     {/* <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-//                     <EntypoIcon name="star" style={styles.icon3}></EntypoIcon> */}
-
-//                     <View style={{position : "absolute", marginLeft : wp("30%")}}>
-//                     {/* <Text>Time till Arrival</Text> */}
-//               {/* <Text style ={{ fontSize : 30, fontWeight : "bold", marginTop : -10}}>2:00</Text> */}
-
-//                     </View>
-                   
-//                   </View>
-
-
-//                   <View></View>
-
-//                   <TouchableOpacity
-//                     style={styles.followButton}
-//                     onPress={this.makeCall} 
-//                   >
-//                     <Icon name = "ios-call"></Icon>
-//                     <Text style={styles.followButtonText}>  Call Driver</Text>
-//                   </TouchableOpacity>
-
-//                   {/* <TouchableOpacity
-//                     style={styles.cancelButton}
-//                     onPress={() => this.clickEventListener(item)}
-//                   >
-//                     <Text style={styles.cancelButtonText}>Cancel Order</Text>
-//                   </TouchableOpacity> */}
-//                   <View>
-
-               
-            
-//             </View>
-//                 </View>
-//                 {/* <View style={styles.icon3Row}>
-//               <Text> Rating</Text>
-//               <Text style={styles.loremIpsum1}> 4.5</Text>
-//               <EntypoIcon name="star" style={styles.icon3}></EntypoIcon>
-//             </View> */}
-
-           
-//               </TouchableOpacity>
-//             {/* ); */}
-//           {/* }} */}
-//         {/* /> */}
-//       </View>
-   
-<>
-{/* <View
-  style={styles.container}
->
-  <Button
-    title="Open Bottom Sheet"
-    onPress={() => sheetRef.current.snapTo(1)}
-  />
-</View> */}
 <BottomSheet
   ref={this.sheetRef}
   snapPoints={[hp("50%"), hp("30%")]}
   borderRadius={50}
-  renderContent={()=>this.renderContent(this.props.driver)}
-/>
-</>
 
+  renderContent={()=>this.renderContent(driver, distance, order)}
+/>
 
    );
   }
@@ -279,18 +188,21 @@ const styles = StyleSheet.create({
 
 
   car_color : {
-    paddingLeft : wp("26%"),
+    // paddingLeft : wp("26%"),
+    alignSelf : "center",
     top : 10
   },
   rider_name : {
-    paddingLeft : wp("11%"),
+    // paddingLeft : wp("11%"),
     top : 10,
     fontSize : 15,
+    alignSelf : "center",
     fontFamily : "Righteous-Regular",
   },
   meters_away : {
-    paddingLeft : wp("20%"),
+    // paddingLeft : wp("20%"),
     top : 10,
+    alignSelf : "center"
     // fontSize : 13,
     // fontFamily : "Righteous-Regular",
   },
@@ -424,3 +336,14 @@ const styles = StyleSheet.create({
     marginLeft: 7,
   },
 });
+
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+  order: state.order,
+  pusher: state.pusher,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, { })(DriverDetailsPopUp);

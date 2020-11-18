@@ -87,7 +87,7 @@ class Map extends Component {
     this.bookRide = this.bookRide.bind(this);
     // this.user_ride_channel = null;
 
-    this.pusher= null
+    this.pusher = null;
 
     const { token } = this.props.auth;
 
@@ -133,303 +133,333 @@ class Map extends Component {
 
   state = {
     my_location: null,
-    coordinate : new AnimatedRegion ({
-      latitude  : 9.0765,
-      longitude : 7.3986,
-        latitudeDelta : 0.3,
-        longitudeDelta :0.3
-    })
+    coordinate: new AnimatedRegion({
+      latitude: 9.0765,
+      longitude: 7.3986,
+      latitudeDelta: 0.3,
+      longitudeDelta: 0.3,
+    }),
+    distance: null,
   };
 
   componentDidMount() {
-
-
-
-    // this.pusher_actions()
+    this.pusher_actions();
     // console.log("users details!!!!!!!!!!!1", this.props.auth)
     // console.log("initial region ", this.props.order.region);\
-
-
     // if(this.map){
     //   this.centerMap();
     // }
-
     // this._getLocationAsync();
-
     // this.pusher_actions()
-
     // console.log("Mounted with props, ", this.props.navigation)
   }
   pusher_actions = async () => {
-    const {token, user} = this.props.auth
+    const { token, user } = this.props.auth;
     // let pusher
- 
+
     if (!this.pusher && user) {
-      console.log("creating a new pusher connection")
-      this.pusher =  new Pusher("41e0bb8609122b8b5c71", {
-      authEndpoint: "http://3b2bc8be111b.ngrok.io/api/pusher/auth",
-      cluster: "eu",
-      auth: {
-        headers: { "x-auth-token": `${token}` },
-      },
-      encrypted: true,
-    });
+      console.log("creating a new pusher connection");
+      this.pusher = new Pusher("41e0bb8609122b8b5c71", {
+        authEndpoint: "http://7f1646aba8df.ngrok.io/api/pusher/auth",
+        cluster: "eu",
+        auth: {
+          headers: { "x-auth-token": `${token}` },
+        },
+        encrypted: true,
+      });
 
-     store.dispatch({
-      type: "PUSHER_AUTH",
-      payload : this.pusher
-    })
-
-  }
+      store.dispatch({
+        type: "PUSHER_AUTH",
+        payload: this.pusher,
+      });
+    }
     // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
     Pusher.logToConsole = true;
-   
-//  if(!this.props.pusher.available_drivers_channel){
 
-  this.available_drivers_channel =   this.pusher.subscribe(
-    `private-available-drivers-${this.props.route.params.logistics}`
-  );
+    //  if(!this.props.pusher.available_drivers_channel){
 
+    this.available_drivers_channel = this.pusher.subscribe(
+      `private-available-drivers-${this.props.route.params.logistics}`
+    );
 
-  this.available_drivers_channel.bind("pusher:subscription_succeeded",  () => {
+    this.available_drivers_channel.bind("pusher:subscription_succeeded", () => {
+      store.dispatch({
+        type: "AVAILABLE_DRIVERS",
+        payload: this.available_drivers_channel,
+      });
 
-  store.dispatch({
-    type : "AVAILABLE_DRIVERS",
-    payload : this.available_drivers_channel
-  })
+      // console.log("binding to available drivers channgel!!!!!!!!!!!!!!!!!!!!!! ", this.props.pusher)
+      // available_drivers_channel.bind(
+      //   "pusher:subscription_failed",
+      //   (data) => {
+      //     console.log("failed to subscribe ");
+      //   }
+      // );
 
-  
+      // available_drivers_channel.bind(
+      //   "pusher:subscription_succeeded",
+      //    (data) => {
+      //     console.log("Subscribed succesfully , ", available_drivers_channel);
+      //      store.dispatch({
+      //       type : "AVAILABLE_DRIVERS",
+      //       payload : available_drivers_channel
+      //     })
+      //   }
+      // );
 
+      //  }
 
-  
-  
-  // console.log("binding to available drivers channgel!!!!!!!!!!!!!!!!!!!!!! ", this.props.pusher)
-  // available_drivers_channel.bind(
-  //   "pusher:subscription_failed",
-  //   (data) => {
-  //     console.log("failed to subscribe ");
-  //   }
-  // );
-
-  // available_drivers_channel.bind(
-  //   "pusher:subscription_succeeded",
-  //    (data) => {
-  //     console.log("Subscribed succesfully , ", available_drivers_channel);
-  //      store.dispatch({
-  //       type : "AVAILABLE_DRIVERS",
-  //       payload : available_drivers_channel
-  //     })
-  //   }
-  // );
-  
-
-//  }
-  
       // available_drivers_channel.bind("Driver_Accepted", function (data) {
       //   alert("New Driver Alerted")
 
       //     })
       // if (!this.props.pusher.user_ride_channel) {
-        const user_ride_channel =  this.pusher.subscribe(
-          "private-ride-" + this.props.auth.user._id
-        );
-    
-          console.log("subscribed to the user part!!!!!!!!!!!1")
+      const user_ride_channel = this.pusher.subscribe(
+        "private-ride-" + this.props.auth.user._id
+      );
 
-          // update the store
-          //   store.dispatch({
-          //   type : "USER_RIDE_CHANNEL",
-          //   payload  : user_ride_channel
-          // })
+      console.log("subscribed to the user part!!!!!!!!!!!1");
 
-           user_ride_channel.bind("client-driver-response", (data) => {
-             console.log("clients driver response!!!!!",)
-             console.log("driver has ride  ??? ",this.props.order.has_ride)
-            let passenger_response = "no";
-            if (!this.props.order.has_ride) {
-              passenger_response = "yes";
-            }
+      // update the store
+      //   store.dispatch({
+      //   type : "USER_RIDE_CHANNEL",
+      //   payload  : user_ride_channel
+      // })
 
-            // passenger responds to driver's response
-             user_ride_channel.trigger("client-driver-response", {
-              response: passenger_response,
-            });
-          });
+      user_ride_channel.bind("client-driver-response", (data) => {
+        console.log("clients driver response!!!!!");
+        console.log("driver has ride  ??? ", this.props.order.has_ride);
+        let passenger_response = "no";
+        if (!this.props.order.has_ride) {
+          passenger_response = "yes";
+        }
 
-           user_ride_channel.bind("client-found-driver", (data) => {
-            // found driver, the passenger has no say about this.
-            // once a driver is found, this will be the driver that's going to drive the user
-            // to their destination
-            // Vibration.vibrate({pattern:500});
-
-            let driverLocation = regionFrom(
-              data.location.latitude,
-              data.location.longitude,
-              data.location.accuracy
-            );
-
-            this.setState({
-              coordinate : {
-                ...this.state.coordinate,
-                longitude :driverLocation.longitude,
-                latitude : driverLocation.latitude
-              }
-            })
-
-            const found_driver = {
-              has_ride: true,
-              is_searching: false,
-              location: driverLocation,
-              driver: {
-                latitude: data.location.latitude,
-                longitude: data.location.longitude,
-                accuracy: data.location.accuracy,
-              },
-              
-              driver_details : data.driver
-            };
-
-            store.dispatch({
-              type: "FOUND_DRIVER",
-              payload: found_driver,
-            });
-
-            // this.setState({
-
-            // });
-
-            Vibration.vibrate();
-
-            console.log(
-              "Driver accepted and animating to driver location ",
-              data
-            );
-
-            this.map.animateToRegion(
-              {
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA,
-                longitude: data.location.longitude,
-                latitude: data.location.latitude,
-              },
-              2000
-            );
-          });
-
-           user_ride_channel.bind("client-driver-location", (data) => {
-            if (data) {
-              const { longitude, latitude, accuracy } = data;
-
-              console.log(
-                "client driver location updated!! ? ",
-                latitude,
-                longitude,
-                accuracy
-              );
-
-              const newCoordinate = {
-                latitude,
-                longitude,
-              };
-
-              // driver location received
-              let driverLocation = regionFrom(latitude, longitude, accuracy);
-              console.log("the drivers new location ", driverLocation);
-
-              var data = {
-                location: driverLocation, //the drivers location
-                driver: {
-                  latitude: latitude,
-                  longitude: longitude,
-                },
-              };
-
-            
-
-              store.dispatch({
-                type: "DRIVER_LOCATION",
-                payload: data,
-              });
-
-              // console.log("old region ", this.props.order.region)
-
-              // this.props.order.region.timing(newCoordinate).start();
-
-              // this.setState({
-
-              // });
-
-              // if (Platform.OS === "android") {
-              //   if (this.driver_marker && newCoordinate) {
-              //     // console.log( this.driver_marker );
-              //     console.log("ANIMATING TO NEW POSITION ", newCoordinate);
-
-              //     // this.driver_marker &&
-              //       // this.driver_marker.animateMarkerToCoordinate(newCoordinate, 500); // 500 is the duration to animate the marker
-              //       this.state.coordinate.timing(newCoordinate).start();
-              //   }
-              // } else {
-              //   this.state.coordinate.timing(newCoordinate).start();
-              // }
-              // // this.driverLocation()   
-            
-
-              this.animate(latitude,longitude)
-            
-            }
-          });
-
-           (user_ride_channel).bind("client-driver-message", (data) => {
-            if (data.type == "near_pickup") {
-              //remove passenger marker
-
-              store.dispatch({
-                type: "HAS_RIDDEN",
-                // payload: data,
-              });
-              // this.setState({
-              //   has_ridden: true,
-              // });
-            }
-
-            if (data.type == "near_dropoff") {
-              this._getLocation();
-            }
-
-            Alert.alert(
-              data.title,
-              data.msg,
-              [
-                {
-                  text: "Okay!",
-                },
-              ],
-              { cancelable: false }
-            );
-          });
+        // passenger responds to driver's response
+        user_ride_channel.trigger("client-driver-response", {
+          response: passenger_response,
         });
-      // }
- 
+      });
+
+      user_ride_channel.bind("client-found-driver", (data) => {
+        // found driver, the passenger has no say about this.
+        // once a driver is found, this will be the driver that's going to drive the user
+        // to their destination
+        // Vibration.vibrate({pattern:500});
+
+        let driverLocation = regionFrom(
+          data.location.latitude,
+          data.location.longitude,
+          data.location.accuracy
+        );
+
+        this.setState({
+          coordinate: {
+            ...this.state.coordinate,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+        });
+
+        const found_driver = {
+          has_ride: true,
+          is_searching: false,
+          location: driverLocation,
+          driver: {
+            latitude: data.location.latitude,
+            longitude: data.location.longitude,
+            accuracy: data.location.accuracy,
+          },
+
+          driver_details: data.driver,
+        };
+
+        store.dispatch({
+          type: "FOUND_DRIVER",
+          payload: found_driver,
+        });
+
+        // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
+
+        var diff_in_meter_pickup = getLatLonDiffInMeters(
+          this.props.order.region.latitude,
+          this.props.order.region.longitude,
+          data.location.latitude,
+          data.location.longitude
+        );
+
+        this.setState({
+          distance: diff_in_meter_pickup,
+        });
+
+        Vibration.vibrate();
+
+        console.log("Driver accepted and animating to driver location ", data);
+
+        this.map.animateToRegion(
+          {
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+            longitude: data.location.longitude,
+            latitude: data.location.latitude,
+          },
+          2000
+        );
+      });
+
+      user_ride_channel.bind("client-driver-location", (data) => {
+        if (data) {
+          const { longitude, latitude, accuracy } = data;
+
+          console.log(
+            "client driver location updated!! ? ",
+            latitude,
+            longitude,
+            accuracy
+          );
+
+          const newCoordinate = {
+            latitude,
+            longitude,
+          };
+
+          // driver location received
+          let driverLocation = regionFrom(latitude, longitude, accuracy);
+          console.log("the drivers new location ", driverLocation);
+
+          var data = {
+            location: driverLocation, //the drivers location
+            driver: {
+              latitude: latitude,
+              longitude: longitude,
+            },
+          };
+
+          store.dispatch({
+            type: "DRIVER_LOCATION",
+            payload: data,
+          });
+
+          var diff_in_meter_pickup = getLatLonDiffInMeters(
+            this.props.order.region.latitude,
+            this.props.order.region.longitude,
+            latitude,
+            longitude
+          );
+
+          this.setState({
+            distance: diff_in_meter_pickup,
+          });
+
+          // console.log("old region ", this.props.order.region)
+
+          // this.props.order.region.timing(newCoordinate).start();
+
+          // this.setState({
+
+          // });
+
+          // if (Platform.OS === "android") {
+          //   if (this.driver_marker && newCoordinate) {
+          //     // console.log( this.driver_marker );
+          //     console.log("ANIMATING TO NEW POSITION ", newCoordinate);
+
+          //     // this.driver_marker &&
+          //       // this.driver_marker.animateMarkerToCoordinate(newCoordinate, 500); // 500 is the duration to animate the marker
+          //       this.state.coordinate.timing(newCoordinate).start();
+          //   }
+          // } else {
+          //   this.state.coordinate.timing(newCoordinate).start();
+          // }
+          // // this.driverLocation()
+
+          this.animate(latitude, longitude);
+          this.setState({
+            coordinate: {
+              ...this.state.coordinate,
+              longitude: longitude,
+              latitude: latitude,
+            },
+          });
+        }
+      });
+
+      user_ride_channel.bind("client-driver-message", (data) => {
+        if (data.type == "near_pickup") {
+          //remove passenger marker
+
+          store.dispatch({
+            type: "HAS_RIDDEN",
+            // payload: data,
+          });
+          // this.setState({
+          //   has_ridden: true,
+          // });
+        }
+
+        // when the driver starts the ride
+        if (data.type == "ride_started") {
+          console.log("ride started by driver triggered ", data.order);
+          store.dispatch({
+            type: "RIDE_UPDATED",
+            payload: data.order,
+          });
+        }
+        if (data.type == "ride_ended") {
+          console.log("ride ended by driver triggered ", data.order);
+          store.dispatch({
+            type: "RIDE_UPDATED",
+            payload: data.order,
+          });
+        }
+        if (data.type == "ride_completed") {
+          console.log("ride completed by driver triggered ", data.order);
+          store.dispatch({
+            type: "RIDE_UPDATED",
+            payload: data.order,
+          });
+          return this.props.navigation.navigate("Driver_Rating")
+        }
+
+        if (data.type == "near_dropoff") {
+          this._getLocation();
+        }
+
+        Alert.alert(
+          data.title,
+          data.msg,
+          [
+            {
+              text: "Okay!",
+            },
+          ],
+          { cancelable: false }
+        );
+      });
+    });
+    // }
   };
 
-
-
-  animate=(latitude, longitude)=> {
+  animate = (latitude, longitude) => {
     const { coordinate } = this.state;
     const newCoordinate = {
       latitude: latitude,
       longitude: longitude,
     };
 
-    if (Platform.OS === 'android') {
-      if (this.driver_marker) {
-        (this.state.coordinate).timing(newCoordinate).start();
+    if (Platform.OS === "android") {
+      if (this.driver_marker && newCoordinate) {
+        console.log({ newCoordinate });
+        console.log("ANIMATING TO NEW POSITION ", newCoordinate);
+        this.driver_marker._component &&
+          this.driver_marker._component.animateMarkerToCoordinate(
+            newCoordinate,
+            500
+          ); // 500 is the duration to animate the marker
       }
     } else {
-      (this.state.coordinate).timing(newCoordinate).start();
+      this.state.coordinate.timing(newCoordinate).start();
     }
-  }
-
+  };
 
   centerMap = () => {
     const {
@@ -494,8 +524,6 @@ class Map extends Component {
 
     // });
 
-
-
     //  this._getLocationAsync
     this.map.animateToRegion(
       {
@@ -522,29 +550,41 @@ class Map extends Component {
     //   // destination: response,
     // });
 
-    let from_address
-    let going_address
+    let from_address;
+    let going_address;
 
-    await Geocoder.from(this.props.order.region.latitude, this.props.order.region.longitude).then(
+    await Geocoder.from(
+      this.props.order.region.latitude,
+      this.props.order.region.longitude
+    ).then(
       (json) => {
         // console.log("coming from ",json.results[0].address_components)
-      return  from_address = json.results[0].address_components[0].long_name + " " +json.results[0].address_components[1].long_name  + " " + json.results[0].address_components[2].long_name;
-        
-      
+        return (from_address =
+          json.results[0].address_components[0].long_name +
+          " " +
+          json.results[0].address_components[1].long_name +
+          " " +
+          json.results[0].address_components[2].long_name);
       },
       (error) => {
-        console.log('err geocoding: ', error);
+        console.log("err geocoding: ", error);
       }
     );
-  await  Geocoder.from(this.props.order.going.latitude, this.props.order.going.longitude).then(
+    await Geocoder.from(
+      this.props.order.going.latitude,
+      this.props.order.going.longitude
+    ).then(
       (json) => {
-          //  console.log("going to ",json.results[0].address_components)
-       return going_address =  json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name + " " + json.results[0].address_components[2].long_name
-        
-      
+        //  console.log("going to ",json.results[0].address_components)
+        return (going_address =
+          json.results[0].address_components[0].long_name +
+          " " +
+          json.results[0].address_components[1].long_name +
+          " " +
+          json.results[0].address_components[2].long_name);
       },
       (error) => {
-        console.log('err geocoding: ', error);
+        console.log("err geocoding: ", error);
       }
     );
 
@@ -552,13 +592,13 @@ class Map extends Component {
     let pickup_data = {
       name: user.firstName,
       latitude: this.props.order.region.latitude,
-      from_address : from_address,
+      from_address: from_address,
       longitude: this.props.order.region.longitude,
     };
 
     let dropoff_data = {
       name: "Area",
-      going_address : going_address,
+      going_address: going_address,
       latitude: this.props.order.going.latitude,
       longitude: this.props.order.going.longitude,
     };
@@ -566,22 +606,17 @@ class Map extends Component {
     let userID = this.props.auth.user._id;
     let available_drivers_channel = this.available_drivers_channel;
 
-
     //  function trigger() {
-      console.log(
-        "Trigger functionality reached",
-  pickup_data,
-        dropoff_data,  );
+    console.log("Trigger functionality reached", pickup_data, dropoff_data);
 
+    // this.props.order.trigger_driver(userID, pickup_data, dropoff_data)
 
-      // this.props.order.trigger_driver(userID, pickup_data, dropoff_data)
-
-      // this.available_drivers_channel.trigger("client-driver-request", {
-      //   userID: userID,
-      //   pickup: pickup_data,
-      //   dropoff: dropoff_data,
-      //   // triggered : "Yes!"
-      // });
+    // this.available_drivers_channel.trigger("client-driver-request", {
+    //   userID: userID,
+    //   pickup: pickup_data,
+    //   dropoff: dropoff_data,
+    //   // triggered : "Yes!"
+    // });
     // };
 
     const data = {
@@ -598,14 +633,12 @@ class Map extends Component {
       userID: userID,
       pickup: pickup_data,
       dropoff: dropoff_data,
-      available_drivers_channel : this.available_drivers_channel
+      available_drivers_channel: this.available_drivers_channel,
     };
 
-const tokens = this.props.auth.token
+    const tokens = this.props.auth.token;
     // console.log("sening redux action for book ride", data);
-    this.props.makeOrder(data,tokens);
-
-
+    this.props.makeOrder(data, tokens);
   };
 
   cancelOrder = () => {
@@ -618,20 +651,15 @@ const tokens = this.props.auth.token
     });
 
     store.dispatch({
-      type : "END_LOADING"
-    })
-    const orderID = this.props.order.order._id
-    const tokens = this.props.auth.token
-    console.log("orderID!!!!!!!!!!!!!!!!!!!!!!" , orderID)
+      type: "END_LOADING",
+    });
+    const orderID = this.props.order.order._id;
+    const tokens = this.props.auth.token;
+    console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
     this.props.cancelOrder(tokens, orderID);
     this.centerMap();
 
-
-
     // this.props.pusher&& this.props.pusher.pusher.disconnect()yyyyyy
-
-
-    
   };
 
   componentWillUnmount() {
@@ -819,9 +847,13 @@ const tokens = this.props.auth.token
 
         {/* if the user has a driver, show the driver details */}
 
-        {/* {this.props.order.has_ride ? */}
-         <DriverDetailsPopUp driver = {this.props.order.driver_details}  /> 
-        {/* : null}  */}
+        {this.props.order.has_ride ? (
+          <DriverDetailsPopUp
+            driver={this.props.order.driver_details}
+            distance={this.state.distance}
+
+          />
+        ) : null}
 
         <View
           style={{
@@ -916,6 +948,7 @@ const tokens = this.props.auth.token
             //   latitudeDelta: LATITUDE_DELTA,
             //   longitudeDelta: LONGITUDE_DELTA,
             // }}
+
             style={{
               flex: 1,
               zIndex: 0,
@@ -952,20 +985,18 @@ const tokens = this.props.auth.token
                     : 7.3986,
                 }}
                 title={`Hello ${
-
-                  user ?
-                  user.firstName.charAt(0).toUpperCase() +
-user.firstName.slice(1) : 
-                  
-                  "Hello There!"
+                  user
+                    ? user.firstName.charAt(0).toUpperCase() +
+                      user.firstName.slice(1)
+                    : "Hello There!"
                 }`}
               ></Marker.Animated>
             )}
 
-
             {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
 
-            {this.props.order.destinationRequested && !this.props.order.driver ? (
+            {this.props.order.destinationRequested &&
+            !this.props.order.driver ? (
               <>
                 <MapViewDirections
                   origin={this.props.order.region}
@@ -1026,28 +1057,45 @@ user.firstName.slice(1) :
               //   }}
               // />
 
-              <Marker.Animated 
-            
-              coordinate = {this.state.coordinate} 
-              anchor = {{x : 0.35, y:0.32}}
-              ref={(marker) => {
-                this.driver_marker = marker;
-              }}
-              style = {{width : 50, height   :50 }}
-          
-  
-  
-  >
-              <Image source = {require("../assets/bike.png")}
-  
-              style ={{
-                  width : 40,
-                   height : 40
-              }}
-  
-              />
-  
-              </Marker.Animated>
+              <>
+                {
+                  (this.props.order.order.state == "Started" && (
+
+                    <>
+                    <MapViewDirections
+                      origin={this.props.order.region}
+                      destination={this.props.order.going}
+                      apikey={google_api}
+                      strokeWidth={3}
+                      strokeColor="black"
+                      showsCompass={false}
+                    ></MapViewDirections>
+   <Marker.Animated
+                  title="Your Destination"
+                  coordinate={this.props.order.going}
+                  pinColor="#ffffff"
+                />
+                    </>
+                  ))
+                }
+
+                <Marker.Animated
+                  coordinate={this.state.coordinate}
+                  anchor={{ x: 0.35, y: 0.32 }}
+                  ref={(marker) => {
+                    this.driver_marker = marker;
+                  }}
+                  style={{ width: 50, height: 50 }}
+                >
+                  <Image
+                    source={require("../assets/bike.png")}
+                    style={{
+                      width: 40,
+                      height: 40,
+                    }}
+                  />
+                </Marker.Animated>
+              </>
               // this.driverLocation()
             )}
           </MapView>
@@ -1068,7 +1116,8 @@ user.firstName.slice(1) :
         />
       </View> */}
 
-        {this.props.order.destinationRequested && !this.props.order.driver &&
+        {this.props.order.destinationRequested &&
+        !this.props.order.driver &&
         !this.props.order.is_searching ? (
           <BottomSheet
             ref={this.sheetRef}
@@ -1102,7 +1151,7 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   error: state.error,
   order: state.order,
-  pusher : state.pusher
+  pusher: state.pusher,
 });
 
 // export default ProjectForm

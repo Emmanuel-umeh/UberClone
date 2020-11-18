@@ -20,7 +20,8 @@ import {
   SET_USER_TOKEN,
   SET_LOADING,
   END_LOADING,
-  PUSHER_AUTH
+  PUSHER_AUTH,
+  RIDE_UPDATED
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -335,6 +336,15 @@ export default function (state = initialState, action) {
        price: price,
     
         type: "PRICE_UPDATED",
+      };
+    }
+    
+    case RIDE_UPDATED:{
+      return {
+        ...state,
+       order: action.payload,
+    
+        type: action.type,
       };
     }
 
