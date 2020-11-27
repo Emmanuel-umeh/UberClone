@@ -19,7 +19,7 @@ function CupertinoButtonWarning6(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFCC00",
+    backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
   },
   logOut: {
     color: "#fff",
+
+
+      fontFamily : "Righteous-Regular",
+
     fontSize: 17
   }
 });

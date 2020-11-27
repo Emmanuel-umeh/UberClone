@@ -9,6 +9,7 @@ import {
   Dimensions,
   Alert,
   Vibration,
+  TouchableOpacity,
   YellowBox,
   Image,
   Platform,
@@ -32,7 +33,7 @@ import google_api from "../keys/google_map";
 import { connect } from "react-redux";
 import Pusher from "pusher-js/react-native";
 import { regionFrom, getLatLonDiffInMeters } from "../helpers/helper";
-
+import { NavigationContainer, StackActions } from "@react-navigation/native";
 import MapViewDirections from "react-native-maps-directions";
 
 import { LogBox } from "react-native";
@@ -44,7 +45,7 @@ import MaterialButtonPink from "./material/MaterialButtonPink";
 import MaterialButtonPink1 from "./material/MaterialButtonPink1";
 import * as Animatable from "react-native-animatable";
 import { BackHandler } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+// import { TouchableOpacity } from "react-native-gesture-handler";
 import DriverDetailsPopUp from "./components/DriverDetailsPopUp";
 import _ from "lodash";
 import {
@@ -61,7 +62,7 @@ import { Divider } from "react-native-paper";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
-const latitudeDelta = 0.3358723958820065; //Very high zoom level
+const latitudeDelta = 0.02858723958820065; //Very high zoom level
 const longitudeDelta = latitudeDelta * ASPECT_RATIO;
 
 const LATITUDE_DELTA = latitudeDelta;
@@ -82,10 +83,10 @@ class Map extends Component {
     this.marker = React.createRef();
     this.driver_marker = React.createRef();
     // this.props.auth.user.phoneNumber = null;
-
+    // this.client_driver_paid = null;
     this.available_drivers_channel = null;
     this.bookRide = this.bookRide.bind(this);
-    // this.user_ride_channel = null;
+    this.user_ride_channel = null;
 
     this.pusher = null;
 
@@ -139,6 +140,13 @@ class Map extends Component {
       latitudeDelta: 0.3,
       longitudeDelta: 0.3,
     }),
+
+    driver_location: {
+      latitude: 9.0765,
+      longitude: 7.3986,
+      latitudeDelta: 0.3,
+      longitudeDelta: 0.3,
+    },
     distance: null,
   };
 
@@ -160,7 +168,8 @@ class Map extends Component {
     if (!this.pusher && user) {
       console.log("creating a new pusher connection");
       this.pusher = new Pusher("41e0bb8609122b8b5c71", {
-        authEndpoint: "http://7f1646aba8df.ngrok.io/api/pusher/auth",
+        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
+        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
         cluster: "eu",
         auth: {
           headers: { "x-auth-token": `${token}` },
@@ -214,9 +223,10 @@ class Map extends Component {
 
       //     })
       // if (!this.props.pusher.user_ride_channel) {
-      const user_ride_channel = this.pusher.subscribe(
+      this.user_ride_channel = this.pusher.subscribe(
         "private-ride-" + this.props.auth.user._id
       );
+      // this.user_ride_channel = user_ride_channel
 
       console.log("subscribed to the user part!!!!!!!!!!!1");
 
@@ -226,7 +236,7 @@ class Map extends Component {
       //   payload  : user_ride_channel
       // })
 
-      user_ride_channel.bind("client-driver-response", (data) => {
+      this.user_ride_channel.bind("client-driver-response", (data) => {
         console.log("clients driver response!!!!!");
         console.log("driver has ride  ??? ", this.props.order.has_ride);
         let passenger_response = "no";
@@ -235,12 +245,12 @@ class Map extends Component {
         }
 
         // passenger responds to driver's response
-        user_ride_channel.trigger("client-driver-response", {
+        this.user_ride_channel.trigger("client-driver-response", {
           response: passenger_response,
         });
       });
 
-      user_ride_channel.bind("client-found-driver", (data) => {
+      this.user_ride_channel.bind("client-found-driver", (data) => {
         // found driver, the passenger has no say about this.
         // once a driver is found, this will be the driver that's going to drive the user
         // to their destination
@@ -255,6 +265,13 @@ class Map extends Component {
         this.setState({
           coordinate: {
             ...this.state.coordinate,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+
+          // the drivers locatio to be passed to the mapviewdirections
+          driver_location: {
+            ...this.state.driver_location,
             longitude: driverLocation.longitude,
             latitude: driverLocation.latitude,
           },
@@ -302,11 +319,12 @@ class Map extends Component {
             longitude: data.location.longitude,
             latitude: data.location.latitude,
           },
-          2000
+          1500
         );
+        this.driver_marker && this.driver_marker.showCallout();
       });
 
-      user_ride_channel.bind("client-driver-location", (data) => {
+      this.user_ride_channel.bind("client-driver-location", (data) => {
         if (data) {
           const { longitude, latitude, accuracy } = data;
 
@@ -379,11 +397,26 @@ class Map extends Component {
               longitude: longitude,
               latitude: latitude,
             },
+            driver_location: {
+              ...this.state.driver_location,
+              longitude: longitude,
+              latitude: latitude,
+            },
           });
+
+          this.map.animateToRegion(
+            {
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA,
+              longitude: longitude,
+              latitude: latitude,
+            },
+            500
+          );
         }
       });
 
-      user_ride_channel.bind("client-driver-message", (data) => {
+      this.user_ride_channel.bind("client-driver-message", (data) => {
         if (data.type == "near_pickup") {
           //remove passenger marker
 
@@ -399,6 +432,7 @@ class Map extends Component {
         // when the driver starts the ride
         if (data.type == "ride_started") {
           console.log("ride started by driver triggered ", data.order);
+          Vibration.vibrate();
           store.dispatch({
             type: "RIDE_UPDATED",
             payload: data.order,
@@ -406,6 +440,7 @@ class Map extends Component {
         }
         if (data.type == "ride_ended") {
           console.log("ride ended by driver triggered ", data.order);
+          Vibration.vibrate();
           store.dispatch({
             type: "RIDE_UPDATED",
             payload: data.order,
@@ -413,15 +448,21 @@ class Map extends Component {
         }
         if (data.type == "ride_completed") {
           console.log("ride completed by driver triggered ", data.order);
+
+          const driver_id = this.props.order.order.driver;
+          Vibration.vibrate();
           store.dispatch({
-            type: "RIDE_UPDATED",
-            payload: data.order,
+            type: "RIDE_COMPLETED",
           });
-          return this.props.navigation.navigate("Driver_Rating")
+          // this.centerMap()
+
+          // passing the id of the driver as params to the rating page
+          return this.reset_navigation("driver_rating", driver_id);
+          // this.props.navigation.navigate("Driver_Rating")
         }
 
         if (data.type == "near_dropoff") {
-          this._getLocation();
+          this.centerMap();
         }
 
         Alert.alert(
@@ -437,6 +478,14 @@ class Map extends Component {
       });
     });
     // }
+  };
+
+  // used to replace screens so user cant go back
+  reset_navigation = (screenName, param) => {
+    // reset navigation!!,
+    this.props.navigation.dispatch(
+      StackActions.replace(screenName, { param: param })
+    );
   };
 
   animate = (latitude, longitude) => {
@@ -463,8 +512,8 @@ class Map extends Component {
 
   centerMap = () => {
     const {
-      latitudeDelta,
-      longitudeDelta,
+      // latitudeDelta,
+      // longitudeDelta,
       latitude,
       longitude,
     } = this.props.order.region;
@@ -487,7 +536,7 @@ class Map extends Component {
     var data = {
       going: going,
       destinationRequested: true,
-      latitudeDelta: 0.3,
+      latitudeDelta: 0.1,
     };
 
     console.log("data passed to the selet destination , ", going);
@@ -532,11 +581,11 @@ class Map extends Component {
         latitude,
         longitude,
       },
-      2000
+      500
     );
   };
 
-  bookRide = async () => {
+  bookRide = async (payment_method) => {
     console.log("booking ride");
     // await this.this.pusher_actions();
     // RNGooglePlacePicker.show((response) => {
@@ -562,9 +611,7 @@ class Map extends Component {
         return (from_address =
           json.results[0].address_components[0].long_name +
           " " +
-          json.results[0].address_components[1].long_name +
-          " " +
-          json.results[0].address_components[2].long_name);
+          json.results[0].address_components[1].long_name);
       },
       (error) => {
         console.log("err geocoding: ", error);
@@ -579,9 +626,7 @@ class Map extends Component {
         return (going_address =
           json.results[0].address_components[0].long_name +
           " " +
-          json.results[0].address_components[1].long_name +
-          " " +
-          json.results[0].address_components[2].long_name);
+          json.results[0].address_components[1].long_name);
       },
       (error) => {
         console.log("err geocoding: ", error);
@@ -607,7 +652,7 @@ class Map extends Component {
     let available_drivers_channel = this.available_drivers_channel;
 
     //  function trigger() {
-    console.log("Trigger functionality reached", pickup_data, dropoff_data);
+    // console.log("Trigger functionality reached", pickup_data, dropoff_data);
 
     // this.props.order.trigger_driver(userID, pickup_data, dropoff_data)
 
@@ -633,6 +678,7 @@ class Map extends Component {
       userID: userID,
       pickup: pickup_data,
       dropoff: dropoff_data,
+      payment_method,
       available_drivers_channel: this.available_drivers_channel,
     };
 
@@ -660,6 +706,15 @@ class Map extends Component {
     this.centerMap();
 
     // this.props.pusher&& this.props.pusher.pusher.disconnect()yyyyyy
+  };
+
+  disconnect_client = () => {
+    // this.this.user_ride_channel.unbind();
+    // this.pusher.unsubscribe(
+    //   "private-ride-" + this.props.order.passenger.userID
+    // );
+
+    this.centerMap();
   };
 
   componentWillUnmount() {
@@ -697,69 +752,40 @@ class Map extends Component {
         }}
       />
       <View style={styles.materialButtonPinkRow}>
-        {/* <MaterialButtonPink
-          style={styles.materialButtonPink}
-
-          onPress ={()=>
-            this.props.navigation.navigate("creditCardScreen", {
-              bookRide : this.bookRide()
-            })
-          }
-        ></MaterialButtonPink> */}
-        <Button
-          rounded
-          dark
-          style={styles.materialButtonPink1}
+        <TouchableOpacity
           onPress={() => {
-            this.bookRide();
+            this.bookRide("Cash");
           }}
         >
-          <Text
-            style={{
-              fontSize: 22,
-              color: "white",
-              alignSelf: "center",
-              paddingLeft: wp("10%"),
-            }}
-          >
-            Cash
-          </Text>
-        </Button>
-        {/* <MaterialButtonPink1
-          style={styles.materialButtonPink1}
-          onPress ={()=>this.props.navigation.navigate("creditCardScreen")}
-        ></MaterialButtonPink1> */}
+          <Button rounded dark style={styles.materialButtonPink1}>
+            <Text
+              style={{
+                fontSize: 22,
+                color: "white",
+                alignSelf: "center",
+                paddingLeft: wp("10%"),
+              }}
+            >
+              Cash
+            </Text>
+          </Button>
+        </TouchableOpacity>
 
-        <Button
-          rounded
-          warning
-          style={styles.materialButtonPink1}
+        <TouchableOpacity
           onPress={() => {
-            const { user } = this.props.auth;
-
-            {
-              user.card.length == 0
-                ? this.props.navigation.navigate("creditCardScreen", {
-                    bookRide: this.bookRide,
-                  })
-                : this.bookRide();
-              // store.dispatch({
-              //   type : "END_LOADING"
-              // })
-            }
-
-            // this.setState({
-            //   is_searching: false,
-            // });
+            this.bookRide("Cashless");
           }}
         >
-          <Text
-            style={{ fontSize: 22, color: "white", paddingLeft: wp("10%") }}
-          >
-            Card
-          </Text>
-        </Button>
+          <Button rounded warning style={styles.materialButtonPink1}>
+            <Text
+              style={{ fontSize: 22, color: "white", paddingLeft: wp("10%") }}
+            >
+              Card
+            </Text>
+          </Button>
+        </TouchableOpacity>
       </View>
+
       <TouchableOpacity>
         <Animatable.View
           animation="bounceIn"
@@ -851,7 +877,7 @@ class Map extends Component {
           <DriverDetailsPopUp
             driver={this.props.order.driver_details}
             distance={this.state.distance}
-
+            user_ride_channel={this.user_ride_channel}
           />
         ) : null}
 
@@ -931,21 +957,22 @@ class Map extends Component {
             // initialRegion={this.props.order.region}
             rotateEnabled={false}
             showsUserLocation={false}
-            showsBuildings={true}
+            showsBuildings={false}
             zoomEnabled={true}
             showsCompass={false}
             onMapReady={() => {
               this.centerMap();
             }}
-            onRegionChangeComplete={() =>
-              this.marker && this.marker.showCallout()
-            }
+            onRegionChangeComplete={() => {
+              this.marker && this.marker.showCallout();
+            }}
+            //comment this if any error
             // region={{
             //   latitude: this.props.order.region.latitude ?this.props.order.region.latitude : 9.04,
 
             //   longitude: this.props.order.region.longitude ?  this.props.order.region.longitude : 7.04,
 
-            //   latitudeDelta: LATITUDE_DELTA,
+            //   latitudeDelta: 0.5,
             //   longitudeDelta: LONGITUDE_DELTA,
             // }}
 
@@ -959,39 +986,44 @@ class Map extends Component {
           >
             {/* {this.state.my_location &&  */}
 
-            {!this.props.order.destinationRequested && this.props.order.region && (
-              <Marker.Animated
-                ref={(marker) => {
-                  this.marker = marker;
-                }}
-                image={require("../assets/images/marker.png")}
-                style={{
-                  width: 30,
-                  height: 30,
-                }}
-                coordinate={{
-                  // latitude: this.state.location.latitude
-                  //   ?parseFloat(this.state.location.latitude
-                  //    ) : 7.3986,
-                  // longitude: this.state.location.longitude
-                  //   ?parseFloat(this.state.location.longitude
-                  //   ): 9.0765,
+            {!this.props.order.destinationRequested &&
+              this.props.order.region &&
+              !this.props.order.driver && (
+                <Marker.Animated
+                  ref={(marker) => {
+                    this.marker = marker;
+                  }}
+                  image={require("../assets/images/marker.png")}
+                  style={{
+                    width: 30,
+                    height: 30,
+                  }}
+                  coordinate={{
+                    // latitude: this.state.location.latitude
+                    //   ?parseFloat(this.state.location.latitude
+                    //    ) : 7.3986,
+                    // longitude: this.state.location.longitude
+                    //   ?parseFloat(this.state.location.longitude
+                    //   ): 9.0765,
 
-                  latitude: this.props.order.region
-                    ? this.props.order.region.latitude
-                    : 9.0765,
-                  longitude: this.props.order.region
-                    ? this.props.order.region.longitude
-                    : 7.3986,
-                }}
-                title={`Hello ${
-                  user
-                    ? user.firstName.charAt(0).toUpperCase() +
-                      user.firstName.slice(1)
-                    : "Hello There!"
-                }`}
-              ></Marker.Animated>
-            )}
+                    latitude: this.props.order.region
+                      ? this.props.order.region.latitude
+                      : 9.0765,
+                    longitude: this.props.order.region
+                      ? this.props.order.region.longitude
+                      : 7.3986,
+                  }}
+                  titleStyle={{
+                    fontFamily: "Righteous-Regular",
+                  }}
+                  title={`Hello ${
+                    user
+                      ? user.firstName.charAt(0).toUpperCase() +
+                        user.firstName.slice(1)
+                      : " There!"
+                  }`}
+                ></Marker.Animated>
+              )}
 
             {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
 
@@ -1058,30 +1090,54 @@ class Map extends Component {
               // />
 
               <>
-                {
-                  (this.props.order.order.state == "Started" && (
+                <Marker.Animated
+                  ref={(marker) => {
+                    this.marker = marker;
+                  }}
+                  image={require("../assets/images/marker.png")}
+                  style={{
+                    width: 30,
+                    height: 30,
+                  }}
+                  coordinate={{
+                    // latitude: this.state.location.latitude
+                    //   ?parseFloat(this.state.location.latitude
+                    //    ) : 7.3986,
+                    // longitude: this.state.location.longitude
+                    //   ?parseFloat(this.state.location.longitude
+                    //   ): 9.0765,
 
-                    <>
+                    latitude: this.props.order.region
+                      ? this.props.order.region.latitude
+                      : 9.0765,
+                    longitude: this.props.order.region
+                      ? this.props.order.region.longitude
+                      : 7.3986,
+                  }}
+                  title={"You're here"}
+                ></Marker.Animated>
+                {this.props.order.order.state == "Started" && (
+                  <>
                     <MapViewDirections
-                      origin={this.props.order.region}
+                      origin={this.state.driver_location}
                       destination={this.props.order.going}
                       apikey={google_api}
                       strokeWidth={3}
                       strokeColor="black"
                       showsCompass={false}
                     ></MapViewDirections>
-   <Marker.Animated
-                  title="Your Destination"
-                  coordinate={this.props.order.going}
-                  pinColor="#ffffff"
-                />
-                    </>
-                  ))
-                }
+                    <Marker.Animated
+                      title="Your Destination"
+                      coordinate={this.props.order.going}
+                      pinColor="#ffffff"
+                    />
+                  </>
+                )}
 
                 <Marker.Animated
                   coordinate={this.state.coordinate}
                   anchor={{ x: 0.35, y: 0.32 }}
+                  title="Your Ride Is Here"
                   ref={(marker) => {
                     this.driver_marker = marker;
                   }}
@@ -1173,7 +1229,7 @@ const styles = StyleSheet.create({
     // marginTop: 476
   },
   totalAmount: {
-    fontFamily: "roboto-700",
+    fontFamily: "Righteous-Regular",
     color: "#121212",
     fontSize: 22,
     marginTop: 10,
@@ -1181,7 +1237,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   n3500: {
-    fontFamily: "roboto-900",
+    fontFamily: "Righteous-Regular",
     color: "#121212",
     fontSize: 40,
     marginTop: 10,

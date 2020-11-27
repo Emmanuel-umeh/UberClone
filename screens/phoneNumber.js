@@ -26,6 +26,9 @@ import {
   Switch,
 } from "native-base";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+
+import { LogBox } from 'react-native';
+
 class PhoneNumber extends Component {
   constructor(props) {
     super(props);
@@ -34,6 +37,10 @@ class PhoneNumber extends Component {
   state = {
     number: null,
   };
+
+// componentDidMount() {
+//     LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+// }
 
   _onPressHandler() {
     this.loadingButton.showLoading(true);
@@ -46,10 +53,20 @@ class PhoneNumber extends Component {
   }
 
   concatNumber= (phoneNumber)=>{
-  
-    var number = "+234" + phoneNumber
 
-    // console.log("concat number ", number)
+    var number 
+  if(phoneNumber[0] == 0){
+
+    var edited_number = phoneNumber.replace(phoneNumber[0], '');
+
+    number = "+234" + edited_number
+
+  }else{
+    number = "+234" + phoneNumber
+  }
+
+     
+    console.log("concat number ", number)
     // this.props.setLoading()
      this.props.textMessageAuth(number)
 
@@ -60,16 +77,18 @@ class PhoneNumber extends Component {
 
   mobileNumber = () => {
 
-    if(!this.state.number ||  this.state.number.length < 10||  this.state.number.length > 11){
+    const number = this.state.number ? this.state.number.replace(/\s+/g, '') : null
+
+    if(!number ||  number.length < 10||  number.length > 11){
       this.loadingButton.showLoading(false);
       return alert("Please enter a valid phone number")
      
      }
  
 
-    "all zeros ? !",/^\d+$/.test(this.state.number.toString() ? 
+    "all zeros ? !",/^\d+$/.test(number.toString() ? 
     
-    this.concatNumber(this.state.number)
+    this.concatNumber(number)
     : 
     alert("Please Enter Just Numbers")
     ) 
@@ -78,7 +97,7 @@ class PhoneNumber extends Component {
 
   componentDidUpdate(prevProps){
 
-    console.log("error ", this.props.error.id.length)
+    // console.log("error ", this.props.error.id.length)
     if(this.props.error.id.length > 0){
       this.loadingButton.showLoading(false);
     }
@@ -200,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent : "space-evenly"
   },
   loremIpsum: {
-    fontFamily: "roboto-regular",
+  fontFamily : "Righteous-Regular",
     color: "black",
     fontSize: 22,
     marginTop: hp("20%"),
@@ -215,14 +234,14 @@ const styles = StyleSheet.create({
     marginLeft: wp("35%"),
   },
   loremIpsum2: {
-    fontFamily: "roboto-regular",
+  fontFamily : "Righteous-Regular",
     color: "#121212",
     lineHeight: 22,
     fontSize: 22,
     marginTop: hp("1%"),
   },
   loremIpsum3: {
-    fontFamily: "roboto-regular",
+  fontFamily : "Righteous-Regular",
     color: "black",
     fontSize: 22,
     opacity: 0.6,
@@ -241,7 +260,7 @@ const styles = StyleSheet.create({
     top: hp("5%")
   },
   back: {
-    fontFamily: "roboto-regular",
+  fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 22,
     marginLeft: 13,
@@ -262,7 +281,7 @@ const styles = StyleSheet.create({
     marginLeft: 24,
   },
   loremIpsum4: {
-    fontFamily: "roboto-regular",
+  fontFamily : "Righteous-Regular",
     color: "lightblue",
     fontSize: 22,
     marginTop: 9,
@@ -278,7 +297,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loremIpsum5: {
-    fontFamily: "roboto-regular",
+  fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize : 15,
     marginTop: 3,

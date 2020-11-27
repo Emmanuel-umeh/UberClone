@@ -21,7 +21,8 @@ import {
   SET_LOADING,
   END_LOADING,
   PUSHER_AUTH,
-  RIDE_UPDATED
+  RIDE_UPDATED,
+  DESTINATION
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -30,8 +31,8 @@ import { AnimatedRegion } from "react-native-maps";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
-const LATITUDE_DELTA =    0.005858723958820065//Very high zoom level
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const LATITUDE_DELTA =  0.005858723958820065;
+const LONGITUDE_DELTA =  0.005858723958820065;
 
 
 var token;
@@ -94,6 +95,8 @@ const initialState = {
 
   coming: null,
   going: null,
+
+  // name of the destination / going
   // determines if the user has selected the destination
   destinationRequested: false,
   // destination : ""
@@ -226,10 +229,7 @@ export default function (state = initialState, action) {
     case RIDE_COMPLETED:
       {
         return {
-          ...state,
-          //   is_searching: false,
-          order: action.payload,
-          type: "RIDE_COMPLETED",
+          initialState
         };
       }
 
@@ -347,6 +347,15 @@ export default function (state = initialState, action) {
         type: action.type,
       };
     }
+    case DESTINATION:{
+      return {
+        ...state,
+       destination: action.payload,
+    
+        type: action.type,
+      };
+    }
+ 
 
 
     default:

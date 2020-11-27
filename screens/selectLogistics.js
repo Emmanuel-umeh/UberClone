@@ -270,34 +270,29 @@ const styles = StyleSheet.create({
   },
   Car: {
     height: hp("50%"),
-    width: 359,
+    width: wp("100%"),
     marginTop: 10,
     marginLeft: 1,
   },
   Bike: {
     height: hp("50%"),
-    width: 360,
+    width: wp("100%"),
     marginTop: 10,
     // backgroundColor : this.state.isTruckSelected
   },
   Truck: {
     height: hp("50%"),
-    width: 360,
+    width: wp("100%"),
     marginTop: 10,
     // backgroundColor : this.state.isTruckSelected
   },
-  cupertinoButtonWarning: {
-    height: 99,
-    width: 299,
-    borderRadius: 100,
-    marginTop: 24,
-    marginLeft: 26,
-  },
+
   selectAVechicle: {
-    fontFamily: "roboto-700",
+    // fontFamily: "roboto-700",
     color: "#121212",
     fontSize: 22,
     textAlign: "center",
+    fontFamily : "Righteous-Regular",
     // position : "relative",
     marginTop: hp("5%"),
     alignSelf: "center",

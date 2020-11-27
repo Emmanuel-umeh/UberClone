@@ -30,6 +30,7 @@
     "loadash": "^1.0.0",
     "lottie-react-native": "~2.6.1",
     "moment": "^2.29.1",
+    "nanoid": "^3.1.18",
     "native-base": "^2.13.14",
     "pubnub-react": "^2.0.0",
     "pusher-js": "^7.0.0",
@@ -70,6 +71,8 @@
     "react-native-notifier": "^1.3.2",
     "react-native-otp-textinput": "0.0.7",
     "react-native-paper": "^4.1.0",
+    "react-native-paystack-webview": "^3.2.1",
+    "react-native-ratings": "^7.3.0",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-reanimated": "~1.9.0",
     "react-native-responsive-screen": "^1.4.1",
@@ -83,6 +86,7 @@
     "react-native-validation": "^1.0.3",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.11.7",
+    "react-native-webview": "9.4.0",
     "react-navigation": "^4.4.0",
     "react-payment-card-component": "^0.2.1",
     "react-redux": "^7.2.1",
@@ -91,7 +95,8 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
-    "styled-components": "^5.2.0"
+    "styled-components": "^5.2.0",
+    "expo-random": "~8.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

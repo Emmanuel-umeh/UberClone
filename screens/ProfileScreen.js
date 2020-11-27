@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { StyleSheet, View, SafeAreaView, StatusBar } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import CupertinoButtonPurple from "./material/CupertinoButtonPurple";
 import MaterialUnderlineTextbox1 from "./material/MaterialUnderlineTextbox1";
@@ -23,11 +23,15 @@ class ProfileScreen extends Component{
       const {user} = this.props.auth
         return (
             <SafeAreaView  style={styles.container}>
+             
 
 <Header style={{
                           backgroundColor : "black",
-                          top : hp("5%")
-                        }}>
+                          top : hp("2%")
+                        }} 
+                        androidStatusBarColor = "black"
+                        iosBarStyle	= "dark-content"
+                        >
                     <Left>
                   <TouchableOpacity  onPress={() => {
                         this.props.navigation.pop();
@@ -45,7 +49,7 @@ class ProfileScreen extends Component{
 
                   <Body>
                     <Title style ={{
-                      fontWeight : "bold",
+                        fontFamily : "Righteous-Regular",
                       marginLeft : wp("10%")
                     }}>Profile</Title>
                   </Body>
@@ -65,13 +69,13 @@ class ProfileScreen extends Component{
 
 
 
-<List style ={{marginTop : hp("10%") , backgroundColor : "white"}}>
+<List style ={{marginTop : hp("5%") , backgroundColor : "white"}}>
             <ListItem style={{
               alignContent : "center"
             }}>
               <Text style ={{
                 fontSize : 18,
-                 fontWeight : "600",
+                fontFamily : "Righteous-Regular",
                  paddingLeft :wp("25%")
               }}>{user && user.phoneNumber}</Text>
             </ListItem>
@@ -81,10 +85,11 @@ class ProfileScreen extends Component{
               height : hp("8%"),
               justifyContent:'flex-start'
             }}>
-               <Input placeholder="First name" value = {user && user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)} style={{
+               <Input disabled placeholder="First name" value = {user && user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)} style={{
                  borderColor : "green",
                  fontSize : 18,
-                 fontWeight : "600",
+                 
+                 fontFamily : "Righteous-Regular",
                }} />
                <View
         style = {{
@@ -93,19 +98,20 @@ class ProfileScreen extends Component{
           backgroundColor: '#cccccc'
         }}
       />
-               <Input placeholder="Last name" value = { user && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} />
+               <Input style ={{fontFamily : "Righteous-Regular",}} disabled placeholder="Last name" value = { user && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} />
             </ListItem>
           
 
             <ListItem>
-            <Input placeholder="Email" value = { user &&user.email.charAt(0).toUpperCase() + user.email.slice(1)} />
+            <Input style ={{fontFamily : "Righteous-Regular",}} disabled placeholder="Email" value = { user &&user.email.charAt(0).toUpperCase() + user.email.slice(1)} />
             </ListItem>
           </List>
           
           <View  style={styles.loremIpsum}>
           <Text style ={{
             paddingTop : 20,
-            fontWeight : "300"
+            fontWeight : "300",
+            fontFamily : "Righteous-Regular",
           }}>
                 Ride recipts will be sent to your email.
               </Text>
@@ -125,11 +131,11 @@ class ProfileScreen extends Component{
             }}>
               
               <Icon active name="md-home" />
-              <Text>Add Home Location</Text>
+              <Text style ={{   fontFamily : "Righteous-Regular"}}>Add Home Location</Text>
               <Right style={{
-                  left : 0
+                  left : -5
               }}>
-                <Icon name="arrow-forward" />
+                <Icon name="arrow-forward" style ={{color : "black"}} />
               </Right>
              </CardItem>
 
@@ -142,12 +148,12 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               <Icon active name="ios-briefcase" />
-              <Text>Add Work Location</Text>
+              <Text  style ={{   fontFamily : "Righteous-Regular",}} >Add Work Location</Text>
               <Right
               style={{
                   left : -6
               }}>
-                <Icon name="arrow-forward" />
+                <Icon name="arrow-forward"  style ={{color : "black"}}  />
               </Right>
             
              </CardItem>
@@ -176,11 +182,11 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               <Icon active name="md-flag" />
-              <Text>English - US</Text>
+              <Text  style ={{   fontFamily : "Righteous-Regular",}}>English - US</Text>
               <Right style={{
                   left : 1
               }}>
-                <Icon name="arrow-down" />
+                <Icon name="arrow-down"  style ={{color : "black"}}  />
               </Right>
               
              </CardItem>
@@ -190,11 +196,11 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               <Icon active name="md-flag" />
-              <Text>Communication Preference</Text>
+              <Text  style ={{   fontFamily : "Righteous-Regular",}}>Communication Preference</Text>
               <Right style={{
                   left : -21
               }}>
-                <Icon name="arrow-forward" />
+                <Icon name="arrow-forward" style ={{color : "black"}} />
               </Right>
               
              </CardItem>
@@ -221,6 +227,7 @@ class ProfileScreen extends Component{
 
 const styles = StyleSheet.create({
   container: {
+    
     flex: 1, 
     backgroundColor : "#ededed"
   },
@@ -229,14 +236,14 @@ const styles = StyleSheet.create({
     fontSize: 38
   },
   profile: {
-    fontFamily: "roboto-700",
+    fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 26,
     marginLeft: 3,
     marginTop: 5
   },
   logOut: {
-    fontFamily: "roboto-regular",
+    fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginLeft: 156,
@@ -285,7 +292,7 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loremIpsum: {
-    fontFamily: "roboto-regular",
+     fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 16,
     fontWeight : "300",
@@ -298,12 +305,12 @@ const styles = StyleSheet.create({
     fontSize: 38
   },
   loremIpsum2: {
-    fontFamily: "roboto-regular",
+     fontFamily : "Righteous-Regular",
     color: "#121212",
     marginLeft: 86
   },
   addAddress: {
-    fontFamily: "roboto-regular",
+     fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginTop: 1
@@ -339,7 +346,7 @@ const styles = StyleSheet.create({
     marginRight: 46
   },
   englishUs: {
-    fontFamily: "roboto-regular",
+    fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginTop: 11

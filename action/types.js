@@ -113,4 +113,7 @@ export const AVAILABLE_DRIVERS="AVAILABLE_DRIVERS"
 
 export const RIDE_UPDATED="RIDE_UPDATED"
 
+// destination name of the user
+export const DESTINATION="DESTINATION"
+
 

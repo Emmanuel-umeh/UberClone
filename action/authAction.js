@@ -37,7 +37,7 @@ import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
 // var location = window.location.href
 // if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
 // axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "http://7f1646aba8df.ngrok.io";
+axios.defaults.baseURL = "https://whiteaxisapi.herokuapp.com";
 // }
 // else if(location.slice(0,17)==  "http://127.0.0.1:"){
 //   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
@@ -309,6 +309,11 @@ export const registerDetails = (firstName, lastName, email, id,tokens) => (
     // dispatch({
     //   type : END_LOADING
     // })
+
+    dispatch({
+      type: USER_LOADED,
+      payload: res.data,
+    });
 
         return RootNavigation.navigate("TermsAndCondition", { token: res.data.token });
 

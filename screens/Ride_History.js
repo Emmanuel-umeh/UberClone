@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { StyleSheet, View, SafeAreaView, ScrollView, FlatList } from "react-native";
 import {connect} from "react-redux"
 
 import {
@@ -23,18 +23,51 @@ import {
   Switch,
 } from "native-base";
 import { TouchableOpacity } from "react-native-gesture-handler";
+  import moment from "moment"
+
+function Item({ order }) {
+  console.log({order})
+  return (
+    <>
+    <Divider style={{
+      marginTop: 20,
+    }}/>
+  <View>
+   
+    <Text style={styles.loremIpsum}>{order.endLocationName}</Text>
+    <Text style ={styles.price} >₦{order.price}</Text>
+  <Text style={styles.loremIpsum2} numberOfLines ={1} ellipsizeMode = {'tail'} >{moment(order.date_created).format(`dddd, MMMM Do YYYY, h:mm:ss a`)}</Text>
+
+  {order.state == "Completed" &&   <Text style={styles.finished}>FINISHED</Text>
+ }
+  {order.state == "Ended" &&   <Text style={styles.finished}>FINISHED</Text>
+ }
+
+
+ {order.state == "Cancelled" &&  <Text style={styles.youCancelled}>YOU CANCELLED</Text>}
+
+ {order.state == "Accepted" &&  <Text style={styles.youCancelled}>PENDING</Text>}
+ {order.state == "Pending" &&  <Text style={styles.youCancelled}>PENDING</Text>}
+
+
+  </View>
+</>
+  );
+}
 
 function Ride_History(props) {
 
   const {user} = props.auth
+  // console.log({user})
   return (
     <SafeAreaView style={styles.container}>
-           <Header
-        style={{
-          backgroundColor: "black",
-          marginTop : hp("5%")
-        }}
-      >
+        <Header style={{
+                          backgroundColor : "black",
+                          top : hp("2%")
+                        }} 
+                        androidStatusBarColor = "black"
+                        iosBarStyle	= "dark-content"
+                        >
         <Left>
           <TouchableOpacity onPress={() => {
                 props.navigation.pop();
@@ -51,7 +84,8 @@ function Ride_History(props) {
         </Left>
         <Body>
                     <Title style ={{
-                      fontWeight : "bold",
+                     fontFamily : "Righteous-Regular",
+                      
                       marginLeft : wp("2%")
                     }}>Ride History</Title>
                   </Body>
@@ -59,18 +93,20 @@ function Ride_History(props) {
       </Header>
     
       <Text style={styles.history}>History</Text>
-      <Divider style={{
-          marginTop: 20,
-        }}/>
-      <View>
-       
-        <Text style={styles.loremIpsum}>Same Global Housing Estate, Abuja</Text>
-      <Text style={styles.loremIpsum2}>Nov 5 , 2020 15:20:30</Text>
-      <Text style={styles.finished}>FINISHED</Text>
-     
-    
-      </View>
-      <Divider style={{
+      {/* <ScrollView> */}
+
+ 
+
+<FlatList
+data={user.orders.reverse()}
+renderItem={({ item }) => <Item order={item} />}
+keyExtractor={item => item.id}
+/>
+
+
+{/* </ScrollView> */}
+  
+      {/* <Divider style={{
           marginTop: 20,
         }}/>
      
@@ -82,7 +118,7 @@ function Ride_History(props) {
 
       <Divider style={{
           marginTop: 30,
-        }}/>
+        }}/> */}
      
     </SafeAreaView>
   );
@@ -93,46 +129,52 @@ const styles = StyleSheet.create({
     flex: 1
   },
   history: {
-    fontFamily: "roboto-700",
+    fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 26,
     marginTop: 49,
     marginLeft: wp("35%")
   },
   loremIpsum: {
-    fontFamily: "roboto-regular",
+    fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginTop: 38,
     marginLeft: 21
   },
+  price: {
+    fontFamily : "Righteous-Regular",
+    color: "#121212",
+    fontSize: 18,
+    marginLeft: 21
+  },
   loremIpsum2: {
-    fontFamily: "roboto-regular",
+    fontFamily : "Righteous-Regular",
     color: "#121212",
     marginTop: 6,
     marginLeft: 21
   },
   finished: {
-    fontFamily: "roboto-regular",
+    fontFamily : "Righteous-Regular",
     color: "rgba(76,187,47,1)",
     marginTop: 5,
     marginLeft: 21
   },
   loremIpsum3: {
-    fontFamily: "roboto-regular",
+   fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginTop: 39,
     marginLeft: 21
   },
   youCancelled: {
-    fontFamily: "roboto-regular",
+   fontFamily : "Righteous-Regular",
     color: "rgba(181,50,34,1)",
     marginTop: 26,
     marginLeft: 21
   },
   loremIpsum4: {
-    fontFamily: "roboto-regular",
+   fontFamily : "Righteous-Regular",
     color: "#121212",
     marginTop: -39,
     marginLeft: 21

@@ -45,12 +45,13 @@ class Add_Card extends Component {
           visible={this.props.order.is_fetching}
           source={require("../assets/lottie/car.json")}
         />
-        <Header
-          style={{
-            backgroundColor: "black",
-            top: hp("3%"),
-          }}
-        >
+     <Header style={{
+                          backgroundColor : "black",
+                          top : hp("2%")
+                        }} 
+                        androidStatusBarColor = "black"
+                        iosBarStyle	= "dark-content"
+                        >
           <Left>
             <TouchableOpacity  onPress={() => {
                   this.props.navigation.pop();
@@ -166,14 +167,14 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   paymentMethod: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "rgba(255,255,255,1)",
     fontSize: 26,
     marginTop: hp("1%"),
     marginLeft: 28,
   },
   done: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "rgba(255,255,255,1)",
     fontSize: 18,
     marginTop: -88,
@@ -209,12 +210,12 @@ const styles = StyleSheet.create({
     height: 60,
   },
   cash: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
   },
   cash1: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 14,
     opacity: 0.44,
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     marginLeft: wp("5%"),
   },
   card: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginTop: 27,
@@ -260,10 +261,9 @@ const styles = StyleSheet.create({
     width: 16,
   },
   addCard: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 17,
-    fontWeight: "bold",
     marginLeft: -wp("10%"),
     marginTop: 9,
   },
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     marginLeft: 24,
   },
   currentAccount: {
-    fontFamily: "roboto-regular",
+                 fontFamily : "Righteous-Regular",
     color: "rgba(255,255,255,1)",
     marginTop: 28,
     fontSize: 20,

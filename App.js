@@ -40,7 +40,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     console.ignoredYellowBox = ["Setting a timer"];
-    console.ignoredYellowBox = ["Animated: `useNativeDriver` was not specified."];
+    console.ignoredYellowBox = ['Animated: `useNativeDriver`'];
+    
   }
   state = {
     loading: true,

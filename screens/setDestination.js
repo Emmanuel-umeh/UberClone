@@ -67,7 +67,7 @@ class setDestination extends Component {
       longitude:  this.props.order.region.longitude,
     })
     // const json = await location.json()
-    var addressComponent =  location.results[0].address_components[0].long_name + " " +location.results[0].address_components[1].long_name  + " " + location.results[0].address_components[2].long_name;;
+    var addressComponent =  location.results[0].address_components[0].long_name + " " +location.results[0].address_components[1].long_name ;
     // console.log("myaddress name ", location.results[0].address_components)
     this.setState({
       my_address : addressComponent
@@ -82,13 +82,13 @@ this.setState({
   visible : true
 })
     const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=500`;
-    const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + ${this.props.route.params.latitude} + ',' + ${this.props.route.params.longitude} + '&radius=' + ${1000} + '&key=' + ${google_api}`
+    const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=${1000}&key=${google_api}`
         
     const result = await fetch(api_url);
     const json = await result.json();
     
 
-    // console.log("predictions ", json.predictions)
+    console.log("predictions ", json.predictions)
     this.setState({
       destination,
       predictions: json.predictions,
@@ -184,8 +184,8 @@ this.setState({
                 left : wp("10%"),
                 width : "70%"
               }}>
-              <Text style ={{fontWeight : "500", fontSize : 15}}>{prediction.structured_formatting.main_text}</Text>
-              <Text style ={{fontWeight : "500", fontSize : 15}}>{prediction.structured_formatting.secondary_text}</Text>
+              <Text style ={{fontFamily : "Righteous-Regular", fontSize : 15}}>{prediction.structured_formatting.main_text}</Text>
+              <Text style ={{fontFamily : "Righteous-Regular", fontSize : 15}}>{prediction.structured_formatting.secondary_text}</Text>
               </Body>
        
               <Right style={{
@@ -221,7 +221,7 @@ this.setState({
 <Spinner
 visible={this.state.loading}
 textContent="Loading..."
-textStyle={{ color: '#fff' }}
+textStyle={{ color: '#fff',fontFamily : "Righteous-Regular", }}
 animation="fade"
 />
 
@@ -267,6 +267,7 @@ animation="fade"
 
               <View style={styles.textInputColumn}>
                 <TextInput
+                 editable={false} 
                   defaultValue={
                     this.state.my_address
                       ?    this.state.my_address
@@ -424,7 +425,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   textInput: {
-    fontFamily: "roboto-regular",
+          fontFamily : "Righteous-Regular",
     color: "black",
     height: hp("6.5%"),
     width: wp("70%"),
@@ -435,7 +436,7 @@ const styles = StyleSheet.create({
     backgroundColor: "whitesmoke",
   },
   textInput1: {
-    fontFamily: "roboto-regular",
+          fontFamily : "Righteous-Regular",
     color: "#121212",
     height: hp("6.5%"),
     width: wp("70%"),
@@ -482,7 +483,7 @@ const styles = StyleSheet.create({
     width: 27,
   },
   chooseOnMap: {
-    fontFamily: "roboto-regular",
+          fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 20,
     opacity: 0.92,
@@ -516,7 +517,7 @@ const styles = StyleSheet.create({
     width: 27,
   },
   addHome: {
-    fontFamily: "roboto-regular",
+          fontFamily : "Righteous-Regular",
     color: "#121212",
     fontSize: 15,
     marginLeft: 32,

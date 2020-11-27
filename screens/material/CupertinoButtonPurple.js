@@ -24,7 +24,8 @@ const styles = StyleSheet.create({
   connectToFacebook: {
     color: "#fff",
     fontSize: 17,
-    fontFamily: "roboto-regular"
+
+fontFamily : "Righteous-Regular",
   },
   icon: {
     top: 10,

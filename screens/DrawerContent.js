@@ -208,7 +208,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
   fontFamily : "Righteous-Regular"
                                 }}
                                 label="Support"
-                                onPress={() => {this.props.navigation.navigate('SupportScreen')}}
+                                onPress={() => {
+                                    alert("Coming Soon")
+                                }}
                             />
                         </Drawer.Section>
                      
