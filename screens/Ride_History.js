@@ -96,12 +96,20 @@ function Ride_History(props) {
       {/* <ScrollView> */}
 
  
-
+{user.orders ? 
 <FlatList
 data={user.orders.reverse()}
 renderItem={({ item }) => <Item order={item} />}
 keyExtractor={item => item.id}
 />
+: <View>
+  <Text  style ={{
+                     fontFamily : "Righteous-Regular",
+                      
+                      marginLeft : wp("2%")
+                    }} >No History To Show</Text>
+</View>
+}
 
 
 {/* </ScrollView> */}

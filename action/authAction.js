@@ -232,6 +232,13 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
         // });
 
         saveToken(res.data.token)
+
+
+        if(res.data.exists){
+          return  store.dispatch({
+            type : "IS_AUTHENTICATED"
+          })
+        }
         // endLoading()
         // dispatch({
         //   type : END_LOADING
