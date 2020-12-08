@@ -16,18 +16,12 @@ import {
 } from "react-native";
 import store from "../store";
 import MapView, { Marker, AnimatedRegion } from "react-native-maps";
-import * as Location from "expo-location";
-import * as Permissions from "expo-permissions";
-// import { Animated} from "react-native-reanimated"
-import RBSheet from "react-native-raw-bottom-sheet";
 
 import DestinationButton from "../components/destinationButton";
 
-import Driver from "../components/driver";
 import CurrentLocationButton from "../components/currentLocationButton";
 
 import { Ionicons } from "@expo/vector-icons";
-import SearchInput from "../components/SearchInput";
 import Geocoder from "react-native-geocoding";
 import google_api from "../keys/google_map";
 import { connect } from "react-redux";
@@ -36,13 +30,8 @@ import { regionFrom, getLatLonDiffInMeters } from "../helpers/helper";
 import { NavigationContainer, StackActions } from "@react-navigation/native";
 import MapViewDirections from "react-native-maps-directions";
 
-import { LogBox } from "react-native";
-
-import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import { Button, Content, Header, Icon } from "native-base";
-import MaterialButtonPink from "./material/MaterialButtonPink";
-import MaterialButtonPink1 from "./material/MaterialButtonPink1";
 import * as Animatable from "react-native-animatable";
 import { BackHandler } from "react-native";
 // import { TouchableOpacity } from "react-native-gesture-handler";
@@ -59,6 +48,7 @@ import LottieLoader from "react-native-lottie-loader";
 import { makeOrder, cancelOrder } from "../action/orderActions";
 import { Divider } from "react-native-paper";
 
+import { Audio } from "expo-av";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
@@ -79,6 +69,9 @@ Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
 class Map extends Component {
   constructor(props) {
     super(props);
+
+    // sound object
+    this.soundObject = null;
     this.map = [];
     this.marker = React.createRef();
     this.driver_marker = React.createRef();
@@ -150,8 +143,27 @@ class Map extends Component {
     distance: null,
   };
 
+  loadSounds = async () => {
+    this.soundObject = new Audio.Sound();
+    try {
+      console.log("Loading sounds!!!!!!!!!!!!!!!!!!!!!!");
+      await this.soundObject.loadAsync(
+        require("../assets/sounds/notification.mp3")
+      );
+      await this.soundObject.playAsync();
+      // Your sound is playing!
+      console.log("played sound");
+
+      // Don't forget to unload the sound from memory
+      // when you are done using the Sound object
+    } catch (error) {
+      console.log({ error });
+      // An error occurred!
+    }
+  };
   componentDidMount() {
     this.pusher_actions();
+
     // console.log("users details!!!!!!!!!!!1", this.props.auth)
     // console.log("initial region ", this.props.order.region);\
     // if(this.map){
@@ -161,6 +173,31 @@ class Map extends Component {
     // this.pusher_actions()
     // console.log("Mounted with props, ", this.props.navigation)
   }
+
+  centerCamera = () => {
+    const {
+      latitudeDelta,
+      longitudeDelta,
+      latitude,
+      longitude,
+    } = this.props.order.region;
+
+    this.map &&
+      this.map.animateCamera(
+        {
+          center: {
+            latitude,
+            longitude,
+          },
+          pitch: 2,
+          heading: 30,
+          altitude: 200,
+          zoom: 40,
+        },
+        1500
+      );
+  };
+
   pusher_actions = async () => {
     const { token, user } = this.props.auth;
     // let pusher
@@ -308,19 +345,36 @@ class Map extends Component {
           distance: diff_in_meter_pickup,
         });
 
-        Vibration.vibrate();
+       
+    this.loadSounds();
 
-        console.log("Driver accepted and animating to driver location ", data);
+        // console.log("Driver accepted and animating to driver location ", data);
+        // this.props.order.region;
 
-        this.map.animateToRegion(
-          {
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
-            longitude: data.location.longitude,
-            latitude: data.location.latitude,
-          },
-          1500
-        );
+        this.map &&
+          this.map.animateCamera(
+            {
+              center: {
+                longitude: data.location.longitude,
+                latitude: data.location.latitude,
+              },
+              pitch: 2,
+              heading: 30,
+              altitude: 200,
+              zoom: 40,
+            },
+            500
+          );
+
+        // this.map.animateToRegion(
+        //   {
+        //     latitudeDelta: LATITUDE_DELTA,
+        //     longitudeDelta: LONGITUDE_DELTA,
+        //     longitude: data.location.longitude,
+        //     latitude: data.location.latitude,
+        //   },
+        //   1500
+        // );
         this.driver_marker && this.driver_marker.showCallout();
       });
 
@@ -432,7 +486,8 @@ class Map extends Component {
         // when the driver starts the ride
         if (data.type == "ride_started") {
           console.log("ride started by driver triggered ", data.order);
-          Vibration.vibrate();
+         
+    this.loadSounds();
           store.dispatch({
             type: "RIDE_UPDATED",
             payload: data.order,
@@ -440,7 +495,8 @@ class Map extends Component {
         }
         if (data.type == "ride_ended") {
           console.log("ride ended by driver triggered ", data.order);
-          Vibration.vibrate();
+         
+    this.loadSounds();
           store.dispatch({
             type: "RIDE_UPDATED",
             payload: data.order,
@@ -450,7 +506,8 @@ class Map extends Component {
           console.log("ride completed by driver triggered ", data.order);
 
           const driver_id = this.props.order.order.driver;
-          Vibration.vibrate();
+         
+    this.loadSounds();
           store.dispatch({
             type: "RIDE_COMPLETED",
           });
@@ -574,15 +631,39 @@ class Map extends Component {
     // });
 
     //  this._getLocationAsync
-    this.map.animateToRegion(
-      {
-        latitudeDelta,
-        longitudeDelta,
-        latitude,
-        longitude,
-      },
-      500
-    );
+
+    this.map
+      ? this.map.fitToCoordinates(
+          [
+            {
+              latitude,
+              longitude,
+            },
+
+            {
+              latitude: this.props.order.region.latitude,
+              longitude: this.props.order.region.longitude,
+            },
+          ],
+          {
+            edgePadding: {
+              bottom: 150,
+              right: 40,
+              top: 150,
+              left: 40,
+            },
+            animated: true,
+          }
+        )
+      : this.map.animateToRegion(
+          {
+            latitudeDelta,
+            longitudeDelta,
+            latitude,
+            longitude,
+          },
+          500
+        );
   };
 
   bookRide = async (payment_method) => {
@@ -721,6 +802,7 @@ class Map extends Component {
     console.log("Unmounting COmponents!!!!!!!");
 
     navigator.geolocation.clearWatch(this.watchId);
+    this.soundObject.unloadAsync();
 
     // this.user_ride_channel.unbind("client-driver-response");
 
@@ -1014,7 +1096,7 @@ class Map extends Component {
                       : 7.3986,
                   }}
                   titleStyle={{
-                    fontFamily: "Righteous-Regular",
+                    fontFamily: "Quicksand-Bold",
                   }}
                   title={`Hello ${
                     user
@@ -1229,7 +1311,7 @@ const styles = StyleSheet.create({
     // marginTop: 476
   },
   totalAmount: {
-    fontFamily: "Righteous-Regular",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     fontSize: 22,
     marginTop: 10,
@@ -1237,7 +1319,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   n3500: {
-    fontFamily: "Righteous-Regular",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     fontSize: 40,
     marginTop: 10,

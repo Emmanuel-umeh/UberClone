@@ -184,8 +184,8 @@ this.setState({
                 left : wp("10%"),
                 width : "70%"
               }}>
-              <Text style ={{fontFamily : "Righteous-Regular", fontSize : 15}}>{prediction.structured_formatting.main_text}</Text>
-              <Text style ={{fontFamily : "Righteous-Regular", fontSize : 15}}>{prediction.structured_formatting.secondary_text}</Text>
+              <Text style ={{fontFamily : "Quicksand-Bold", fontSize : 15}}>{prediction.structured_formatting.main_text}</Text>
+              <Text style ={{fontFamily : "Quicksand-Bold", fontSize : 15}}>{prediction.structured_formatting.secondary_text}</Text>
               </Body>
        
               <Right style={{
@@ -221,7 +221,7 @@ this.setState({
 <Spinner
 visible={this.state.loading}
 textContent="Loading..."
-textStyle={{ color: '#fff',fontFamily : "Righteous-Regular", }}
+textStyle={{ color: '#fff',fontFamily : "Quicksand-Bold", }}
 animation="fade"
 />
 
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   textInput: {
-          fontFamily : "Righteous-Regular",
+          fontFamily : "Quicksand-Bold",
     color: "black",
     height: hp("6.5%"),
     width: wp("70%"),
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     backgroundColor: "whitesmoke",
   },
   textInput1: {
-          fontFamily : "Righteous-Regular",
+          fontFamily : "Quicksand-Bold",
     color: "#121212",
     height: hp("6.5%"),
     width: wp("70%"),
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
     width: 27,
   },
   chooseOnMap: {
-          fontFamily : "Righteous-Regular",
+          fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 20,
     opacity: 0.92,
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     width: 27,
   },
   addHome: {
-          fontFamily : "Righteous-Regular",
+          fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 15,
     marginLeft: 32,

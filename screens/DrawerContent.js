@@ -95,7 +95,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                     fontWeight : "300",
                           fontSize : 17
                                     ,
-  fontFamily : "Righteous-Regular"
+  fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Home"
                                 onPress={() => {this.props.navigation.navigate('Map')}}
@@ -114,7 +114,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                     fontWeight : "300",
                           fontSize : 17
                                     ,
-  fontFamily : "Righteous-Regular"
+  fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Profile"
                                 onPress={() => {this.props.navigation.navigate('profileScreen')}}
@@ -134,7 +134,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                     color : "black",
                                     fontWeight : "300",
                           fontSize : 17,
-                                    fontFamily : "Righteous-Regular"
+                                    fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Ride History"
                                 onPress={() => {this.props.navigation.navigate('ride_history')}}
@@ -155,7 +155,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                     color : "black",
                                     fontWeight : "300",
                           fontSize : 17,
-                                    fontFamily : "Righteous-Regular"
+                                    fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Payment Method"
                                 onPress={() => {this.props.navigation.navigate('add_card')}}
@@ -187,7 +187,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                     fontWeight : "300",
                           fontSize : 17,
                                     
-  fontFamily : "Righteous-Regular"
+  fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Settings"
                                 onPress={() => {this.props.navigation.navigate('settings')}}
@@ -205,7 +205,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                     fontWeight : "300",
                           fontSize : 17
                                     ,
-  fontFamily : "Righteous-Regular"
+  fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Support"
                                 onPress={() => {
@@ -231,7 +231,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                             fontWeight : "300",
                   fontSize : 17
                             ,
-  fontFamily : "Righteous-Regular"
+  fontFamily : "Quicksand-Bold"
                         }}
                         label="Sign Out"
                         
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
       fontSize: 14,
       lineHeight: 14,
     
-  fontFamily : "Righteous-Regular"
+  fontFamily : "Quicksand-Bold"
     },
     row: {
       marginTop: 20,

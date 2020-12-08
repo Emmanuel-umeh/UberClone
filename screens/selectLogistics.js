@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     color: "#121212",
     fontSize: 22,
     textAlign: "center",
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     // position : "relative",
     marginTop: hp("5%"),
     alignSelf: "center",

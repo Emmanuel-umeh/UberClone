@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   bike: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     fontSize: 30,
     color: "#000",
     top :wp("10%"),

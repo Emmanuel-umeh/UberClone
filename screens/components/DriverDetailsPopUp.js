@@ -179,7 +179,7 @@ class DriverDetailsPopUp extends Component {
               >
                 <Text
                   style={{
-                    fontFamily: "Righteous-Regular",
+                    fontFamily: "Quicksand-Bold",
                   }}
                 >
                   Pay With Card/USSD
@@ -280,7 +280,7 @@ class DriverDetailsPopUp extends Component {
         <Left>
           <EntypoIcon name="location-pin" style={styles.icon1}></EntypoIcon>
         </Left>
-        <Body style={{ marginLeft: wp("-70%") }}>
+        <Body style={{ alignSelf : "flex-start" }}>
           <View>
             <Text
               style={styles.location}
@@ -303,6 +303,7 @@ class DriverDetailsPopUp extends Component {
           top: -10,
         }}
       />
+      
 
       <TouchableOpacity
         onPress={() => {
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
 
   on_the_way: {
     padding: 20,
-    fontFamily: "Righteous-Regular",
+    fontFamily: "Quicksand-Bold",
     fontSize: 20,
     alignSelf: "center",
   },
@@ -379,7 +380,7 @@ const styles = StyleSheet.create({
 
     alignSelf: "center",
     top: 15,
-    fontFamily: "Righteous-Regular",
+    fontFamily: "Quicksand-Bold",
     fontSize: 20,
     alignSelf: "center",
   },
@@ -394,33 +395,33 @@ const styles = StyleSheet.create({
     top: 10,
     fontSize: 15,
     alignSelf: "center",
-    fontFamily: "Righteous-Regular",
+    fontFamily: "Quicksand-Bold",
   },
   meters_away: {
     // paddingLeft : wp("20%"),
     top: 10,
     alignSelf: "center",
     // fontSize : 13,
-    // fontFamily : "Righteous-Regular",
+    // fontFamily : "Quicksand-Bold",
   },
 
   icon1: {
     fontSize: 30,
     color: "#ed922b",
     // fontSize : 13,
-    // fontFamily : "Righteous-Regular",
+    // fontFamily : "Quicksand-Bold",
   },
   icon2: {
     fontSize: 30,
     color: "#ed922b",
     // fontSize : 13,
-    // fontFamily : "Righteous-Regular",
+    // fontFamily : "Quicksand-Bold",
   },
   location: {
     // fontSize : 20,
     // color : "#ed922b",
     fontSize: 17,
-    fontFamily: "Righteous-Regular",
+    fontFamily: "Quicksand-Bold",
   },
 
   contentList: {

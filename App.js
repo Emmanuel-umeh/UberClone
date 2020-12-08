@@ -26,8 +26,8 @@ import { loadUser, setUserToken } from "./action/authAction";
 
 import AuthenticatedStack from "./screens/AuthenticatedStack";
 import AsyncStorage from "@react-native-community/async-storage";
+import * as Permissions from "expo-permissions";
 const Drawer = createDrawerNavigator();
-import LoadingView from "react-native-loading-view";
 
 YellowBox.ignoreWarnings(["Setting a timer"]);
 const _console = _.clone(console);
@@ -62,11 +62,22 @@ class App extends React.Component {
       "roboto-700": require("./assets/fonts/roboto-700.ttf"),
       "roboto-900": require("./assets/fonts/roboto-900.ttf"),
       "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
+      "Quicksand-Bold": require("./assets/fonts/Quicksand-Bold.ttf"),
+      
+      "Quicksand-Light": require("./assets/fonts/Quicksand-Light.ttf"),
+      
+      "Quicksand-Medium": require("./assets/fonts/Quicksand-Medium.ttf"),
+      
+      "Quicksand-Regular": require("./assets/fonts/Quicksand-Regular.ttf"),
+      
+      "Quicksand-SemiBold": require("./assets/fonts/Quicksand-SemiBold.ttf"),
+      
+
 
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       // ...Ionicons.font,
-    });
+    }); await Permissions.askAsync(Permissions.LOCATION);
 
     await this.getToken();
     await this.props.loadUser();
