@@ -116,4 +116,15 @@ export const RIDE_UPDATED="RIDE_UPDATED"
 // destination name of the user
 export const DESTINATION="DESTINATION"
 
+// set the type of logistic
+export const LOGISTIC_TYPE="LOGISTIC_TYPE"
+
+
+// coordinate driver location
+export const COORDINATE_DRIVER_LOCATION="COORDINATE_DRIVER_LOCATION"
+
+
+// Clean up redux states
+export const PURGE="PURGE"
+
 

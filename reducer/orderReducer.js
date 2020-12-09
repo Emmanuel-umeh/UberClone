@@ -22,7 +22,10 @@ import {
   END_LOADING,
   PUSHER_AUTH,
   RIDE_UPDATED,
-  DESTINATION
+  DESTINATION,
+  LOGISTIC_TYPE,
+  COORDINATE_DRIVER_LOCATION,
+  PURGE
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -99,6 +102,7 @@ const initialState = {
   // name of the destination / going
   // determines if the user has selected the destination
   destinationRequested: false,
+  
   // destination : ""
   address: null,
   addressShortName: null,
@@ -118,18 +122,26 @@ const initialState = {
 
   // name of the accepted driver
   driver_details: null,
+  logistic_type : null,
   //  auth_msg_details : null
 
 
-// redux details
+// state details
+my_location: null,
+coordinate: new AnimatedRegion({
+  latitude: 9.0765,
+  longitude: 7.3986,
+  latitudeDelta: 0.3,
+  longitudeDelta: 0.3,
+}),
 
-
-  available_drivers_channel : null,
-  user_ride_channel : null,
-  pusher: null
-
-
-
+driver_location: {
+  latitude: 9.0765,
+  longitude: 7.3986,
+  latitudeDelta: 0.3,
+  longitudeDelta: 0.3,
+},
+distance: null,
 
 
 
@@ -355,6 +367,36 @@ export default function (state = initialState, action) {
         type: action.type,
       };
     }
+    case LOGISTIC_TYPE:{
+      return {
+        ...state,
+       logistic_type: action.payload,
+    
+        type: action.type,
+      };
+    }
+    case COORDINATE_DRIVER_LOCATION:{
+      return {
+        ...state,
+       coordinate: action.payload.coordinate,
+       driver_location : action.payload.driver_location,
+       distance : action.payload.distance,
+    
+        type: action.type,
+      };
+    }
+
+
+    
+case PURGE:
+  // console.log("updating payload for user loaded ", action.payload);
+  
+  return {
+    initialState
+  };
+
+
+
  
 
 

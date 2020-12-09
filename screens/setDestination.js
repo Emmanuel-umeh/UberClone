@@ -31,6 +31,7 @@ import store from "../store"
 import { Spinner as Loading } from "native-base";
 import Spinner  from 'react-native-loading-spinner-overlay';
 import { Divider } from "react-native-paper";
+import { persistStore } from "redux-persist";
 
 
 const WIDTH = Dimensions.get("window").width;
@@ -62,6 +63,8 @@ class setDestination extends Component {
 
  async componentDidMount(){
 
+  // persistStore(store).purge();
+
     let location = await  Geocoder.from({
       latitude: this.props.order.region.latitude,
       longitude:  this.props.order.region.longitude,
@@ -87,8 +90,6 @@ this.setState({
     const result = await fetch(api_url);
     const json = await result.json();
     
-
-    console.log("predictions ", json.predictions)
     this.setState({
       destination,
       predictions: json.predictions,

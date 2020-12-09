@@ -116,10 +116,10 @@ class DriverDetailsPopUp extends Component {
 
       {order && order.state == "Ended" && (
         <>
-          <Text style={styles.on_the_way}>
+          <Text style={[styles.on_the_way, {color : "coral"}]}>
             Total Price : ₦
             {this.props.order
-              ? Math.round(this.props.order.price / 100) * 100
+              ? Math.round(order.price / 100) * 100
               : "Calculating..."}
           </Text>
 
@@ -239,16 +239,28 @@ class DriverDetailsPopUp extends Component {
               {driver ? driver.lisence_number.toUpperCase() : "635-2GS-RB36"}
             </Text>
 
+
+            {!driver.company && (
+
             <Text style={styles.rider_name}>
-              Your Rider Is {driver && driver.firstname}
+           {driver && driver.firstname.charAt(0).toUpperCase() +
+                  driver.firstname.substring(1)} Is On The Way
             </Text>
+            )}
 
             {driver.company && (
-              <Text style={styles.rider_name}>
-                Owned By{" "}
-                {driver.company.company_name.charAt(0).toUpperCase() +
+
+              <>
+            <Text style={styles.rider_name}>
+            {driver && driver.firstname.charAt(0).toUpperCase() +
+                  driver.firstname.substring(1)} from {driver.company.company_name.charAt(0).toUpperCase() +
                   driver.company.company_name.substring(1)}
+          </Text>
+              <Text style={styles.rider_name}>
+                Is on the way..
+             
               </Text>
+              </>
             )}
 
             <Text style={styles.car_color}>
@@ -280,8 +292,8 @@ class DriverDetailsPopUp extends Component {
         <Left>
           <EntypoIcon name="location-pin" style={styles.icon1}></EntypoIcon>
         </Left>
-        <Body style={{ alignSelf : "flex-start" }}>
-          <View>
+        <Body >
+          <View >
             <Text
               style={styles.location}
               numberOfLines={1}
@@ -293,9 +305,11 @@ class DriverDetailsPopUp extends Component {
             </Text>
           </View>
         </Body>
-        {/* <Right>
-  <EntypoIcon name="arrow-right" style={styles.icon1}></EntypoIcon>
-  </Right> */}
+        <Right style ={{
+          width : 10
+        }}>
+  {/* <EntypoIcon name="arrow-right" style={styles.icon1}></EntypoIcon> */}
+  </Right>
       </View>
 
       <Divider
@@ -314,7 +328,7 @@ class DriverDetailsPopUp extends Component {
         <Button
           style={{
             borderRadius: 50,
-            width: wp("30%"),
+            width: wp("35%"),
             alignSelf: "center",
             alignItems: "center",
           }}
@@ -322,7 +336,7 @@ class DriverDetailsPopUp extends Component {
           dark
         >
           <Icon style={{ left: -5 }} name="md-call" />
-          <Text style={{ color: "white", left: -6 }}>Call Driver</Text>
+          <Text style={{ color: "white", left: -wp("5") }}>Call Driver</Text>
         </Button>
       </TouchableOpacity>
     </View>

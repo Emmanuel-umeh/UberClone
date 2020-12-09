@@ -27,6 +27,8 @@ import Geocoder from "react-native-geocoding";
 
 import store from "../store"
 import google_api from "../keys/google_map";
+import { connect } from 'react-redux'
+
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -47,6 +49,14 @@ class SetLogistics extends Component {
 
   componentDidMount(){
 
+
+
+    
+    if(this.props.order.has_ride){
+      this._getLocationAsync()
+      return this.props.navigation.replace("Map")
+      
+    }
     this._getLocationAsync()
   }
   
@@ -152,6 +162,11 @@ class SetLogistics extends Component {
 
   _next =(logistic)=>{
     console.log("props passed!!!!!!!!!!!!!!!! ", this.props.navigation)
+
+    store.dispatch({
+      type : "LOGISTIC_TYPE",
+      payload : logistic
+    })
 
    
     this.props.navigation.navigate("Map", {
@@ -299,4 +314,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SetLogistics;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+  order: state.order,
+  pusher: state.pusher,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, { })(SetLogistics);
