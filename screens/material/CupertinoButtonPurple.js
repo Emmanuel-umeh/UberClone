@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 17,
 
-fontFamily : "Righteous-Regular",
+fontFamily : "Quicksand-Bold",
   },
   icon: {
     top: 10,

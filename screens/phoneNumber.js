@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent : "space-evenly"
   },
   loremIpsum: {
-  fontFamily : "Righteous-Regular",
+  fontFamily : "Quicksand-Bold",
     color: "black",
     fontSize: 22,
     marginTop: hp("20%"),
@@ -234,14 +234,14 @@ const styles = StyleSheet.create({
     marginLeft: wp("35%"),
   },
   loremIpsum2: {
-  fontFamily : "Righteous-Regular",
+  fontFamily : "Quicksand-Bold",
     color: "#121212",
     lineHeight: 22,
     fontSize: 22,
     marginTop: hp("1%"),
   },
   loremIpsum3: {
-  fontFamily : "Righteous-Regular",
+  fontFamily : "Quicksand-Bold",
     color: "black",
     fontSize: 22,
     opacity: 0.6,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     top: hp("5%")
   },
   back: {
-  fontFamily : "Righteous-Regular",
+  fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 22,
     marginLeft: 13,
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     marginLeft: 24,
   },
   loremIpsum4: {
-  fontFamily : "Righteous-Regular",
+  fontFamily : "Quicksand-Bold",
     color: "lightblue",
     fontSize: 22,
     marginTop: 9,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loremIpsum5: {
-  fontFamily : "Righteous-Regular",
+  fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize : 15,
     marginTop: 3,

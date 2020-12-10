@@ -89,7 +89,7 @@ class Driver_Rating extends Component{
 
          <Textarea rowSpan={5} bordered  placeholder ="Please write a short review (Optional)... " style ={{
              fontSize : 13,
-             fontFamily : "Righteous-Regular",
+             fontFamily : "Quicksand-Bold",
              backgroundColor : "whitesmoke"
          }}
          onChangeText={(review_message) => {this.setState({review_message}); }}
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     name:{
       fontSize:20,
       color:"black",
-      fontFamily : "Righteous-Regular",
+      fontFamily : "Quicksand-Bold",
       alignSelf : "center"
     },
     price:{

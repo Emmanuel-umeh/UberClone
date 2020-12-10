@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loremIpsum: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "rgba(0,0,0,1)",
     fontSize: 20
   },

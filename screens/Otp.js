@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     position: "absolute",
-     fontFamily : "Righteous-Regular",
+     fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 22
   },
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     top: 27,
     left: 115,
     position: "absolute",
-     fontFamily : "Righteous-Regular",
+     fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 22
   },
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     marginLeft: 24
   },
   resendCodeIn0015: {
-     fontFamily : "Righteous-Regular",
+     fontFamily : "Quicksand-Bold",
     color: "black",
     lineHeight: 30,
     fontSize: 22,

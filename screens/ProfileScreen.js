@@ -49,7 +49,7 @@ class ProfileScreen extends Component{
 
                   <Body>
                     <Title style ={{
-                        fontFamily : "Righteous-Regular",
+                        fontFamily : "Quicksand-Bold",
                       marginLeft : wp("10%")
                     }}>Profile</Title>
                   </Body>
@@ -75,7 +75,7 @@ class ProfileScreen extends Component{
             }}>
               <Text style ={{
                 fontSize : 18,
-                fontFamily : "Righteous-Regular",
+                fontFamily : "Quicksand-Bold",
                  paddingLeft :wp("25%")
               }}>{user && user.phoneNumber}</Text>
             </ListItem>
@@ -89,7 +89,7 @@ class ProfileScreen extends Component{
                  borderColor : "green",
                  fontSize : 18,
                  
-                 fontFamily : "Righteous-Regular",
+                 fontFamily : "Quicksand-Bold",
                }} />
                <View
         style = {{
@@ -98,12 +98,12 @@ class ProfileScreen extends Component{
           backgroundColor: '#cccccc'
         }}
       />
-               <Input style ={{fontFamily : "Righteous-Regular",}} disabled placeholder="Last name" value = { user && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} />
+               <Input style ={{fontFamily : "Quicksand-Bold",}} disabled placeholder="Last name" value = { user && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} />
             </ListItem>
           
 
             <ListItem>
-            <Input style ={{fontFamily : "Righteous-Regular",}} disabled placeholder="Email" value = { user &&user.email.charAt(0).toUpperCase() + user.email.slice(1)} />
+            <Input style ={{fontFamily : "Quicksand-Bold",}} disabled placeholder="Email" value = { user &&user.email.charAt(0).toUpperCase() + user.email.slice(1)} />
             </ListItem>
           </List>
           
@@ -111,7 +111,7 @@ class ProfileScreen extends Component{
           <Text style ={{
             paddingTop : 20,
             fontWeight : "300",
-            fontFamily : "Righteous-Regular",
+            fontFamily : "Quicksand-Bold",
           }}>
                 Ride recipts will be sent to your email.
               </Text>
@@ -131,7 +131,7 @@ class ProfileScreen extends Component{
             }}>
               
               <Icon active name="md-home" />
-              <Text style ={{   fontFamily : "Righteous-Regular"}}>Add Home Location</Text>
+              <Text style ={{   fontFamily : "Quicksand-Bold"}}>Add Home Location</Text>
               <Right style={{
                   left : -5
               }}>
@@ -148,7 +148,7 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               <Icon active name="ios-briefcase" />
-              <Text  style ={{   fontFamily : "Righteous-Regular",}} >Add Work Location</Text>
+              <Text  style ={{   fontFamily : "Quicksand-Bold",}} >Add Work Location</Text>
               <Right
               style={{
                   left : -6
@@ -182,7 +182,7 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               <Icon active name="md-flag" />
-              <Text  style ={{   fontFamily : "Righteous-Regular",}}>English - US</Text>
+              <Text  style ={{   fontFamily : "Quicksand-Bold",}}>English - US</Text>
               <Right style={{
                   left : 1
               }}>
@@ -196,7 +196,7 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               <Icon active name="md-flag" />
-              <Text  style ={{   fontFamily : "Righteous-Regular",}}>Communication Preference</Text>
+              <Text  style ={{   fontFamily : "Quicksand-Bold",}}>Communication Preference</Text>
               <Right style={{
                   left : -21
               }}>
@@ -236,14 +236,14 @@ const styles = StyleSheet.create({
     fontSize: 38
   },
   profile: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 26,
     marginLeft: 3,
     marginTop: 5
   },
   logOut: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 18,
     marginLeft: 156,
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loremIpsum: {
-     fontFamily : "Righteous-Regular",
+     fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 16,
     fontWeight : "300",
@@ -305,12 +305,12 @@ const styles = StyleSheet.create({
     fontSize: 38
   },
   loremIpsum2: {
-     fontFamily : "Righteous-Regular",
+     fontFamily : "Quicksand-Bold",
     color: "#121212",
     marginLeft: 86
   },
   addAddress: {
-     fontFamily : "Righteous-Regular",
+     fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 18,
     marginTop: 1
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     marginRight: 46
   },
   englishUs: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 18,
     marginTop: 11

@@ -166,7 +166,7 @@ class Map extends Component {
     }
   };
   componentDidMount() {
-
+    // persistStore(store).purge();
     this.pusher_actions();
 
     // console.log("users details!!!!!!!!!!!1", this.props.auth)
@@ -270,9 +270,9 @@ class Map extends Component {
             longitude,
           },
           pitch: 2,
-          heading: 30,
-          altitude: 200,
-          zoom: 30,
+          heading: 60,
+          altitude: 18,
+          zoom:18,
         },
         1500
       );
@@ -304,8 +304,6 @@ class Map extends Component {
 
     //  if(!this.props.pusher.available_drivers_channel){
 
-    console.log("reconnecting user!!!!!!!!!!!!!!!!!!!!!!!!!!!! via",
-    this.props.route.params)
 
     this.available_drivers_channel = this.pusher.subscribe(
       `private-available-drivers-${
@@ -468,9 +466,9 @@ class Map extends Component {
                 latitude: data.location.latitude,
               },
               pitch: 2,
-              heading: 30,
-              altitude: 200,
-              zoom: 40,
+              heading: 60,
+              altitude: 18,
+              zoom: 10,
             },
             500
           );
@@ -571,15 +569,29 @@ class Map extends Component {
           });
 
           console.log("maops", this.map)
-          this.map &&  this.map.animateToRegion(
+          this.map && 
+          this.map.animateCamera(
             {
-              latitudeDelta: LATITUDE_DELTA,
-              longitudeDelta: LONGITUDE_DELTA,
-              longitude: longitude,
-              latitude: latitude,
+              center: {
+                longitude: longitude,
+                latitude: latitude,
+              },
+              pitch: 2,
+              heading: 60,
+              altitude: 18,
+              zoom: 10,
             },
             500
-          );
+          ); 
+          // this.map.animateToRegion(
+          //   {
+          //     latitudeDelta: LATITUDE_DELTA,
+          //     longitudeDelta: LONGITUDE_DELTA,
+          //     longitude: longitude,
+          //     latitude: latitude,
+          //   },
+          //   500
+          // );
         }
       });
 
@@ -1072,7 +1084,7 @@ class Map extends Component {
   sheetRef = React.createRef(null);
 
   render() {
-    // console.log("region!!!!! ? ", this.props.order);
+    console.log("region!!!!! ? ", this.props.order);
     const { user } = this.props.auth;
 
     return (
@@ -1104,13 +1116,13 @@ class Map extends Component {
 
         {/* if the user has a driver, show the driver details */}
 
-        {this.props.order.has_ride ? (
+        {this.props.order.has_ride && (
           <DriverDetailsPopUp
             driver={this.props.order.driver_details}
             distance={this.props.order.distance}
             user_ride_channel={this.user_ride_channel}
           />
-        ) : null}
+        ) }
 
         {!this.props.order.destinationRequested ? (
           <TouchableOpacity
@@ -1197,7 +1209,7 @@ class Map extends Component {
         !this.props.order.has_ride ? (
           <CurrentLocationButton
             cb={() => {
-              this.centerMap();
+              this.centerCamera();
             }}
             onPress={() => {
               this.refs.BottomSheet.current.snapTo(9);
@@ -1215,7 +1227,7 @@ class Map extends Component {
             zoomEnabled={true}
             showsCompass={false}
             onMapReady={() => {
-              this.centerMap();
+              this.centerCamera();
               this.marker && this.marker.showCallout();
             }}
             // onRegionChangeComplete={() => {

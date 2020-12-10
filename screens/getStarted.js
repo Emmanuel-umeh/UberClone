@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   moveSafely: {
-   fontFamily : "Righteous-Regular",
+   fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 40,
     marginTop: "100%",
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     marginLeft: wp("15%")
   },
   getStarted: {
-   fontFamily : "Righteous-Regular",
+   fontFamily : "Quicksand-Bold",
     color: "rgba(255,255,255,1)",
     fontSize: 20,
     marginTop: 15

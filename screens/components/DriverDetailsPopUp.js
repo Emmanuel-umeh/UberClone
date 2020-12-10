@@ -248,7 +248,7 @@ class DriverDetailsPopUp extends Component {
             </Text>
             )}
 
-            {driver.company && (
+            {driver.company && driver.company.company_name &&  (
 
               <>
             <Text style={styles.rider_name}>

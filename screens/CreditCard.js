@@ -49,7 +49,7 @@ console.log(this.props.route.params)
         return(
 
             <View style ={{flex : 1, justifyContent : "center", alignContent : "center" }}>
-                <Text style={{ fontFamily : "Righteous-Regular", alignSelf : "center"}}>Please Add A Valid ATM Card</Text>
+                <Text style={{ fontFamily : "Quicksand-Bold", alignSelf : "center"}}>Please Add A Valid ATM Card</Text>
 <CreditCardInput onChange={this._onChange} />
 
 

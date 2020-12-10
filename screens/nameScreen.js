@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     justifyContent : "center"
   },
   whatsYourName: {
-    fontFamily: "roboto-regular",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     fontSize: 22,
     marginTop: hp("20%"),
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     left: 0,
     color: "blue",
     position: "absolute",
-    fontFamily: "roboto-regular",
+    fontFamily: "Quicksand-Bold",
     // color: "#121212",
     fontSize: 22,
     opacity: 0.19
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     marginLeft: 24
   },
   lastName: {
-    fontFamily: "roboto-regular",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     color: "blue",
     fontSize: 22,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   email: {
-    fontFamily: "roboto-regular",
+    fontFamily: "Quicksand-Bold",
     color: "blue",
     fontSize: 22,
     opacity: 0.19,

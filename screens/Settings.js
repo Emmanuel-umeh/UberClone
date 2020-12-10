@@ -78,7 +78,7 @@ class  Settings extends Component{
         </Left>
           <Body>
             <Title style ={{
-                           fontFamily : "Righteous-Regular",
+                           fontFamily : "Quicksand-Bold",
               marginLeft : wp("10%")
             }}>Settings</Title>
           </Body>
@@ -142,7 +142,7 @@ class  Settings extends Component{
             <CardItem>
               <Icon active name="ios-notifications" />
               <Text style ={{
-                 fontFamily : "Righteous-Regular",
+                 fontFamily : "Quicksand-Bold",
               }}>Notifications</Text>
               <Right style={{
                   left : 20
@@ -177,7 +177,7 @@ this.setState({
             <CardItem>
               <Icon active name="ios-cash" />
               <Text style ={{
-                 fontFamily : "Righteous-Regular",
+                 fontFamily : "Quicksand-Bold",
               }}>Payment Method</Text>
               <Right style={{
                   left : -6
@@ -200,7 +200,7 @@ this.setState({
             <CardItem>
               <Icon active name="md-trash" />
               <Text style ={{
-                 fontFamily : "Righteous-Regular",
+                 fontFamily : "Quicksand-Bold",
               }}>Clear Cache</Text>
               <Right style={{
                   left : 0
@@ -217,7 +217,7 @@ this.setState({
             <CardItem>
               <Icon active name="ios-briefcase" />
               <Text style ={{
-                 fontFamily : "Righteous-Regular",
+                 fontFamily : "Quicksand-Bold",
               }}>Terms & Privacy</Text>
               <Right
               style={{
@@ -237,7 +237,7 @@ this.setState({
             <CardItem>
               <Icon active name="md-contact" />
               <Text style ={{
-                 fontFamily : "Righteous-Regular",
+                 fontFamily : "Quicksand-Bold",
               }}>Contact Us</Text>
               <Right style={{
                   left : 1
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     marginTop: 1
   },
   settings: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "rgba(255,255,255,1)",
     fontSize: 26,
     marginLeft: 10
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   chineduChidera: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     marginTop: -2,
     // fontWeight : "bold",
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     height: hp("40%")
   },
   settings1: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "rgba(255,255,255,1)",
     fontSize: 26,
     marginLeft: 53,

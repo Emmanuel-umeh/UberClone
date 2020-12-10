@@ -8,7 +8,7 @@ import SignUpScreen from './SignUpScreen';
 import PhoneNumber from './phoneNumber';
 import Splash1 from './Intro/Intro1';
 import Map from './Map';
-import MainTabScreen from './MainTabScreen';
+// import MainTabScreen from './MainTabScreen';
 import { loadUser } from "../action/authAction";
 import {connect} from "react-redux"
 import getStarted from './getStarted';

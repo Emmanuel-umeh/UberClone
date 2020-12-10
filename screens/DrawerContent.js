@@ -143,7 +143,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 
-<DrawerItem 
+{/* <DrawerItem 
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="cash" 
@@ -159,7 +159,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
                                 }}
                                 label="Payment Method"
                                 onPress={() => {this.props.navigation.navigate('add_card')}}
-                            />
+                            /> */}
 
                             
                             {/* <DrawerItem 

@@ -29,6 +29,7 @@ import store from "../store"
 import google_api from "../keys/google_map";
 import { connect } from 'react-redux'
 
+import { persistStore } from "redux-persist";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -51,7 +52,6 @@ class SetLogistics extends Component {
 
 
 
-    
     if(this.props.order.has_ride){
       this._getLocationAsync()
       return this.props.navigation.replace("Map")

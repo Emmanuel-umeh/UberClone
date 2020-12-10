@@ -27,6 +27,7 @@ import { loadUser, setUserToken } from "./action/authAction";
 import AuthenticatedStack from "./screens/AuthenticatedStack";
 import AsyncStorage from "@react-native-community/async-storage";
 import * as Permissions from "expo-permissions";
+import NetInfo from '@react-native-community/netinfo';
 const Drawer = createDrawerNavigator();
 
 YellowBox.ignoreWarnings(["Setting a timer"]);
@@ -51,6 +52,7 @@ class App extends React.Component {
   };
 
   componentDidMount = async () => {
+    
     // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYTg1NzI1MGM4NjNjM2E3Y2ZiMWI1NiIsImlhdCI6MTYwNDg3MDI0MywiZXhwIjoxMDAwMDAxNjA0ODcwMjQyfQ.1yMf5nhSj3U4rrOHGyw8yEJ138sFp7c60zp2qOBEBPI")
 // await AsyncStorage.removeItem("token")
     await Font.loadAsync({
