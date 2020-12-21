@@ -25,6 +25,7 @@ import {
   DESTINATION,
   LOGISTIC_TYPE,
   COORDINATE_DRIVER_LOCATION,
+  CANCEL_ORDER,
   PURGE
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -143,6 +144,7 @@ driver_location: {
 },
 distance: null,
 
+fromChanged : false,
 
 
 
@@ -316,17 +318,46 @@ export default function (state = initialState, action) {
       {
         const {
           going,
+          from,
           destinationRequested,
           latitudeDelta,
         } = action.payload;
-        console.log("redux goimg!!!!!!!!!!!!!!!!!!!", going)
-        return {
-          ...state,
-          going: going,
-          destinationRequested: destinationRequested,
-          latitudeDelta: latitudeDelta,
-          type: "SELECT_DESTINATION",
-        };
+        console.log("redux from!!!!!!!!!!!!!!!!!!!", from)
+
+        if(from){
+
+          return {
+            ...state,
+            going: going,
+            // value to show that user is making a pickup order from a different location and not present location
+            fromChanged : true,
+            region : {
+              // ...region,
+              latitude : from.latitude,
+              longitude : from.longitude,
+           
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA
+  
+  
+            },
+            destinationRequested: destinationRequested,
+            latitudeDelta: latitudeDelta,
+            type: action.type,
+          };
+        }else{
+          return {
+            ...state,
+            going: going,
+            fromChanged : false,
+          
+            destinationRequested: destinationRequested,
+            latitudeDelta: latitudeDelta,
+            type: action.type,
+          };
+          }
+        
+      
       }
      
     case DESTINATION_CANCELLED:
@@ -334,6 +365,7 @@ export default function (state = initialState, action) {
         return {
           ...state,
           destinationRequested: false,
+          fromChanged  :false,
       
           type: "DESTINATION_CANCELLED",
         };
@@ -382,6 +414,60 @@ export default function (state = initialState, action) {
        driver_location : action.payload.driver_location,
        distance : action.payload.distance,
     
+        type: action.type,
+      };
+    }
+    case CANCEL_ORDER:{
+      return {
+        ...state,
+        order: null,
+    
+      
+        coming: null,
+        going: null,
+      
+        // name of the destination / going
+        // determines if the user has selected the destination
+        destinationRequested: false,
+        
+        // destination : ""
+        address: null,
+        addressShortName: null,
+        location: null,
+        error: null,
+        has_ride: false,
+        destination: null,
+        driver: null,
+   
+        is_searching: false,
+        has_ridden: false,
+        totalPriceVisible: false,
+        is_fetching : false,
+        // price of ride
+        price: 0,
+      
+        // name of the accepted driver
+        driver_details: null,
+        logistic_type : null,
+        //  auth_msg_details : null
+      
+      
+      // state details
+      my_location: null,
+     
+      distance: null,
+      
+      fromChanged : false,
+          
+      
+      
+      
+      
+      
+      
+      
+      
+      
         type: action.type,
       };
     }

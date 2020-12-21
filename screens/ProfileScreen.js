@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, SafeAreaView, StatusBar } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import CupertinoButtonPurple from "./material/CupertinoButtonPurple";
 import MaterialUnderlineTextbox1 from "./material/MaterialUnderlineTextbox1";
@@ -7,6 +7,8 @@ import MaterialUnderlineTextbox2 from "./material/MaterialUnderlineTextbox2";
 import MaterialUnderlineTextbox3 from "./material/MaterialUnderlineTextbox3";
 import MaterialUnderlineTextbox4 from "./material/MaterialUnderlineTextbox4";
 import EntypoIcon from "react-native-vector-icons/Entypo";
+
+import * as Animatable from "react-native-animatable"
 import MaterialStackedLabelTextbox8 from "./material/MaterialStackedLabelTextbox8";
 import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Body, Input,  List, ListItem, Title, Button,Picker, Switch } from 'native-base';
 import {
@@ -16,7 +18,7 @@ import {
 import {connect} from "react-redux"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Divider } from "react-native-paper";
-
+import { StatusBar } from 'expo-status-bar';
 class ProfileScreen extends Component{
 
     render(){
@@ -25,6 +27,7 @@ class ProfileScreen extends Component{
             <SafeAreaView  style={styles.container}>
              
 
+             <StatusBar style="dark" hidden = {true} />
 <Header style={{
                           backgroundColor : "black",
                           top : hp("2%")
@@ -54,7 +57,7 @@ class ProfileScreen extends Component{
                     }}>Profile</Title>
                   </Body>
                 
-
+                  <Right></Right>
                 
                 </Header>  
               {/* <View style={styles.icon4Row}>
@@ -65,7 +68,9 @@ class ProfileScreen extends Component{
                 <Text style={styles.profile}>Profile</Text>
                 <Text style={styles.logOut}>Log out</Text>
               </View> */}
-<ScrollView>
+
+              <Animatable.View  animation="bounceIn">
+<ScrollView >
 
 
 
@@ -218,7 +223,7 @@ class ProfileScreen extends Component{
               ></CupertinoButtonPurple>
         
               </ScrollView>
-
+              </Animatable.View>
             </SafeAreaView >
           );
     }

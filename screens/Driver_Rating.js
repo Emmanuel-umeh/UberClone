@@ -20,8 +20,10 @@ class Driver_Rating extends Component{
     reset_navigation =()=>{
                 // reset navigation!!
                 this.props.navigation.dispatch(
-                    StackActions.replace('setLogisticsScreen', { test: 'Test Params' })
+                    StackActions.replace('setLogisticsScreen')
                   )
+                this.props.navigation.pop() 
+                // && this.props.navigation.navigate('setLogisticsScreen');
                 
     }
 

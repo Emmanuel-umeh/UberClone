@@ -28,6 +28,9 @@ import AuthenticatedStack from "./screens/AuthenticatedStack";
 import AsyncStorage from "@react-native-community/async-storage";
 import * as Permissions from "expo-permissions";
 import NetInfo from '@react-native-community/netinfo';
+import * as SplashScreen from 'expo-splash-screen';
+
+import NoInternetScreen from "./screens/NoInternet"
 const Drawer = createDrawerNavigator();
 
 YellowBox.ignoreWarnings(["Setting a timer"]);
@@ -42,7 +45,9 @@ class App extends React.Component {
     super(props);
     console.ignoredYellowBox = ["Setting a timer"];
     console.ignoredYellowBox = ['Animated: `useNativeDriver`'];
-    
+    this.unsubscribe = null
+
+    this.connectivity = true
   }
   state = {
     loading: true,
@@ -51,44 +56,27 @@ class App extends React.Component {
     reduxLoading: this.props.auth.isLoading,
   };
 
-  componentDidMount = async () => {
+  async componentDidMount() {
+  
+this.loadApp()
+  
+ 
     
-    // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYTg1NzI1MGM4NjNjM2E3Y2ZiMWI1NiIsImlhdCI6MTYwNDg3MDI0MywiZXhwIjoxMDAwMDAxNjA0ODcwMjQyfQ.1yMf5nhSj3U4rrOHGyw8yEJ138sFp7c60zp2qOBEBPI")
-// await AsyncStorage.removeItem("token")
-    await Font.loadAsync({
-      "charm-bold": require("./assets/fonts/Charm-Bold.ttf"),
-      //   // 'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
-      "charm-regular": require("./assets/fonts/Charm-Regular.ttf"),
-      "Righteous-Regular": require("./assets/fonts/Righteous-Regular.ttf"),
-
-      "roboto-700": require("./assets/fonts/roboto-700.ttf"),
-      "roboto-900": require("./assets/fonts/roboto-900.ttf"),
-      "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
-      "Quicksand-Bold": require("./assets/fonts/Quicksand-Bold.ttf"),
-      
-      "Quicksand-Light": require("./assets/fonts/Quicksand-Light.ttf"),
-      
-      "Quicksand-Medium": require("./assets/fonts/Quicksand-Medium.ttf"),
-      
-      "Quicksand-Regular": require("./assets/fonts/Quicksand-Regular.ttf"),
-      
-      "Quicksand-SemiBold": require("./assets/fonts/Quicksand-SemiBold.ttf"),
-      
-
-
-      Roboto: require("native-base/Fonts/Roboto.ttf"),
-      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-      // ...Ionicons.font,
-    }); await Permissions.askAsync(Permissions.LOCATION);
-
-    await this.getToken();
-    await this.props.loadUser();
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 2000);
-
-    // console.log("Redux props ", this.props)
   };
+
+
+  loadApp = async()=>{
+      
+    console.log("loading app")
+    try {
+      await SplashScreen.preventAutoHideAsync();
+
+      this.prepareResources()
+    } catch (e) {
+      console.warn(e);
+    }
+
+  }
 
   // componentDidUpdate(prevProps) {
   //   console.log("prevprops ", prevProps.auth.isLoading);
@@ -101,6 +89,66 @@ class App extends React.Component {
   //   }
   // }
 
+  prepareResources = async()=>{
+try {
+  
+    
+    // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYTg1NzI1MGM4NjNjM2E3Y2ZiMWI1NiIsImlhdCI6MTYwNDg3MDI0MywiZXhwIjoxMDAwMDAxNjA0ODcwMjQyfQ.1yMf5nhSj3U4rrOHGyw8yEJ138sFp7c60zp2qOBEBPI")
+// await AsyncStorage.removeItem("token")
+await Font.loadAsync({
+  "charm-bold": require("./assets/fonts/Charm-Bold.ttf"),
+  //   // 'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
+  "charm-regular": require("./assets/fonts/Charm-Regular.ttf"),
+  "Righteous-Regular": require("./assets/fonts/Righteous-Regular.ttf"),
+
+  "roboto-700": require("./assets/fonts/roboto-700.ttf"),
+  "roboto-900": require("./assets/fonts/roboto-900.ttf"),
+  "roboto-regular": require("./assets/fonts/roboto-regular.ttf"),
+  "Quicksand-Bold": require("./assets/fonts/Quicksand-Bold.ttf"),
+  
+  "Quicksand-Light": require("./assets/fonts/Quicksand-Light.ttf"),
+  
+  "Quicksand-Medium": require("./assets/fonts/Quicksand-Medium.ttf"),
+  
+  "Quicksand-Regular": require("./assets/fonts/Quicksand-Regular.ttf"),
+  
+  "Quicksand-SemiBold": require("./assets/fonts/Quicksand-SemiBold.ttf"),
+  
+
+
+  Roboto: require("native-base/Fonts/Roboto.ttf"),
+  Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+  // ...Ionicons.font,
+}); await Permissions.askAsync(Permissions.LOCATION);
+
+await this.getToken();
+await this.props.loadUser();
+
+  
+this.unsubscribe = NetInfo.addEventListener(state => {
+  console.log('Connection type', state.type);
+ 
+  console.log('Is connected?', state.isConnected);
+
+  this.connectivity = state.isConnected
+});
+
+// console.log("Redux props ", this.props)
+} catch (error) {
+  console.warn(error)
+}finally{
+
+  this.setState({ loading: false }, async () => {
+
+    setTimeout(async() => {
+      await SplashScreen.hideAsync(); 
+    }, 1000);
+   
+  });
+
+}
+  }
+
   getToken = async () => {
     var token = await AsyncStorage.getItem("token");
     console.log("app js ", token);
@@ -110,6 +158,11 @@ class App extends React.Component {
     return token;
   };
 
+
+  componentWillUnmount(){
+    this.unsubscribe()
+
+  }
   // _renderNextButton = () => {
   //   return (
   //     <View style={styles.row}>
@@ -154,13 +207,32 @@ class App extends React.Component {
   render() {
     const { isAuthenticated, type, token, isLoading } = this.props.auth;
 
-    // console.log("last type dispatched ",type)
+    console.log("connectivity status ",this.connectivity)
 
     //   console.log("is loading??!! ", isLoading);
     //   console.log("redux loading " , this.state.reduxLoading)
-    if (this.state.loading || isLoading) {
-      return <AppLoading />;
-    } else {
+    if (this.state.loading) {
+      return null;
+    } 
+    
+    else if (!this.connectivity){
+ return(
+ 
+   <NoInternetScreen loadApp = {this.loadApp}/>
+ 
+   // <NoInternet 
+   // heading={"Oops! There is no Internet Connection"}
+   // content={"We're having a little difficulty in connecting to the Internet. Please check your connection and try again."}
+   // buttonLabel={"Try Again"}
+   // errorText={"We still can't connect - please try again."}
+   // // MainComponent={<NoInternetScreen/>}
+   // containerStyle={{backgroundColor: "white"}}
+   // textStyle={{color: "black"}}
+   // />
+ )
+ 
+     }
+    else {
       // console.log("second!!!");
       return (
         <NotifierWrapper>
@@ -168,6 +240,7 @@ class App extends React.Component {
             {isAuthenticated ? (
               <Drawer.Navigator
                 drawerContent={(props) => <DrawerContent {...props} />}
+                
                 initialRouteName="Home"
               >
                 <Drawer.Screen

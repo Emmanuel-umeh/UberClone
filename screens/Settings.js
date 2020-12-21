@@ -1,5 +1,5 @@
 import React, { Component,  } from "react";
-import { StyleSheet, View, Image, StatusBar, Platform,TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, Platform,TouchableOpacity } from "react-native";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import PaystackWebView from "react-native-paystack-webview";
 import CupertinoButtonWarning6 from "./material/CupertinoButtonWarning6";
@@ -13,7 +13,7 @@ import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Bo
 import LottieLoader from "react-native-lottie-loader";
 import {notifications_allowed} from "../action/authAction"
 import AsyncStorage from "@react-native-community/async-storage";
-import * as Random from 'expo-random';
+import { StatusBar } from 'expo-status-bar';
 // import { nanoid } from 'nanoid'
 class  Settings extends Component{
 
@@ -54,16 +54,19 @@ class  Settings extends Component{
         const {user} = this.props.auth
         return (
             <View style={styles.container}> 
-
+<StatusBar style="dark" hidden = {true} />
 <Header style={{
                           backgroundColor : "black",
-                          top : hp("2%")
+                          // top : hp("2%")
+                          zIndex : 999
                         }} 
                         androidStatusBarColor = "black"
                         iosBarStyle	= "dark-content"
                         >
             <Left>
-          <TouchableOpacity onPress={() => {
+          <TouchableOpacity style ={{
+            zIndex : 999
+          }} onPress={() => {
                 this.props.navigation.pop();
               }}> 
           <Button transparent > 
@@ -82,6 +85,8 @@ class  Settings extends Component{
               marginLeft : wp("10%")
             }}>Settings</Title>
           </Body>
+
+          <Right></Right>
         
         </Header>  
                    {/* <LottieLoader
@@ -239,47 +244,6 @@ this.setState({
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
               }}>Contact Us</Text>
-              <Right style={{
-                  left : 1
-              }}>
-                <Icon name="arrow-forward" style ={{
-                  color : "black"
-                }} />
-              </Right>
-             </CardItem>
-            <CardItem>
-              <Icon active name="md-contact" />
-         
-
-              {/* <PaystackWebView
-        buttonText="Pay Now"
-        showPayButton={true}
-        paystackKey="pk_test_083d152747bcfd9dfebd3c284dc4d9f63e947863"
-        amount={120000}
-        billingEmail="Emmanuelsumeh@gmail.com"
-        billingMobile="09787377462"
-        billingName="Emmanuel Umehj"
-        ActivityIndicatorColor="yellow"
-        SafeAreaViewContainer={{marginTop: 5}}
-        SafeAreaViewContainerModal={{marginTop: 5}}
-        handleWebViewMessage={(e) => {
-          // handle the message
-        }}
-        onCancel={(e) => {
-          // handle response here
-        }}
-        onSuccess={(res) => {
-          // handle response here
-          console.log("success", res)
-        }}
-        autoStart={false}
-        refNumber={ this.getRandomString(7)} // this is only for cases where you have a reference number generated
-        // renderButton={(onPress) => {
-        //   <Button onPress={onPress}>
-        //     Pay Now
-        //   </Button>
-        // }}
-      /> */}
               <Right style={{
                   left : 1
               }}>

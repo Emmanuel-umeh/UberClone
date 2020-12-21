@@ -145,7 +145,7 @@ export const endLoading = () => (dispatch, getState) => {
 
 
 // send OTP code to the user
-export const textMessageAuth = (phoneNumber) => (dispatch) => {
+export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
   // console.log("data received ", email, password)
   const config = {
     headers: {
@@ -171,6 +171,8 @@ export const textMessageAuth = (phoneNumber) => (dispatch) => {
         
         // status code 10 means otp has already been sent
         // status code 6 means the otp has timed out or more of it has been completed
+        hideLoader()
+        
         return RootNavigation.navigate("otp", {
           request_id: res.data.request_id,
           status: res.data.status,

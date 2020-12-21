@@ -122,6 +122,8 @@ export const LOGISTIC_TYPE="LOGISTIC_TYPE"
 
 // coordinate driver location
 export const COORDINATE_DRIVER_LOCATION="COORDINATE_DRIVER_LOCATION"
+// cCANCEL AN ORDER
+export const CANCEL_ORDER="CANCEL_ORDER"
 
 
 // Clean up redux states

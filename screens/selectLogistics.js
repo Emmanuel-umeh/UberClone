@@ -8,6 +8,10 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+
+
+import { StatusBar } from "expo-status-bar";
+
 import Car from "./material/Car";
 import Bike from "./material/Bike";
 import Truck from "./material/Truck";
@@ -51,17 +55,26 @@ class SetLogistics extends Component {
   componentDidMount(){
 
 
+              // persistStore(store).purge();
+              // store.dispatch({
+              //   type : "PURGE"
+              // })
 
     if(this.props.order.has_ride){
-      this._getLocationAsync()
+      // if(!this.props.order.fromChanged){
+        this._getLocationAsync()
+      // }
+    
       return this.props.navigation.replace("Map")
       
     }
+    
     this._getLocationAsync()
   }
   
 
   _getLocationAsync = async () => {
+    console.log("getting location ")
     Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
@@ -178,12 +191,13 @@ class SetLogistics extends Component {
 
     // console.log("state changed,", this.state)
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {/* <Header />  */}
+        <StatusBar style="light" hidden = {true} />
 
-        <SafeAreaView>
+        {/* <SafeAreaView> */}
           <Animatable.Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Vehicle</Animatable.Text>
-        </SafeAreaView>
+        {/* </SafeAreaView> */}
 
         <ScrollView>
 
@@ -273,7 +287,7 @@ class SetLogistics extends Component {
             </Text>
           </Button>
         </TouchableOpacity> */}
-      </View>
+      </SafeAreaView>
     );
   }
 }

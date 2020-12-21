@@ -19,9 +19,10 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Body, Button, Icon, Left, Right } from "native-base";
+import { Body, Button, Icon, Left, Right, ListItem, List, Switch } from "native-base";
 import { Divider } from "react-native-paper";
 
+import LottieView from 'lottie-react-native';
 import { connect } from "react-redux";
 import { cashless_payment } from "../../action/orderActions";
 const TouchableOpacity =
@@ -33,6 +34,7 @@ class DriverDetailsPopUp extends Component {
     super(props);
     this.state = {
       modalVisible: false,
+      payment_successful : false
     };
     this.sheetRef = React.createRef();
     this.paystackbutton = React.createRef(null);
@@ -82,6 +84,9 @@ class DriverDetailsPopUp extends Component {
         height: hp("60%"),
       }}
     >
+
+      {!this.state.payment_successful ? 
+      <>
       <View
         style={{
           width: wp("10%"),
@@ -149,8 +154,12 @@ class DriverDetailsPopUp extends Component {
                 onSuccess={(res) => {
                   // handle response here
                   const tokens = this.props.auth.token;
+                  console.log({user_ride_channel})
+                 
                   cashless_payment(tokens, order._id, user_ride_channel);
-
+                  this.setState({
+                    payment_successful : true
+                    })
                   //  console.log("success", res)
                 }}
                 autoStart={false}
@@ -175,6 +184,9 @@ class DriverDetailsPopUp extends Component {
               <Button
                 block
                 warning
+                style ={{
+                  top : -hp("17%")
+                }}
                 onPress={() => this.paystackbutton.current.StartTransaction()}
               >
                 <Text
@@ -190,7 +202,10 @@ class DriverDetailsPopUp extends Component {
         </>
       )}
 
-      <Divider />
+      <Divider style ={{
+        height : 1,
+        top : -5
+      }} />
 
       {order && order.state != "Ended" && (
         <View
@@ -214,7 +229,7 @@ class DriverDetailsPopUp extends Component {
               style={{
                 flex: 1,
                 flexDirection: "row",
-                top: 5,
+                top: hp("1.5"),
                 justifyContent: "center",
               }}
             >
@@ -278,17 +293,24 @@ class DriverDetailsPopUp extends Component {
               </Text>
             ) : null}
           </View>
+          {/* <Divider /> */}
         </View>
       )}
-      <Divider style={{ top: hp("4%") }} />
+ 
 
-      <View style={{ margin: 20, alignSelf: "center" }}>
+
+{ order.state !== "Ended" &&
+<>
+
+      <View style={{ margin: hp("4"), alignSelf: "center" }}>
+      
         <Text style={styles.rider_name}>Destination</Text>
+        <Divider />
       </View>
 
       <Divider />
 
-      <View style={{ flex: 1, flexDirection: "row" }}>
+       <ListItem icon >
         <Left>
           <EntypoIcon name="location-pin" style={styles.icon1}></EntypoIcon>
         </Left>
@@ -305,21 +327,19 @@ class DriverDetailsPopUp extends Component {
             </Text>
           </View>
         </Body>
-        <Right style ={{
-          width : 10
-        }}>
-  {/* <EntypoIcon name="arrow-right" style={styles.icon1}></EntypoIcon> */}
-  </Right>
-      </View>
+     
+      </ListItem>
 
-      <Divider
-        style={{
-          top: -10,
-        }}
-      />
-      
+      </>
+}
+
+
 
       <TouchableOpacity
+
+      style ={{
+        marginTop : hp("4")
+      }}
         onPress={() => {
           // alert("Making call!!!")
           makeCall();
@@ -339,6 +359,73 @@ class DriverDetailsPopUp extends Component {
           <Text style={{ color: "white", left: -wp("5") }}>Call Driver</Text>
         </Button>
       </TouchableOpacity>
+  
+  
+  </> :
+  <View style ={{flex : 1}}>
+       <View
+        style={{
+          width: wp("10%"),
+          backgroundColor: "#515357",
+          padding: 3,
+          // left  : wp("40%"),
+          alignSelf: "center",
+          // height : 2,
+          borderRadius: 50,
+        }}
+      ></View>
+
+{order && order.state == "Ended" && (
+  <>
+        <Text style={styles.on_the_way}>Paid Successfully!</Text>
+        <Divider />
+        </>
+      )}
+
+  <LottieView
+          // style = {styles.image}
+          // height = {600}
+          
+        
+          // imageAssetsFolder={'lottie/animation_1'}
+          source={require("../../assets/lottie/tick.json")}
+          autoPlay 
+          loop
+        /> 
+        
+
+
+        <View style ={{top : hp("35%")}}>
+
+
+        <TouchableOpacity
+
+
+  onPress={() => {
+    // alert("Making call!!!")
+    makeCall();
+  }}
+>
+  <Button
+    style={{
+      borderRadius: 50,
+      width: wp("35%"),
+      alignSelf: "center",
+      alignItems: "center",
+    }}
+    iconLeft
+    dark
+  >
+    <Icon style={{ left: -5 }} name="md-call" />
+    <Text style={{ color: "white", left: -wp("5") }}>Call Driver</Text>
+  </Button>
+</TouchableOpacity>
+
+          </View>
+
+        
+        </View>}
+  
     </View>
   );
 
@@ -398,6 +485,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     alignSelf: "center",
   },
+  
 
   car_color: {
     // paddingLeft : wp("26%"),

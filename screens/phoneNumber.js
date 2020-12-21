@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { StyleSheet, View, TextInput } from "react-native";
-import IoniconsIcon from "react-native-vector-icons/Ionicons";
-import EntypoIcon from "react-native-vector-icons/Entypo";
 import * as Animatable from "react-native-animatable";
 import {connect} from "react-redux"
 import {textMessageAuth, setLoading} from "../action/authAction"
@@ -11,23 +9,19 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import {
-  Container,
+
   Header,
-  Content,
-  Card,
-  CardItem,
+
   Text,
   Icon,
-  Right,
+
   Left,
   Body,
   Title,
   Button,
-  Switch,
+
 } from "native-base";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-
-import { LogBox } from 'react-native';
 
 class PhoneNumber extends Component {
   constructor(props) {
@@ -52,6 +46,10 @@ class PhoneNumber extends Component {
     this.mobileNumber()
   }
 
+  hideLoader =()=>{
+     this.loadingButton.showLoading(false);
+  }
+
   concatNumber= (phoneNumber)=>{
 
     var number 
@@ -68,13 +66,17 @@ class PhoneNumber extends Component {
      
     console.log("concat number ", number)
     // this.props.setLoading()
-     this.props.textMessageAuth(number)
+     this.props.textMessageAuth(number, this.hideLoader)
 
     // console.log({result})
     // this.props.navigation.navigate("otp")
 
   }
 
+
+  componentWillUnmount(){
+    this.loadingButton.showLoading(true);
+  }
   mobileNumber = () => {
 
     const number = this.state.number ? this.state.number.replace(/\s+/g, '') : null

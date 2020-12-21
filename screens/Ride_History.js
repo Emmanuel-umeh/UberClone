@@ -26,7 +26,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
   import moment from "moment"
 
 function Item({ order }) {
-  console.log({order})
   return (
     <>
     <Divider style={{
@@ -89,7 +88,7 @@ function Ride_History(props) {
                       marginLeft : wp("2%")
                     }}>Ride History</Title>
                   </Body>
-                
+                  <Right></Right>   
       </Header>
     
       <Text style={styles.history}>History</Text>
@@ -100,6 +99,7 @@ function Ride_History(props) {
 <FlatList
 data={user.orders.reverse()}
 renderItem={({ item }) => <Item order={item} />}
+initialNumToRender={5}
 keyExtractor={item => item.id}
 />
 : <View>
