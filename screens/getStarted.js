@@ -7,6 +7,7 @@ import {connect} from "react-redux"
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import LottieView from 'lottie-react-native';
+import { TouchableOpacity } from "react-native";
 
 function getStarted({navigation}) {
   return (
@@ -56,16 +57,21 @@ function getStarted({navigation}) {
       
 
       <View style={styles.rect}>
+        <TouchableOpacity  onPress ={()=>{
+            navigation.navigate("phoneNumberScreen")
+          }}>
+
+  
         <Animatable.View 
         animation = "fadeInUp"
         style={styles.getStartedRow}>
-          <Text style={styles.getStarted} onPress ={()=>{
-            navigation.navigate("phoneNumberScreen")
-          }}>Get Started</Text>
+          <Text style={styles.getStarted}>Get Started</Text>
           <Icon onPress ={()=>{
             navigation.navigate("phoneNumberScreen")
           }} name="md-arrow-forward" style={styles.icon}></Icon>
         </Animatable.View>
+                
+        </TouchableOpacity>
       </View>
     </Animatable.View>
   );

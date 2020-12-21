@@ -318,14 +318,15 @@ export const registerDetails = (firstName, lastName, email, id,tokens) => (
     // dispatch({
     //   type : END_LOADING
     // })
+    RootNavigation.navigate("TermsAndCondition", { token: res.data.token });
+
 
     dispatch({
       type: USER_LOADED,
       payload: res.data,
     });
 
-        return RootNavigation.navigate("TermsAndCondition", { token: res.data.token });
-
+        // return 
         // status code 10 means otp has already been sent
         // status code 6 means the otp has timed out or more of it has been completed
         // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });

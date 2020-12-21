@@ -83,7 +83,7 @@ function Ride_History(props) {
         </Left>
         <Body>
                     <Title style ={{
-                     fontFamily : "Righteous-Regular",
+                     fontFamily : "Quicksand-Bold",
                       
                       marginLeft : wp("2%")
                     }}>Ride History</Title>
@@ -100,11 +100,23 @@ function Ride_History(props) {
 data={user.orders.reverse()}
 renderItem={({ item }) => <Item order={item} />}
 initialNumToRender={5}
-keyExtractor={item => item.id}
+ListEmptyComponent ={()=>{
+  return <>
+  <View style ={{
+    marginTop : hp(20)
+  }}>
+    <Text style={{
+      fontFamily : "Quicksand-Bold",
+      alignSelf : "center"
+    }}> No Ride History</Text>
+  </View>
+  </>
+}}
+keyExtractor={item => item._id}
 />
 : <View>
   <Text  style ={{
-                     fontFamily : "Righteous-Regular",
+                     fontFamily : "Quicksand-Bold",
                       
                       marginLeft : wp("2%")
                     }} >No History To Show</Text>
@@ -137,52 +149,53 @@ const styles = StyleSheet.create({
     flex: 1
   },
   history: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 26,
     marginTop: 49,
-    marginLeft: wp("35%")
+    // marginLeft: wp("35%")
+    alignSelf: "center"
   },
   loremIpsum: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 18,
     marginTop: 38,
     marginLeft: 21
   },
   price: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 18,
     marginLeft: 21
   },
   loremIpsum2: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "#121212",
     marginTop: 6,
     marginLeft: 21
   },
   finished: {
-    fontFamily : "Righteous-Regular",
+    fontFamily : "Quicksand-Bold",
     color: "rgba(76,187,47,1)",
     marginTop: 5,
     marginLeft: 21
   },
   loremIpsum3: {
-   fontFamily : "Righteous-Regular",
+   fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 18,
     marginTop: 39,
     marginLeft: 21
   },
   youCancelled: {
-   fontFamily : "Righteous-Regular",
+   fontFamily : "Quicksand-Bold",
     color: "rgba(181,50,34,1)",
     marginTop: 26,
     marginLeft: 21
   },
   loremIpsum4: {
-   fontFamily : "Righteous-Regular",
+   fontFamily : "Quicksand-Bold",
     color: "#121212",
     marginTop: -39,
     marginLeft: 21

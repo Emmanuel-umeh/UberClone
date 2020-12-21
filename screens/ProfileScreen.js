@@ -30,7 +30,7 @@ class ProfileScreen extends Component{
              <StatusBar style="dark" hidden = {true} />
 <Header style={{
                           backgroundColor : "black",
-                          top : hp("2%")
+                          // top : hp("2%")
                         }} 
                         androidStatusBarColor = "black"
                         iosBarStyle	= "dark-content"
