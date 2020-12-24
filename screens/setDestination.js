@@ -21,6 +21,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
+import * as Location from "expo-location";
 
 import  FloatingActionButton  from "react-native-floating-action-button";
  import { connect } from 'react-redux'
@@ -84,15 +85,21 @@ class setDestination extends Component {
   // persistStore(store).purge();
 
   try {
-    let location = await  Geocoder.from({
+    // let location = await  Geocoder.from({
+    //   latitude: this.props.order.region.latitude,
+    //   longitude:  this.props.order.region.longitude,
+    // })
+
+   const location = await Location.reverseGeocodeAsync({
+
       latitude: this.props.order.region.latitude,
       longitude:  this.props.order.region.longitude,
     })
-    // const json = await location.json()
-    var addressComponent =  location.results[0].address_components[0].long_name + " " +location.results[0].address_components[1].long_name ;
-    // console.log("myaddress name ", location.results[0].address_components)
+
+
+   
     this.setState({
-      my_address : addressComponent
+      my_address : location.street
     })
     //   .then((json) => {
     //     var addressComponent = json.results[0].address_components[0].long_name;
@@ -356,12 +363,22 @@ key={item.place_id}
     const result = await fetch(place_url);
      const json = await result.json();
 
-    
+    // the name of the destination to display on callout
+    // using this to return formatted street name
+  //   const going_address_name =  await  Location.reverseGeocodeAsync({
+  //     latitude: json.result.geometry.location.lat,
+  //  longitude:   json.result.geometry.location.lng
+  //   })
 
+// going address passed to map
      const destination = {
        latitude: json.result.geometry.location.lat,
        longitude: json.result.geometry.location.lng,
+       name : item.structured_formatting.main_text
      };
+
+     console.log({destination})
+
 
    const  distance =   getLatLonDiffInMeters(
        this.props.order.region.latitude,

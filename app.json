@@ -15,13 +15,24 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.whiteaxis.whiteaxis",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.whiteaxis.whiteaxis",
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBLmNEQEe5yUH4Rc41ZwfkJIz5h5Dl8Oc8"
+        }
+      }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo3.png"
     },
     "description": "White Axis Solution"
   }

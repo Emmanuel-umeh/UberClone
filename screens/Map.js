@@ -11,6 +11,7 @@ import {
   Alert,
   Vibration,
   TouchableOpacity,
+  Linking,
   YellowBox,
   Image,
   Platform,
@@ -18,7 +19,7 @@ import {
 
 import * as Permissions from "expo-permissions";
 import store from "../store";
-import MapView, { Marker, AnimatedRegion } from "react-native-maps";
+import MapView, { Marker, AnimatedRegion, Callout } from "react-native-maps";
 
 import * as Location from "expo-location";
 import DestinationButton from "../components/destinationButton";
@@ -35,7 +36,7 @@ import { NavigationContainer, StackActions } from "@react-navigation/native";
 import MapViewDirections from "react-native-maps-directions";
 
 import BottomSheet from "reanimated-bottom-sheet";
-import { Button, Content, Header, Icon } from "native-base";
+import { Button, Content, Header, Icon, Item , Input} from "native-base";
 import * as Animatable from "react-native-animatable";
 import { BackHandler } from "react-native";
 // import { TouchableOpacity } from "react-native-gesture-handler";
@@ -162,6 +163,7 @@ class Map extends Component {
     this.soundObject = new Audio.Sound();
     try {
       console.log("Loading sounds!!!!!!!!!!!!!!!!!!!!!!");
+      Vibration.vibrate(500)
       await this.soundObject.loadAsync(
         require("../assets/sounds/notification.mp3")
       );
@@ -306,7 +308,7 @@ this.reconnect_client()
           pitch: 2,
           heading: 60,
           altitude: 18,
-          zoom:16,
+          zoom:wp(4.6),
         },
         1500
       );
@@ -334,7 +336,7 @@ this.reconnect_client()
       // });<D
     }
     // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-    Pusher.logToConsole = true;
+    Pusher.logToConsole = false;
 
     //  if(!this.props.pusher.available_drivers_channel){
 
@@ -840,23 +842,27 @@ this.reconnect_client()
 
     try {
       const {
-        // latitudeDelta,
-        // longitudeDelta,
+        latitudeDelta,
+        longitudeDelta,
         latitude,
         longitude,
       } = this.props.order.region;
   
-      this.map &&  this.map.animateToRegion(
-        {
-          latitudeDelta,
-          longitudeDelta,
-          latitude,
-          longitude,
-        },
-        1500
-      );
-  
-      console.log("animation should be complete");
+      this.map &&
+        this.map.animateCamera(
+          {
+            center: {
+              latitude,
+              longitude,
+            },
+            pitch: 0,
+            heading: 30,
+            altitude: 100,
+            zoom: 15,
+          },
+          1500
+        );
+    
     } catch (error) {
       console.warn(error)
     }
@@ -912,6 +918,7 @@ this.reconnect_client()
   
       //  this._getLocationAsync
   
+      this.destinationMarker.showCallout()
       this.map
         ? this.map.fitToCoordinates(
             [
@@ -945,7 +952,7 @@ this.reconnect_client()
             500
           );
 
-          this.destinationMarker.showCallout()
+     
     } catch (error) {
       console.warn(error)
     }
@@ -959,51 +966,25 @@ this.reconnect_client()
 
     try {
       console.log("booking ride");
-    // await this.this.pusher_actions();
-    // RNGooglePlacePicker.show((response) => {
-    //   if (response.didCancel) {
-    //     console.log('User cancelled GooglePlacePicker');
-    //   } else if (response.error) {
-    //     console.log('GooglePlacePicker Error: ', response.error);
-    //   } else {
-    // this.setState({
-    //   is_searching: true,
-    //   // destination: response,
-    // });
 
-    let from_address;
-    let going_address;
+    let from_address ;
+    let going_address= this.props.order.going.name;
 
-    await Geocoder.from(
-      this.props.order.region.latitude,
-      this.props.order.region.longitude
-    ).then(
-      (json) => {
-        // console.log("coming from ",json.results[0].address_components)
-        return (from_address =
-          json.results[0].address_components[0].long_name +
-          " " +
-          json.results[0].address_components[1].long_name);
-      },
-      (error) => {
-        console.log("err geocoding: ", error);
-      }
-    );
-    await Geocoder.from(
-      this.props.order.going.latitude,
-      this.props.order.going.longitude
-    ).then(
-      (json) => {
-        //  console.log("going to ",json.results[0].address_components)
-        return (going_address =
-          json.results[0].address_components[0].long_name +
-          " " +
-          json.results[0].address_components[1].long_name);
-      },
-      (error) => {
-        console.log("err geocoding: ", error);
-      }
-    );
+   const from_address_full =  await  Location.reverseGeocodeAsync({
+      latitude:  this.props.order.region.latitude,
+   longitude:   this.props.order.region.longitude
+    })
+ 
+  //   const going_address_full =    await  Location.reverseGeocodeAsync({
+  //     latitude: this.props.order.going.latitude,
+  //  longitude:  this.props.order.going.longitude
+  //   })
+
+    from_address = from_address_full.street
+    // going_address = going_address_full.street
+
+
+    console.log(from_address , going_address)
 
     const { user } = this.props.auth;
     let pickup_data = {
@@ -1021,20 +1002,6 @@ this.reconnect_client()
     };
 
     let userID = this.props.auth.user._id;
-    let available_drivers_channel = this.available_drivers_channel;
-
-    //  function trigger() {
-    // console.log("Trigger functionality reached", pickup_data, dropoff_data);
-
-    // this.props.order.trigger_driver(userID, pickup_data, dropoff_data)
-
-    // this.available_drivers_channel.trigger("client-driver-request", {
-    //   userID: userID,
-    //   pickup: pickup_data,
-    //   dropoff: dropoff_data,
-    //   // triggered : "Yes!"
-    // });
-    // };
 
     const data = {
       startLatitude: this.props.order.region.latitude,
@@ -1172,6 +1139,20 @@ this.reconnect_client()
       let { status } = await Permissions.askAsync(Permissions.LOCATION);
       if (status !== "granted") {
         console.log("Permission to access denied!!!.");
+       return   Alert.alert(
+        "Access Denied",
+        "You need to grant access to location to continue using White Axis",
+        [
+          {
+            text: 'Open Settings',
+            onPress: () =>   Linking.openSettings(),
+            style: 'cancel',
+          },
+          { text: 'ignore', onPress: () => navigation.goback()},
+          // { text: 'OK', onPress: () => console.log('OK Pressed') }
+        ],
+        { cancelable: false }
+      );
       }
       let location = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
@@ -1373,9 +1354,6 @@ this.reconnect_client()
 
   render() {
 
-    // console.log("users ride channe;!!!!!!!!!!!1", this.state.user_ride_channel)
-    console.log("region!!!!! ? ", this.props.order.region);
-    const { user } = this.props.auth;
 
     return (
       <View style={styles.container}>
@@ -1406,7 +1384,7 @@ this.reconnect_client()
 
         {/* if the user has a driver, show the driver details */}
 
-        {this.props.order.has_ride && this.state.user_ride_channel && (
+        {this.props.order.has_ride  && (
           <DriverDetailsPopUp
             driver={this.props.order.driver_details}
             distance={this.props.order.distance}
@@ -1495,24 +1473,24 @@ this.reconnect_client()
           }}
         /> */}
 
-        {!this.props.order.destinationRequested &&
-        !this.props.order.has_ride ? (
+
           <CurrentLocationButton
             cb={() => {
               this.centerCamera();
             }}
+            order = {this.props.order.destinationRequested || this.props.order.driver}
             onPress={() => {
               this.refs.BottomSheet.current.snapTo(9);
             }}
           />
-        ) : null}
+   
 
         {this.props.order.region && (
           <MapView
             followUserLocation={true}
             // initialRegion={this.props.order.region}
             rotateEnabled={false}
-            showsUserLocation={false}
+            showsUserLocation={true}
             showsBuildings={false}
             zoomEnabled={true}
             showsCompass={false}
@@ -1548,7 +1526,7 @@ this.reconnect_client()
               }else{
                 console.log("second function called")
                 this.centerCamera();
-                this.marker && this.marker.showCallout();
+                // this.marker && this.marker.showCallout();
               }
             
             }}
@@ -1569,8 +1547,9 @@ this.reconnect_client()
             // }}
 
             style={{
-              flex: 1,
-              zIndex: 0,
+              // flex: 1,
+              ...StyleSheet.absoluteFillObject,
+              // zIndex: 0,
             }}
             // ref={(map) => {
             //   this.map = map;
@@ -1578,7 +1557,7 @@ this.reconnect_client()
           >
             {/* {this.state.my_location &&  */}
 
-            {!this.props.order.destinationRequested &&
+            {/* {!this.props.order.destinationRequested &&
               this.props.order.region &&
               !this.props.order.driver && (
                 <Marker.Animated
@@ -1608,7 +1587,7 @@ this.reconnect_client()
                       : "Pick Up Location"
                   }`}
                 ></Marker.Animated>
-              )}
+              )} */}
 
             {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
 
@@ -1622,10 +1601,13 @@ this.reconnect_client()
                   strokeWidth={3}
                   strokeColor="black"
                   showsCompass={false}
+                  onError ={()=>{
+                    alert ("Could not find a path to your destination")
+                  }}
                 ></MapViewDirections>
 
-                <Marker.Animated
-                  title="Your Destination"
+                <Marker
+                  title={this.props.order.going.name ? this.props.order.going.name : "Your Destination"}
                   ref={(marker) => {
                     this.destinationMarker = marker;
                   }}
@@ -1638,27 +1620,35 @@ this.reconnect_client()
                     ?   this.props.order.going.longitude
                     : 7.3986,
                   }}
-                  pinColor="#ffffff"
-                />
-                <Marker.Animated
-                  ref={(marker) => {
-                    this.marker = marker;
-                  }}
-                  image={require("../assets/images/marker.png")}
-                  style={{
-                    width: 30,
-                    height: 30,
-                  }}
-                  coordinate={{
-                    latitude: this.props.order.region
-                      ? this.props.order.region.latitude
-                      : 9.0765,
-                    longitude: this.props.order.region
-                      ? this.props.order.region.longitude
-                      : 7.3986,
-                  }}
-                  title={"You're here"}
-                ></Marker.Animated>
+                  pinColor="green"
+                >
+
+<Callout
+
+tooltip ={false}
+>
+
+  <Content style ={{width : undefined , backgroundColor : "white"}}>
+<Item style ={{
+  padding : 10
+}}>
+            <Icon active name='pin' style={{
+              color : "blue",
+              
+              fontSize : 25,
+            }} />
+            <Text style ={{
+              fontSize : 18,
+              fontFamily : "Quicksand-Bold"
+            }}>{this.props.order.going.name ? this.props.order.going.name : "Your Destination"}</Text>      
+            
+                </Item>
+          </Content>
+</Callout>
+
+
+                </Marker>
+       
               </>
             ) : null}
 
@@ -1679,7 +1669,7 @@ this.reconnect_client()
               // />
 
               <>
-                <Marker.Animated
+                {/* <Marker.Animated
                   ref={(marker) => {
                     this.marker = marker;
                   }}
@@ -1697,7 +1687,7 @@ this.reconnect_client()
                       : 7.3986,
                   }}
                   title={"You're here"}
-                ></Marker.Animated>
+                ></Marker.Animated> */}
                 {this.props.order.order && this.props.order.order.state == "Started" && (
                   <>
                     <MapViewDirections
@@ -1746,7 +1736,7 @@ this.reconnect_client()
             )}
           </MapView>
         )}
-        <StatusBar style="auto" />
+        <StatusBar style="auto" hidden = {true} />
 
         {/* <View
         style={{
@@ -1756,7 +1746,7 @@ this.reconnect_client()
           justifyContent: 'center',
         }}
       >
-        <Button
+        <f
           title="Open Bottom Sheet"
           onPress={() => sheetRef.current.snapTo(0)}
         />

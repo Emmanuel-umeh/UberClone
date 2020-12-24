@@ -1,29 +1,32 @@
 import React, { Component } from 'react'
-import {View, StyleSheet, Dimensions} from "react-native"
+import {View, StyleSheet, TouchableOpacity} from "react-native"
 import {MaterialIcons} from "@expo/vector-icons"
 
-const WIDTH = Dimensions.get('window').width
-const HEIGHT = Dimensions.get('window').height
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+  } from "react-native-responsive-screen";
 
 
 export default function CurrentLocationButton (props){
 // render(){
 
-console.log("props ", props)
+
 const bottom = props.bottom ? props.bottom : 80
 
 
 const cb = props.cb ? props.cb : ()=> console.log("callback function not passed")
-
+const order = props.order ? props.order : false
+console.log({order})
     return(
 
-        <View style = {[styles.container, {top : HEIGHT - bottom}]}>
+        <TouchableOpacity onPress ={ ()=>{
+            cb()
+        }} style = {[styles.container, {top : order ? hp(30) : hp(80)}]}>
 
         <MaterialIcons name = "my-location"
-        size = {25} onPress ={ ()=>{
-            cb()
-        }} />
-        </View>
+        size = {25}  />
+        </TouchableOpacity>
     )
 // }
 
@@ -38,7 +41,7 @@ const styles = StyleSheet.create({
         width : 43,
         height  :45,
         backgroundColor : 'white',
-        left : WIDTH - 70,
+        left : wp(80),
         borderRadius : 50,
         shadowColor : "#000000",
         elevation : 7,

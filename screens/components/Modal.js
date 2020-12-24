@@ -28,7 +28,7 @@ const CustomModal = props => {
         
         </View>
 
-        <Text style = {{fontSize  : 30, fontWeight : "bold", color : "whitesmoke"}}>Searching For A Ride...</Text>
+        <Text style = {{fontSize  : 30, fontWeight : "bold", color : "whitesmoke"}}>Searching for a ride...</Text>
         <Button rounded warning style ={{alignSelf : "center"}}
         
         

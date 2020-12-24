@@ -62,92 +62,92 @@ class SetLogistics extends Component {
 
     if(this.props.order.has_ride){
       // if(!this.props.order.fromChanged){
-        this._getLocationAsync()
+        // this._getLocationAsync()
       // }
     
       return this.props.navigation.replace("Map")
       
     }
     
-    this._getLocationAsync()
+    // this._getLocationAsync()
   }
   
 
-  _getLocationAsync = async () => {
-    console.log("getting location ")
-    Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      console.log("Permission to access denied!!!.");
-    }
-    let location = await Location.getCurrentPositionAsync({
-      enableHighAccuracy: true,
-    });
+  // _getLocationAsync = async () => {
+  //   console.log("getting location ")
+  //   Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
+  //   let { status } = await Permissions.askAsync(Permissions.LOCATION);
+  //   if (status !== "granted") {
+  //     console.log("Permission to access denied!!!.");
+  //   }
+  //   let location = await Location.getCurrentPositionAsync({
+  //     enableHighAccuracy: true,
+  //   });
 
    
-    var my_location = regionFrom(
-      location.coords.latitude,
-      location.coords.longitude,
-      location.coords.accuracy
-    );
+  //   var my_location = regionFrom(
+  //     location.coords.latitude,
+  //     location.coords.longitude,
+  //     location.coords.accuracy
+  //   );
 
 
-    console.log("my location!!!!!!!!!!!!", my_location)
-    this.setState({
-      my_location : my_location
-    });
+  //   console.log("my location!!!!!!!!!!!!", my_location)
+  //   this.setState({
+  //     my_location : my_location
+  //   });
 
-    let region = {
-      latitude: my_location.latitude,
-      longitude: my_location.longitude,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA,
-    };
+  //   let region = {
+  //     latitude: my_location.latitude,
+  //     longitude: my_location.longitude,
+  //     latitudeDelta: LATITUDE_DELTA,
+  //     longitudeDelta: LONGITUDE_DELTA,
+  //   };
 
-    // console.log("region ", region);
+  //   // console.log("region ", region);
 
-    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-    // this.setState({
+  //   // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
+  //   // this.setState({
 
-    // });
+  //   // });
     
 
-    // Geocoder.from({
-    //   latitude: location.coords.latitude,
-    //   longitude: location.coords.longitude,
-    // })
-    //   .then((json) => {
-    //     var addressComponent = json.results[0].address_components[0].long_name;
-    //     // console.log(json.results[0].formatted_address);
+  //   // Geocoder.from({
+  //   //   latitude: location.coords.latitude,
+  //   //   longitude: location.coords.longitude,
+  //   // })
+  //   //   .then((json) => {
+  //   //     var addressComponent = json.results[0].address_components[0].long_name;
+  //   //     // console.log(json.results[0].formatted_address);
 
-    //     // this.setState({
+  //   //     // this.setState({
 
-       var data = {
-          region: region,
-          // address: json.results[0].formatted_address,
-          // addressShortName: addressComponent,
-        };
-        store.dispatch({
-          type: "GET_LOCATION",
-          payload: data,
-        });
+  //      var data = {
+  //         region: region,
+  //         // address: json.results[0].formatted_address,
+  //         // addressShortName: addressComponent,
+  //       };
+  //       store.dispatch({
+  //         type: "GET_LOCATION",
+  //         payload: data,
+  //       });
 
-        this.watchId = location;
+  //       this.watchId = location;
 
     
 
-        // });
-        // y address  Object {
-        //   "long_name": "9",
-        //   "short_name": "9",
-        //   "types": Array [
-        //     "street_number",
-        //   ],
-        // }
-      // })
-      // .catch((error) => console.warn(error));
+  //       // });
+  //       // y address  Object {
+  //       //   "long_name": "9",
+  //       //   "short_name": "9",
+  //       //   "types": Array [
+  //       //     "street_number",
+  //       //   ],
+  //       // }
+  //     // })
+  //     // .catch((error) => console.warn(error));
    
-  };
+  // };
 
 
 
