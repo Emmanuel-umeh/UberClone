@@ -99,7 +99,7 @@ class setDestination extends Component {
 
    
     this.setState({
-      my_address : location.street
+      my_address : location[0].street
     })
     //   .then((json) => {
     //     var addressComponent = json.results[0].address_components[0].long_name;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import {
   StyleSheet,
   View,
@@ -43,7 +43,7 @@ const longitudeDelta = latitudeDelta * ASPECT_RATIO;
 
 const LATITUDE_DELTA = latitudeDelta
 const LONGITUDE_DELTA = longitudeDelta
-class SetLogistics extends Component {
+class SetLogistics extends PureComponent {
   state = {
     isTruckSelected: null,
     isBikeSelected: null,
@@ -62,92 +62,92 @@ class SetLogistics extends Component {
 
     if(this.props.order.has_ride){
       // if(!this.props.order.fromChanged){
-        // this._getLocationAsync()
+        this._getLocationAsync()
       // }
     
       return this.props.navigation.replace("Map")
       
     }
     
-    // this._getLocationAsync()
+    this._getLocationAsync()
   }
   
 
-  // _getLocationAsync = async () => {
-  //   console.log("getting location ")
-  //   Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
-  //   let { status } = await Permissions.askAsync(Permissions.LOCATION);
-  //   if (status !== "granted") {
-  //     console.log("Permission to access denied!!!.");
-  //   }
-  //   let location = await Location.getCurrentPositionAsync({
-  //     enableHighAccuracy: true,
-  //   });
+  _getLocationAsync = async () => {
+    console.log("getting location ")
+    Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      console.log("Permission to access denied!!!.");
+    }
+    let location = await Location.getCurrentPositionAsync({
+      enableHighAccuracy: true,
+    });
 
    
-  //   var my_location = regionFrom(
-  //     location.coords.latitude,
-  //     location.coords.longitude,
-  //     location.coords.accuracy
-  //   );
+    var my_location = regionFrom(
+      location.coords.latitude,
+      location.coords.longitude,
+      location.coords.accuracy
+    );
 
 
-  //   console.log("my location!!!!!!!!!!!!", my_location)
-  //   this.setState({
-  //     my_location : my_location
-  //   });
+    console.log("my location!!!!!!!!!!!!", my_location)
+    this.setState({
+      my_location : my_location
+    });
 
-  //   let region = {
-  //     latitude: my_location.latitude,
-  //     longitude: my_location.longitude,
-  //     latitudeDelta: LATITUDE_DELTA,
-  //     longitudeDelta: LONGITUDE_DELTA,
-  //   };
+    let region = {
+      latitude: my_location.latitude,
+      longitude: my_location.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    };
 
-  //   // console.log("region ", region);
+    // console.log("region ", region);
 
-  //   // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-  //   // this.setState({
+    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
+    // this.setState({
 
-  //   // });
+    // });
     
 
-  //   // Geocoder.from({
-  //   //   latitude: location.coords.latitude,
-  //   //   longitude: location.coords.longitude,
-  //   // })
-  //   //   .then((json) => {
-  //   //     var addressComponent = json.results[0].address_components[0].long_name;
-  //   //     // console.log(json.results[0].formatted_address);
+    // Geocoder.from({
+    //   latitude: location.coords.latitude,
+    //   longitude: location.coords.longitude,
+    // })
+    //   .then((json) => {
+    //     var addressComponent = json.results[0].address_components[0].long_name;
+    //     // console.log(json.results[0].formatted_address);
 
-  //   //     // this.setState({
+    //     // this.setState({
 
-  //      var data = {
-  //         region: region,
-  //         // address: json.results[0].formatted_address,
-  //         // addressShortName: addressComponent,
-  //       };
-  //       store.dispatch({
-  //         type: "GET_LOCATION",
-  //         payload: data,
-  //       });
+       var data = {
+          region: region,
+          // address: json.results[0].formatted_address,
+          // addressShortName: addressComponent,
+        };
+        store.dispatch({
+          type: "GET_LOCATION",
+          payload: data,
+        });
 
-  //       this.watchId = location;
+        this.watchId = location;
 
     
 
-  //       // });
-  //       // y address  Object {
-  //       //   "long_name": "9",
-  //       //   "short_name": "9",
-  //       //   "types": Array [
-  //       //     "street_number",
-  //       //   ],
-  //       // }
-  //     // })
-  //     // .catch((error) => console.warn(error));
+        // });
+        // y address  Object {
+        //   "long_name": "9",
+        //   "short_name": "9",
+        //   "types": Array [
+        //     "street_number",
+        //   ],
+        // }
+      // })
+      // .catch((error) => console.warn(error));
    
-  // };
+  };
 
 
 
@@ -205,7 +205,7 @@ class SetLogistics extends Component {
          this._next("bike")
           }}>
 
-<Animatable.View 
+<View 
             animation = "slideInRight"
             >
             <Bike
@@ -215,38 +215,38 @@ class SetLogistics extends Component {
               }
             ></Bike>
 
-</Animatable.View>
+</View>
           </TouchableOpacity>
 
           <TouchableOpacity onPress ={()=>{
              this._next("car")
           }}>
-            <Animatable.View 
+            <View 
             animation = "slideInLeft"
             >
             <Car
               style={
                 (styles.Car,
-                { backgroundColor: this.state.isCarSelected ? "gold" : null })
+                {  })
               }
             ></Car>
-            </Animatable.View>
+            </View>
           </TouchableOpacity>
         
           <TouchableOpacity 
           onPress ={()=>{
             this._next("truck")
           }}>
-            <Animatable.View 
+            <View 
             animation = "slideInUp"
             >
             <Truck
               style={
                 (styles.Truck,
-                { backgroundColor: this.state.isTruckSelected ? "gold" : null })
+                { })
               }
             ></Truck>
-            </Animatable.View>
+            </View>
             {/* <Plane/> */}
           </TouchableOpacity>
 
@@ -256,16 +256,16 @@ class SetLogistics extends Component {
           onPress ={()=>{
             this._next("tanker")
           }}>
-            <Animatable.View 
+            <View 
             animation = "slideInUp"
             >
             <Tanker
               style={
                 (styles.Truck,
-                { backgroundColor: this.state.isTankerSelected ? "gold" : null })
+                { })
               }
             ></Tanker>
-            </Animatable.View>
+            </View>
             {/* <Plane/> */}
           </TouchableOpacity>
         </ScrollView>

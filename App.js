@@ -6,10 +6,11 @@ import { View, Text, Button, StyleSheet, Image, YellowBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { NotifierWrapper } from "react-native-notifier";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import MainTabScreen, {
-  HomeStackScreen,
-  DetailsStackScreen,
-} from "./screens/MainTabScreen";
+import AnimatedSplash from "react-native-animated-splash-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import _ from "lodash";
 
 import DrawerContent from "./screens/DrawerContent";
@@ -19,7 +20,6 @@ import RootStackScreen from "./screens/RootStackScreen";
 import { navigationRef } from "./rootNavigation";
 
 import * as Font from "expo-font";
-import { AppLoading } from "expo";
 
 import { connect } from "react-redux";
 import { loadUser, setUserToken } from "./action/authAction";
@@ -31,6 +31,10 @@ import NetInfo from '@react-native-community/netinfo';
 import * as SplashScreen from 'expo-splash-screen';
 
 import NoInternetScreen from "./screens/NoInternet"
+
+import Config from "react-native-config";
+
+
 const Drawer = createDrawerNavigator();
 
 YellowBox.ignoreWarnings(["Setting a timer"]);
@@ -58,6 +62,7 @@ class App extends React.Component {
 
   async componentDidMount() {
   
+
 this.loadApp()
   
  
@@ -66,10 +71,9 @@ this.loadApp()
 
 
   loadApp = async()=>{
-      
-    console.log("loading app")
+  
     try {
-      await SplashScreen.preventAutoHideAsync();
+      // await SplashScreen.preventAutoHideAsync();
 
       this.prepareResources()
     } catch (e) {
@@ -78,16 +82,6 @@ this.loadApp()
 
   }
 
-  // componentDidUpdate(prevProps) {
-  //   console.log("prevprops ", prevProps.auth.isLoading);
-  //   const { isLoading } = this.props.auth;
-  //   console.log("currentprops", isLoading);
-  //   if (prevProps.auth.isLoading !== isLoading) {
-  //     this.setState({
-  //       reduxLoading: isLoading,
-  //     });
-  //   }
-  // }
 
   prepareResources = async()=>{
 try {
@@ -126,9 +120,6 @@ await this.props.loadUser();
 
   
 this.unsubscribe = NetInfo.addEventListener(state => {
-  console.log('Connection type', state.type);
- 
-  console.log('Is connected?', state.isConnected);
 
   this.connectivity = state.isConnected
 });
@@ -138,21 +129,19 @@ this.unsubscribe = NetInfo.addEventListener(state => {
   console.warn(error)
 }finally{
 
-  this.setState({ loading: false }, async () => {
-
     setTimeout(async() => {
-      await SplashScreen.hideAsync(); 
-    }, 1000);
+      
+  this.setState({ loading: false });
+    }, 2000);
    
-  });
+
 
 }
   }
 
   getToken = async () => {
     var token = await AsyncStorage.getItem("token");
-    console.log("app js ", token);
-
+ 
     this.props.setUserToken(token);
     // token = token
     return token;
@@ -207,12 +196,19 @@ this.unsubscribe = NetInfo.addEventListener(state => {
   render() {
     const { isAuthenticated, type, token, isLoading } = this.props.auth;
 
-    console.log("connectivity status ",this.connectivity)
 
-    //   console.log("is loading??!! ", isLoading);
-    //   console.log("redux loading " , this.state.reduxLoading)
     if (this.state.loading) {
-      return null;
+return(
+  <AnimatedSplash
+  translucent={true}
+  isLoaded={!this.state.loading}
+  logoImage={require("./assets/logo2.png")}
+  backgroundColor={"#000000"}
+  logoHeight={hp(40)}
+  logoWidth={wp(80)}
+></AnimatedSplash>
+)
+    
     } 
     
     else if (!this.connectivity){
@@ -235,12 +231,25 @@ this.unsubscribe = NetInfo.addEventListener(state => {
     else {
       // console.log("second!!!");
       return (
+
+
+        <AnimatedSplash
+        translucent={true}
+        isLoaded={!this.state.loading}
+        logoImage={require("./assets/logo.png")}
+        backgroundColor={"#000000"}
+        logoHeight={hp(40)}
+        logoWidth={wp(80)}
+      >
+      
         <NotifierWrapper>
           <NavigationContainer ref={navigationRef}>
             {isAuthenticated ? (
               <Drawer.Navigator
                 drawerContent={(props) => <DrawerContent {...props} />}
-                
+                screenOptions ={{
+                  swipeEnabled : false
+                }}
                 initialRouteName="Home"
               >
                 <Drawer.Screen
@@ -261,6 +270,8 @@ this.unsubscribe = NetInfo.addEventListener(state => {
             {/* <RootStackScreen /> */}
           </NavigationContainer>
         </NotifierWrapper>
+
+        </AnimatedSplash>
       );
     }
   }

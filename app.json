@@ -5,6 +5,7 @@
     "entryPoint": "./index.js",
     "version": "1.0.0",
     "orientation": "portrait",
+    "backgroundColor" : "#ffffff",
     "icon": "./assets/logo4.png",
     "splash": {
       "image": "./assets/splash.png",

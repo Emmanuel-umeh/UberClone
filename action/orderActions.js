@@ -281,6 +281,38 @@ console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       });
     });
 };
+// get an order  and clkear from database
+export const getOrder = (tokens,orderID) => (dispatch) => {
+  
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+  
+      "x-auth-token" : tokens
+    },
+  };
+
+  const body = {}
+
+  // dispatch({
+  //   type : "SET_FETCHING"
+  // })
+
+  axios
+    .post(`/api/order/get-order/${orderID}`, body, config)
+    .then(
+      (res) => {
+        console.log("got order successfully")
+  
+        console.log("MESSAGE res ", res.data)
+      }
+      // console.log("this is the res ", res)
+    )
+    .catch((err) => {
+      console.warn("error ", err);
+
+    });
+};
 export const cashless_payment = (tokens,orderID,user_ride_channel) => (dispatch) => {
   console.log("trigerring channel , ", user_ride_channel)
 

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 import { StatusBar } from "expo-status-bar";
 
-import AsyncStorage from "@react-native-community/async-storage";
 import {
   StyleSheet,
   Text,
@@ -19,7 +18,7 @@ import {
 
 import * as Permissions from "expo-permissions";
 import store from "../store";
-import MapView, { Marker, AnimatedRegion, Callout } from "react-native-maps";
+import MapView, { Marker, AnimatedRegion, Callout, Overlay } from "react-native-maps";
 
 import * as Location from "expo-location";
 import DestinationButton from "../components/destinationButton";
@@ -27,7 +26,7 @@ import DestinationButton from "../components/destinationButton";
 import CurrentLocationButton from "../components/currentLocationButton";
 
 import { Ionicons } from "@expo/vector-icons";
-import Geocoder from "react-native-geocoding";
+
 import google_api from "../keys/google_map";
 import { connect } from "react-redux";
 import Pusher from "pusher-js/react-native";
@@ -55,8 +54,8 @@ import { Divider } from "react-native-paper";
 
 import { Audio } from "expo-av";
 import { persistStore } from "redux-persist";
-import RBSheet from "react-native-raw-bottom-sheet";
-import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import {day_styles, night_styles} from "./map_styles/styles"
+import { PureComponent } from "react";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -74,8 +73,7 @@ console.warn = (message) => {
   }
 };
 
-Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
-class Map extends Component {
+class Map extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -93,71 +91,314 @@ class Map extends Component {
 
     this.pusher = null;
 
+
+    const {user, token} = this.props.auth
+    
+    if (!this.pusher && user) {
+      console.log("creating a new pusher connection");
+      this.pusher = new Pusher("eead8d5075773e7aca0a", {
+        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
+        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
+        cluster: "eu",
+        auth: {
+          headers: { "x-auth-token": `${token}` },
+        },
+        encrypted: true,
+      });
+
+      // store.dispatch({
+      //   type: "PUSHER_AUTH",
+      //   payload: this.pusher,
+      // });<D
+    }
+
     this.state ={
       available_drivers_channel : null,
       user_ride_channel : null,
-      pusher : null
+      map_is_ready : false,
+      pusher : null,
+      follow_user_location : true,
+      show_user_location : true
     }
    
 
-    // this.props.order = {
-
-    //   // clients initial region
-    //   region: {
-    //     latitude: 9.0765,
-    //     longitude: 7.3986,
-    //     latitudeDelta: 0.992,
-    //     longitudeDelta: 0.0421,
-
-    //     // destination the user is going to
-    //   },
-
-    //   coming: null,
-    //   going: null,
-    //   // determines if the user has selected the destination
-    //   destinationRequested: false,
-    //   // destination : ""
-
-    //   address: null,
-
-    //   addressShortName: null,
-
-    //   location: null,
-    //   error: null,
-    //   has_ride: false,
-    //   destination: null,
-    //   driver: null,
-    //   origin: null,
-    //   is_searching: false,
-    //   has_ridden: false,
-    //   totalPriceVisible: false,
-
-    //   // price of ride
-    //   price: 0,
-
-    //   // name of the accepted driver
-    //   driverName: null,
-    // };
-
-    // this.state = {
-    //   my_location: null,
-    //   coordinate: new AnimatedRegion({
-    //     latitude: 9.0765,
-    //     longitude: 7.3986,
-    //     latitudeDelta: 0.3,
-    //     longitudeDelta: 0.3,
-    //   }),
-
-    //   driver_location: {
-    //     latitude: 9.0765,
-    //     longitude: 7.3986,
-    //     latitudeDelta: 0.3,
-    //     longitudeDelta: 0.3,
-    //   },
-    //   distance: null,
-    // };
-    // this.get_state_data();
   }
+
+
+  drawer_button=()=>{
+    return(
+      <TouchableOpacity
+      style={{
+        height: 55,
+        width: 55,
+        backgroundColor: "#fff",
+        borderRadius: 50,
+        position: "absolute",
+        // display: inline-block;
+
+        top: 40,
+        left: 30,
+        zIndex: 999,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onPress={() => {
+        this.props.navigation.openDrawer();
+        // this.bookRide();
+      }}
+    >
+      <View>
+        <Ionicons name="md-menu" size={32} color="black" />
+      </View>
+    </TouchableOpacity>
+  
+    )
+  }
+  back_button=()=>{
+    return(
+      <TouchableOpacity
+      style={{
+        height: 55,
+        width: 55,
+        backgroundColor: "white",
+        borderRadius: 50,
+        position: "absolute",
+        // display: inline-block;
+
+        top: 40,
+        left: 30,
+        zIndex: 999,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onPress={() => {
+        // this.props.navigation.openDrawer();
+
+        // this.setState({
+
+        // store.dispatch({
+        //   type: "DESTINATION_CANCELLED",
+        // });
+
+        this.cancelOrder();
+        // destinationRequested: false,
+        // });
+         this.centerCamera();;
+      }}
+    >
+      <View>
+        <Icon
+          active
+          style={{
+            fontSize: 50,
+            fontWeight: "bold",
+            // color: "red",
+          }}
+          name="ios-close"
+        />
+      </View>
+    </TouchableOpacity>
+
+    )
+  }
+
+  destination_button = ()=>{
+    return(
+      <DestinationButton
+      navigation={this.props.navigation}
+      state={this.props.order}
+      logistics={
+        this.props.route.params
+          ? this.props.route.params.logistics
+          : this.props.order.logistic_type
+      }
+      selectDestination={this.selectDestination}
+    />
+    )
+  }
+
+  show_driver_marker=()=>{
+
+    const {driver, coordinate, logistic_type} = this.props.order
+    return(
+      
+      <Marker.Animated
+      coordinate={{
+        latitude: coordinate
+        ? coordinate.latitude
+        : 9.0765,
+      longitude: coordinate
+        ? coordinate.longitude
+        : 7.3986,
+        
+      }}
+      anchor={{ x: 0.35, y: 0.32 }}
+      title="Your Ride Is Here"
+      ref={(marker) => {
+        this.driver_marker = marker;
+      }}
+      style={{ width: 50, height: 50 }}
+    >
+    {logistic_type == "Bike" ?
+    
+    <Image
+    source={require("../assets/images/bike_icon.png")}
+    style={{
+      width: 40,
+      height: 40,
+      transform: [{
+        rotate: driver.heading === undefined ? '0deg' : `${driver.heading}deg`
+      }]
+    }}
+  /> : 
+
+  logistic_type == "Car"? 
+
+  <Image
+  source={require("../assets/images/car_icon.png")}
+  style={{
+    width: 40,
+    height: 40,
+    transform: [{
+      rotate: driver.heading === undefined ? '0deg' : `${driver.heading}deg`
+    }]
+  }}
+/> :  logistic_type =="Truck" ?
+
+<Image
+source={require("../assets/images/truck_icon.png")}
+style={{
+  width: 40,
+  height: 40,
+  transform: [{
+    rotate: driver.heading === undefined ? '0deg' : `${driver.heading}deg`
+  }]
+}}
+/> :   <Image
+        source={require("../assets/images/tanker.png")}
+        resizeMode = "contain"
+        style={{
+          width: 50,
+          height: 50,
+          transform: [{
+            rotate: driver.heading === undefined ? '0deg' : `${driver.heading}deg`
+          }]
+        }}
+      />
+    }
+    </Marker.Animated>
+
+    )
+  }
+
+  isDay=()=> {
+    const hours = (new Date()).getHours();
+    return (hours >= 6 && hours < 18);
+  }
+
+  driver_details_popup =()=>{
+    return(
+      <DriverDetailsPopUp
+      driver={this.props.order.driver_details}
+      distance={this.props.order.distance}
+      user_ride_channel={this.state.user_ride_channel}
+    />
+    )
+  }
+  
+
+  map_view_directions =()=>{
+
+
+    console.log("os day!!!!", this.isDay())
+    if(this.isDay){
+      return <>
+          <MapViewDirections
+        origin={this.props.order.driver_location}
+        destination={this.props.order.going}
+        apikey={google_api}
+        strokeWidth={5}
+        strokeColor="black"
+        showsCompass={false}
+      ></MapViewDirections>
+      <Marker.Animated
+        title="Your Destination"
+        coordinate={this.props.order.going}
+        pinColor="#ffffff"
+      /></>
+    }else{
+      return(
+        <>
+        <MapViewDirections
+          origin={this.props.order.driver_location}
+          destination={this.props.order.going}
+          apikey={google_api}
+          strokeWidth={5}
+          strokeColor="whitesmoke"
+          showsCompass={false}
+        ></MapViewDirections>
+        <Marker.Animated
+          title="Your Destination"
+          coordinate={this.props.order.going}
+          pinColor="#ffffff"
+        />
+      </>
+      )
+    }
+  
+  }
+  
+  getMapStyles = ()=>{
+    // console.log("time of the day !!!!!!!!" ,this.isDay())
+    if(this.isDay()){
+      return day_styles
+    }else{
+      return night_styles
+    }
+    }
+
+    bottom_sheet =()=>{
+      return(
+        <BottomSheet
+        ref={this.sheetRef}
+        snapPoints={["30%", "5%"]}
+        borderRadius={20}
+        renderContent={this.renderContent}
+        renderHeader={this.renderHeader}
+        enabledContentTapInteraction={false}
+        isBackDrop={true}
+        isBackDropDismisByPress={true}
+        isRoundBorderWithTipHeader={true}
+        ref="BottomSheet"
+        // isModal
+        // containerStyle={{backgroundCol or:"red"}}
+        tipStyle={{ backgroundColor: "red" }}
+        headerStyle={{ backgroundColor: "red" }}
+        // bodyStyle={{backgroundColor:"red",flex:1}}
+        header={
+          <View>
+            <Text style={styles.text}>Header</Text>
+          </View>
+        }
+      />
+      )
+    }
+
+    // this will check if the user order has started so as to hide user location
+
+    check_order_state =()=>{
+      if(this.props.order.order){
+
+        if(this.props.order.order.state =="Accepted"){
+
+return true
+        }else{
+          return false
+        }
+      }else{
+        return true 
+      }
+    }
 
   loadSounds = async () => {
     this.soundObject = new Audio.Sound();
@@ -178,6 +419,151 @@ class Map extends Component {
       // An error occurred!
     }
   };
+
+  current_location_button =()=>{
+    return(
+      <CurrentLocationButton
+      cb={() => {
+        this.centerCamera();
+      }}
+      order = { this.props.order.driver}
+      destination = {this.props.order.destinationRequested }
+      onPress={() => {
+        this.refs.BottomSheet.current.snapTo(9);
+      }}
+    />
+
+    )
+  }
+
+
+  destination_marker =()=>{
+
+    if(this.isDay){
+      return(
+
+      
+        <>
+  
+  <MapViewDirections
+                    origin={this.props.order.region}
+                    destination={this.props.order.going}
+                    apikey={google_api}
+                    strokeWidth={5}
+                    strokeColor="black"
+                    showsCompass={false}
+                    onError ={()=>{
+                      alert ("Could not find a path to your destination")
+                    }}
+                  ></MapViewDirections>
+        <Marker
+        title={this.props.order.going.name ? this.props.order.going.name : "Your Destination"}
+        ref={(marker) => {
+          this.destinationMarker = marker;
+        }}
+        coordinate={{
+        
+          latitude:  this.props.order.going
+          ?   this.props.order.going.latitude
+          : 9.0765,
+        longitude:   this.props.order.going
+          ?   this.props.order.going.longitude
+          : 7.3986,
+        }}
+        pinColor="green"
+      >
+  
+  <Callout
+  
+  tooltip ={false}
+  >
+  
+  <Content style ={{width : undefined , backgroundColor : "white"}}>
+  <Item style ={{
+  padding : 10
+  }}>
+  <Icon active name='pin' style={{
+    color : "blue",
+    
+    fontSize : 25,
+  }} />
+  <Text style ={{
+    fontSize : 18,
+    fontFamily : "Quicksand-Bold"
+  }}>{this.props.order.going.name ? this.props.order.going.name : "Your Destination"}</Text>      
+  
+      </Item>
+  </Content>
+  </Callout>
+  
+  
+      </Marker>
+  </>
+      )
+    }else{
+      return(
+
+      
+        <>
+  
+  <MapViewDirections
+                    origin={this.props.order.region}
+                    destination={this.props.order.going}
+                    apikey={google_api}
+                    strokeWidth={5}
+                    strokeColor="white"
+                    showsCompass={false}
+                    onError ={()=>{
+                      alert ("Could not find a path to your destination")
+                    }}
+                  ></MapViewDirections>
+        <Marker
+        title={this.props.order.going.name ? this.props.order.going.name : "Your Destination"}
+        ref={(marker) => {
+          this.destinationMarker = marker;
+        }}
+        coordinate={{
+        
+          latitude:  this.props.order.going
+          ?   this.props.order.going.latitude
+          : 9.0765,
+        longitude:   this.props.order.going
+          ?   this.props.order.going.longitude
+          : 7.3986,
+        }}
+        pinColor="green"
+      >
+  
+  <Callout
+  
+  tooltip ={false}
+  >
+  
+  <Content style ={{width : undefined , backgroundColor : "white"}}>
+  <Item style ={{
+  padding : 10
+  }}>
+  <Icon active name='pin' style={{
+    color : "blue",
+    
+    fontSize : 25,
+  }} />
+  <Text style ={{
+    fontSize : 18,
+    fontFamily : "Quicksand-Bold"
+  }}>{this.props.order.going.name ? this.props.order.going.name : "Your Destination"}</Text>      
+  
+      </Item>
+  </Content>
+  </Callout>
+  
+  
+      </Marker>
+  </>
+      )
+    }
+
+  }
 
 
 // reconnect a user to previous ride
@@ -202,7 +588,7 @@ class Map extends Component {
       // });<D
     }
     // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-    Pusher.logToConsole = true;
+    Pusher.logToConsole = false;
 
     //  if(!this.props.pusher.available_drivers_channel){
 
@@ -220,7 +606,7 @@ class Map extends Component {
       "private-ride-" + this.props.auth.user._id
     );
 
-    this.user_ride_channel.bind("client-driver-response", (data) => {
+    this.user_ride_channel.bind("client-driver-available", (data) => {
       console.log("clients driver response!!!!!");
       console.log("driver has ride  ??? ", this.props.order.has_ride);
       let passenger_response = "no";
@@ -267,6 +653,8 @@ class Map extends Component {
       type :"PERFORMING_TASK_ENDED"
     })
 
+    console.log("has ride ? ", this.props.order)
+
     if(this.props.order.has_ride){
 this.reconnect_client()
 
@@ -291,52 +679,144 @@ this.reconnect_client()
 
 
   centerCamera = () => {
-    const {
-      latitudeDelta,
-      longitudeDelta,
-      latitude,
-      longitude,
-    } = this.props.order.region;
 
-    this.map &&
+
+
+ 
+ if(this.props.order.order){
+if(this.props.order.order.state!=="Accepted" || this.props.order.order.state!=="Pending"){
+
+  var {latitude, longitude} = this.props.order.driver_location
+  console.log("centering ,map Destination requested with order!!!!!!!!!!!", this.props.order.order)
+  // const latitude = this.props.order.going.latitude
+  // const longitude = this.props.order.going.longitude
+
+    this.map
+    && this.map.fitToCoordinates(
+        [
+          {
+            latitude,
+            longitude,
+          },
+
+          {
+            latitude: this.props.order.going.latitude,
+            longitude: this.props.order.going.longitude,
+          },
+        ],
+        {
+          edgePadding: {
+            bottom: hp("60%"),
+            right: wp("40%"),
+            top: hp("20%"),
+            left: wp("10%"),
+          },
+          animated: true,
+        }
+      )
+
+  
+}
+else{
+
+  var {latitude, longitude} = this.props.order.driver_location
+  console.log("centering ,driver locatin and user location")
+  // const latitude = this.props.order.going.latitude
+  // const longitude = this.props.order.going.longitude
+
+    this.map
+    && this.map.fitToCoordinates(
+        [
+          {
+            latitude,
+            longitude,
+          },
+
+          {
+            latitude: this.props.order.region.latitude,
+            longitude: this.props.order.region.longitude,
+          },
+        ],
+        {
+          edgePadding: {
+            bottom: hp("60%"),
+            right: wp("40%"),
+            top: hp("20%"),
+            left: wp("10%"),
+          },
+          animated: true,
+        }
+      )
+
+}
+
+}else    if(this.props.order.destinationRequested ){
+
+  console.log("centering ,map Destination requested!!!!!!!!!!!")
+  const latitude = this.props.order.going.latitude
+const longitude = this.props.order.going.longitude
+
+  this.map
+  && this.map.fitToCoordinates(
+      [
+        {
+          latitude,
+          longitude,
+        },
+
+        {
+          latitude: this.props.order.region.latitude,
+          longitude: this.props.order.region.longitude,
+        },
+      ],
+      {
+        edgePadding: {
+          bottom: hp("60%"),
+          right: wp("40%"),
+          top: hp("20%"),
+          left: wp("10%"),
+        },
+        animated: true,
+      }
+    )
+
+}
+    
+    
+    else{
+
+      console.log("all the above failed")
+      const {
+        latitudeDelta,
+        longitudeDelta,
+        latitude,
+        longitude,
+      } = this.props.order.region;
+      this.map &&
       this.map.animateCamera(
         {
           center: {
             latitude,
             longitude,
           },
-          pitch: 2,
-          heading: 60,
-          altitude: 18,
-          zoom:wp(4.6),
+          pitch: 20,
+          heading: 30,
+          altitude: 100,
+          zoom: 16,
         },
-        1500
+        800
       );
+
+    }
+
   };
 
   pusher_actions = async () => {
     const { token, user } = this.props.auth;
     // let pusher
 
-    if (!this.pusher && user) {
-      console.log("creating a new pusher connection");
-      this.pusher = new Pusher("eead8d5075773e7aca0a", {
-        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-        cluster: "eu",
-        auth: {
-          headers: { "x-auth-token": `${token}` },
-        },
-        encrypted: true,
-      });
-
-      // store.dispatch({
-      //   type: "PUSHER_AUTH",
-      //   payload: this.pusher,
-      // });<D
-    }
     // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-    Pusher.logToConsole = false;
+    Pusher.logToConsole = true;
 
     //  if(!this.props.pusher.available_drivers_channel){
 
@@ -387,7 +867,7 @@ this.reconnect_client()
       // this.user_ride_channel = user_ride_channel
 
   
-      this.user_ride_channel.bind("client-driver-response", (data) => {
+      this.user_ride_channel.bind("client-driver-available", (data) => {
         console.log("clients driver response!!!!!");
         console.log("driver has ride  ??? ", this.props.order.has_ride);
         let passenger_response = "no";
@@ -519,7 +999,7 @@ this.reconnect_client()
             {
               edgePadding: {
                 bottom: hp("60%"),
-                right: wp("10%"),
+                right: wp("40%"),
                 top: hp("20%"),
                 left: wp("10%"),
               },
@@ -536,7 +1016,7 @@ this.reconnect_client()
         //   },
         //   1500
         // );
-        this.driver_marker && this.driver_marker.showCallout();
+        // this.driver_marker && this.driver_marker.showCallout();
         } catch (error) {
           console.warn(error)
         }
@@ -549,14 +1029,15 @@ this.reconnect_client()
 
         try {
           if (data) {
-            const { longitude, latitude, accuracy } = data;
+            const { longitude, latitude, accuracy, heading } = data;
   
             const {state} =  this.props.order.order
             console.log(
               "client driver location updated!! ? ",
               latitude,
               longitude,
-              accuracy
+              accuracy,
+              heading
             );
   
             const newCoordinate = {
@@ -573,6 +1054,7 @@ this.reconnect_client()
               driver: {
                 latitude: latitude,
                 longitude: longitude,
+                heading : heading.magHeading
               },
             };
   
@@ -625,6 +1107,8 @@ this.reconnect_client()
             // this.setState({
             //   distance: diff_in_meter_pickup,
             // });
+
+    
   
           await  store.dispatch({
               type: "COORDINATE_DRIVER_LOCATION",
@@ -632,7 +1116,9 @@ this.reconnect_client()
             });
   
             // console.log("maops", this.map)
-            
+            console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!")
+
+            this.centerCamera()
            
             // this.map.animateCamera(
             //   {
@@ -648,62 +1134,7 @@ this.reconnect_client()
             //   500
             // ); 
             // this.props.order.going
-  
-            var destination_latitude = this.props.order.going.latitude
-            var destination_longitude = this.props.order.going.longitude
-  
-            console.log({state})
-            if(state == "Started"){
-  
-              this.map &&    this.map.fitToCoordinates(
-                [
-                  {
-                    latitude : destination_latitude,
-                   longitude:  destination_longitude,
-                  },
-      
-                  {
-                    latitude: this.props.order.region.latitude,
-                    longitude: this.props.order.region.longitude,
-                  },
-                ],
-                {
-                  edgePadding: {
-                    bottom: hp("60%"),
-                    right: wp("10%"),
-                    top: hp("20%"),
-                    left: wp("10%"),
-                  },
-                  animated: true,
-                }
-              )
-            }else{
-              this.map &&    this.map.fitToCoordinates(
-                [
-                  {
-                    latitude,
-                    longitude,
-                  },
-      
-                  {
-                    latitude: this.props.order.region.latitude,
-                    longitude: this.props.order.region.longitude,
-                  },
-                ],
-                {
-                  edgePadding: {
-                    bottom: hp("60%"),
-                    right: wp("10%"),
-                    top: hp("20%"),
-                    left: wp("10%"),
-                  },
-                  animated: true,
-                }
-              )
-           
-            }
-  
-       
+
             // this.map.animateToRegion(
             //   {
             //     latitudeDelta: LATITUDE_DELTA,
@@ -813,20 +1244,20 @@ this.reconnect_client()
   animate = (latitude, longitude) => {
 
     try {
-      const { coordinate } = this.props.order;
-      const newCoordinate = {
+   
+      const newCoordinate = new AnimatedRegion ({
         latitude: latitude,
         longitude: longitude,
-      };
+      });
   
       if (Platform.OS === "android") {
         if (this.driver_marker && newCoordinate) {
-          console.log({ newCoordinate });
+        
           console.log("ANIMATING TO NEW POSITION ", newCoordinate);
           this.driver_marker._component &&
             this.driver_marker._component.animateMarkerToCoordinate(
               newCoordinate,
-              500
+              1500
             ); // 500 is the duration to animate the marker
         }
       } else {
@@ -935,9 +1366,9 @@ this.reconnect_client()
             {
               edgePadding: {
                 bottom: hp("60%"),
-                right: wp("10%"),
-                top: hp("20%"),
-                left: wp("10%"),
+          right: wp("40%"),
+          top: hp("20%"),
+          left: wp("10%"),
               },
               animated: true,
             }
@@ -974,23 +1405,24 @@ this.reconnect_client()
       latitude:  this.props.order.region.latitude,
    longitude:   this.props.order.region.longitude
     })
+
  
   //   const going_address_full =    await  Location.reverseGeocodeAsync({
   //     latitude: this.props.order.going.latitude,
   //  longitude:  this.props.order.going.longitude
   //   })
 
-    from_address = from_address_full.street
+    from_address = from_address_full[0].street
     // going_address = going_address_full.street
 
 
-    console.log(from_address , going_address)
+    console.log({from_address_full})
 
     const { user } = this.props.auth;
     let pickup_data = {
       name: user.firstName,
       latitude: this.props.order.region.latitude,
-      from_address: from_address,
+      from_address:  from_address_full[0].street ?from_address_full[0].street  : from_address_full[0].name ,
       longitude: this.props.order.region.longitude,
     };
 
@@ -1001,6 +1433,8 @@ this.reconnect_client()
       longitude: this.props.order.going.longitude,
     };
 
+
+    console.log("pickup data !!!!!!!!!!!!!!!!!!!!!!!!!!",  pickup_data)
     let userID = this.props.auth.user._id;
 
     const data = {
@@ -1135,7 +1569,7 @@ this.reconnect_client()
 
     try {
       console.log("getting location ")
-      Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
+   
       let { status } = await Permissions.askAsync(Permissions.LOCATION);
       if (status !== "granted") {
         console.log("Permission to access denied!!!.");
@@ -1354,7 +1788,6 @@ this.reconnect_client()
 
   render() {
 
-
     return (
       <View style={styles.container}>
         {/* Loading Animation */}
@@ -1370,97 +1803,25 @@ this.reconnect_client()
         )}
         {!this.props.order.destinationRequested &&
         !this.props.order.has_ride ? (
-          <DestinationButton
-            navigation={this.props.navigation}
-            state={this.props.order}
-            logistics={
-              this.props.route.params
-                ? this.props.route.params.logistics
-                : this.props.order.logistic_type
-            }
-            selectDestination={this.selectDestination}
-          />
+        
+
+          this.destination_button()
         ) : null}
 
         {/* if the user has a driver, show the driver details */}
 
         {this.props.order.has_ride  && (
-          <DriverDetailsPopUp
-            driver={this.props.order.driver_details}
-            distance={this.props.order.distance}
-            user_ride_channel={this.state.user_ride_channel}
-          />
+       this.driver_details_popup()
         ) }
 
         {!this.props.order.destinationRequested ? (
-          <TouchableOpacity
-            style={{
-              height: 55,
-              width: 55,
-              backgroundColor: "white",
-              borderRadius: 50,
-              position: "absolute",
-              // display: inline-block;
+this.drawer_button()
+   
+   
+   ) : (
 
-              top: 40,
-              left: 30,
-              zIndex: 999,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onPress={() => {
-              this.props.navigation.openDrawer();
-              // this.bookRide();
-            }}
-          >
-            <View>
-              <Ionicons name="md-menu" size={32} color="black" />
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={{
-              height: 55,
-              width: 55,
-              backgroundColor: "white",
-              borderRadius: 50,
-              position: "absolute",
-              // display: inline-block;
-
-              top: 40,
-              left: 30,
-              zIndex: 999,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onPress={() => {
-              // this.props.navigation.openDrawer();
-
-              // this.setState({
-
-              // store.dispatch({
-              //   type: "DESTINATION_CANCELLED",
-              // });
-
-              this.cancelOrder();
-              // destinationRequested: false,
-              // });
-               this.centerCamera();;
-            }}
-          >
-            <View>
-              <Icon
-                active
-                style={{
-                  fontSize: 50,
-                  fontWeight: "bold",
-                  // color: "red",
-                }}
-                name="ios-close"
-              />
-            </View>
-          </TouchableOpacity>
-        )}
+    this.back_button()
+   )}
 
         {/* <View style = {styles.destination}>  */}
         {/* <SearchInput /> */}
@@ -1474,65 +1835,36 @@ this.reconnect_client()
         /> */}
 
 
-          <CurrentLocationButton
-            cb={() => {
-              this.centerCamera();
-            }}
-            order = {this.props.order.destinationRequested || this.props.order.driver}
-            onPress={() => {
-              this.refs.BottomSheet.current.snapTo(9);
-            }}
-          />
-   
+      {this.current_location_button()}
 
-        {this.props.order.region && (
           <MapView
-            followUserLocation={true}
-            // initialRegion={this.props.order.region}
+            followUserLocation={this.state.follow_user_location}
+            initialRegion={this.props.order.region}
             rotateEnabled={false}
-            showsUserLocation={true}
+            
+            customMapStyle = {this.getMapStyles()}
+            showsUserLocation={this.state.show_user_location}
             showsBuildings={false}
             zoomEnabled={true}
             showsCompass={false}
+
+            // pitchEnabled = {true}
+            showsAnnotationCallouts = {true}
             onMapReady={() => {
 
-              if(this.props.order.has_ride){
-                console.log("first function called")
 
-                var {latitude, longitude} = this.props.order.driver_location
-                this.map.fitToCoordinates(
-                  [
-                    {
-                      latitude,
-                      longitude,
-                    },
-        
-                    {
-                      latitude: this.props.order.region.latitude,
-                      longitude: this.props.order.region.longitude,
-                    },
-                  ],
-                  {
-                    edgePadding: {
-                      bottom: hp("60%"),
-                      right: wp("10%"),
-                      top: hp("20%"),
-                      left: wp("10%"),
-                    },
-                    animated: true,
-                  }
-                )
-             
-              }else{
-                console.log("second function called")
-                this.centerCamera();
-                // this.marker && this.marker.showCallout();
-              }
-            
+              setTimeout(() => {
+                this.setState({
+                  map_is_ready : true
+                })
+          
+                  this.centerCamera();
+         
+              }, 100);
+
+         
             }}
-            // onRegionChangeComplete={() => {
-            //   this.marker && this.marker.showCallout();
-            // }}
+     
             ref={(map) => {
               this.map = map;
             }}
@@ -1593,149 +1925,48 @@ this.reconnect_client()
 
             {this.props.order.destinationRequested &&
             !this.props.order.driver ? (
-              <>
-                <MapViewDirections
-                  origin={this.props.order.region}
-                  destination={this.props.order.going}
-                  apikey={google_api}
-                  strokeWidth={3}
-                  strokeColor="black"
-                  showsCompass={false}
-                  onError ={()=>{
-                    alert ("Could not find a path to your destination")
-                  }}
-                ></MapViewDirections>
-
-                <Marker
-                  title={this.props.order.going.name ? this.props.order.going.name : "Your Destination"}
-                  ref={(marker) => {
-                    this.destinationMarker = marker;
-                  }}
-                  coordinate={{
-                  
-                    latitude:  this.props.order.going
-                    ?   this.props.order.going.latitude
-                    : 9.0765,
-                  longitude:   this.props.order.going
-                    ?   this.props.order.going.longitude
-                    : 7.3986,
-                  }}
-                  pinColor="green"
-                >
-
-<Callout
-
-tooltip ={false}
->
-
-  <Content style ={{width : undefined , backgroundColor : "white"}}>
-<Item style ={{
-  padding : 10
-}}>
-            <Icon active name='pin' style={{
-              color : "blue",
-              
-              fontSize : 25,
-            }} />
-            <Text style ={{
-              fontSize : 18,
-              fontFamily : "Quicksand-Bold"
-            }}>{this.props.order.going.name ? this.props.order.going.name : "Your Destination"}</Text>      
             
-                </Item>
-          </Content>
-</Callout>
+             
 
 
-                </Marker>
-       
-              </>
+
+this.destination_marker()
+   
             ) : null}
 
             {this.props.order.driver && (
-              // <Driver
-              //   driver={{
-              //     uid: null,
-              //     location: {
-              //       latitude: this.props.order.driver.latitude,
-              //       longitude: this.props.order.driver.longitude,
-              //       // latitudeDelta :0.3,
-              //       // longitudeDelta : 0.3,
-              //     },
-              //   }}
-              //   innerRef={(driver_marker) => {
-              //     this.driver_marker = driver_marker;
-              //   }}
-              // />
+
 
               <>
-                {/* <Marker.Animated
-                  ref={(marker) => {
-                    this.marker = marker;
-                  }}
-                  image={require("../assets/images/marker.png")}
-                  style={{
-                    width: 30,
-                    height: 30,
-                  }}
-                  coordinate={{
-                    latitude: this.props.order.region
-                      ? this.props.order.region.latitude
-                      : 9.0765,
-                    longitude: this.props.order.region
-                      ? this.props.order.region.longitude
-                      : 7.3986,
-                  }}
-                  title={"You're here"}
-                ></Marker.Animated> */}
+
                 {this.props.order.order && this.props.order.order.state == "Started" && (
-                  <>
-                    <MapViewDirections
-                      origin={this.props.order.driver_location}
-                      destination={this.props.order.going}
-                      apikey={google_api}
-                      strokeWidth={3}
-                      strokeColor="black"
-                      showsCompass={false}
-                    ></MapViewDirections>
-                    <Marker.Animated
-                      title="Your Destination"
-                      coordinate={this.props.order.going}
-                      pinColor="#ffffff"
-                    />
-                  </>
+               this.map_view_directions()
                 )}
 
-                <Marker.Animated
-                  coordinate={{
-                    latitude: this.props.order.coordinate
-                    ? this.props.order.coordinate.latitude
-                    : 9.0765,
-                  longitude: this.props.order.coordinate
-                    ? this.props.order.coordinate.longitude
-                    : 7.3986,
-                    
-                  }}
-                  anchor={{ x: 0.35, y: 0.32 }}
-                  title="Your Ride Is Here"
-                  ref={(marker) => {
-                    this.driver_marker = marker;
-                  }}
-                  style={{ width: 50, height: 50 }}
-                >
-                  <Image
-                    source={require("../assets/bike.png")}
-                    style={{
-                      width: 40,
-                      height: 40,
-                    }}
-                  />
-                </Marker.Animated>
-              </>
+                {this.show_driver_marker()}
+   </>
               // this.driverLocation()
             )}
           </MapView>
-        )}
+
+             {/* <OverlayComponent
+      style={{position: "absolute", bottom: 50}}
+    /> */}
+        {/* over lay image */}
+
+
+{/* {!this.state.map_is_ready &&
+
+<View style ={{
+   ...StyleSheet.absoluteFillObject,
+}}>
+<Image source = {require("../assets/images/map_ready.png")} resizeMode = "contain" ></Image>
+
+</View>
+
+
+} */}
+
         <StatusBar style="auto" hidden = {true} />
 
         {/* <View
@@ -1755,28 +1986,7 @@ tooltip ={false}
         {this.props.order.destinationRequested &&
         !this.props.order.driver &&
         !this.props.order.is_searching ? (
-          <BottomSheet
-            ref={this.sheetRef}
-            snapPoints={["30%", "5%"]}
-            borderRadius={20}
-            renderContent={this.renderContent}
-            renderHeader={this.renderHeader}
-            enabledContentTapInteraction={false}
-            isBackDrop={true}
-            isBackDropDismisByPress={true}
-            isRoundBorderWithTipHeader={true}
-            ref="BottomSheet"
-            // isModal
-            // containerStyle={{backgroundCol or:"red"}}
-            tipStyle={{ backgroundColor: "red" }}
-            headerStyle={{ backgroundColor: "red" }}
-            // bodyStyle={{backgroundColor:"red",flex:1}}
-            header={
-              <View>
-                <Text style={styles.text}>Header</Text>
-              </View>
-            }
-          />
+        this.bottom_sheet()
         ) : null}
       </View>
     );

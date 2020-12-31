@@ -17,12 +17,13 @@ const bottom = props.bottom ? props.bottom : 80
 
 const cb = props.cb ? props.cb : ()=> console.log("callback function not passed")
 const order = props.order ? props.order : false
+const destination = props.destination ? props.destination : false
 console.log({order})
     return(
 
         <TouchableOpacity onPress ={ ()=>{
             cb()
-        }} style = {[styles.container, {top : order ? hp(30) : hp(80)}]}>
+        }} style = {[styles.container, {top : order ? hp(30) : destination ? hp(60) : hp(80)}]}>
 
         <MaterialIcons name = "my-location"
         size = {25}  />

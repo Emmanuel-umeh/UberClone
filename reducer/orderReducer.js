@@ -136,12 +136,7 @@ coordinate: new AnimatedRegion({
   longitudeDelta: 0.3,
 }),
 
-driver_location: {
-  latitude: 9.0765,
-  longitude: 7.3986,
-  latitudeDelta: 0.3,
-  longitudeDelta: 0.3,
-},
+driver_location: null,
 distance: null,
 
 fromChanged : false,
@@ -271,6 +266,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         //   is_searching: false,
+        order : {...order, state :"Accepted"},
         has_ride: has_ride,
         is_searching: is_searching,
         location: location,

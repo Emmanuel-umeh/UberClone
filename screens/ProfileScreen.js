@@ -1,15 +1,8 @@
 import React, { Component } from "react";
 import { StyleSheet, View, SafeAreaView } from "react-native";
-import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import CupertinoButtonPurple from "./material/CupertinoButtonPurple";
-import MaterialUnderlineTextbox1 from "./material/MaterialUnderlineTextbox1";
-import MaterialUnderlineTextbox2 from "./material/MaterialUnderlineTextbox2";
-import MaterialUnderlineTextbox3 from "./material/MaterialUnderlineTextbox3";
-import MaterialUnderlineTextbox4 from "./material/MaterialUnderlineTextbox4";
-import EntypoIcon from "react-native-vector-icons/Entypo";
 
 import * as Animatable from "react-native-animatable"
-import MaterialStackedLabelTextbox8 from "./material/MaterialStackedLabelTextbox8";
 import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Body, Input,  List, ListItem, Title, Button,Picker, Switch } from 'native-base';
 import {
     widthPercentageToDP as wp,
@@ -263,10 +256,10 @@ const styles = StyleSheet.create({
   },
   cupertinoButtonPurple: {
     height: 44,
-    width: wp("90%"),
+    width: wp("80%"),
     borderRadius: 11,
     marginTop: hp("2%"),
-    marginLeft: 21,
+    
     alignSelf: "center"
   },
   materialUnderlineTextbox1: {
