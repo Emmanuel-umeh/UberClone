@@ -26,6 +26,8 @@ import {
   LOGISTIC_TYPE,
   COORDINATE_DRIVER_LOCATION,
   CANCEL_ORDER,
+  GET_ORDER,
+  DRIVER_HEADING,
   PURGE
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -255,7 +257,7 @@ export default function (state = initialState, action) {
 
     case FOUND_DRIVER:{
 
-      console.log("driver found!!!!!!!!!!!!!!!!!!!! ", action.payload)
+     
       const {
         has_ride,
         is_searching,
@@ -273,6 +275,16 @@ export default function (state = initialState, action) {
         driver: driver,
         driver_details: driver_details,
         type: "FOUND_DRIVER",
+      };
+    }
+     
+    case DRIVER_HEADING:{
+
+  
+      return {
+       
+        driver: {...driver, heading : action.payload},
+      
       };
     }
      
@@ -364,6 +376,16 @@ export default function (state = initialState, action) {
           fromChanged  :false,
       
           type: "DESTINATION_CANCELLED",
+        };
+      }
+    
+    case GET_ORDER:
+      {
+        return {
+          ...state,
+          order : action.payload,
+      
+          type: action.type,
         };
       }
     

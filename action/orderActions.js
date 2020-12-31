@@ -293,23 +293,25 @@ export const getOrder = (tokens,orderID) => (dispatch) => {
   };
 
   const body = {}
-
-  // dispatch({
-  //   type : "SET_FETCHING"
-  // })
+console.log("tokens passed!!!!!!!!!!!!", tokens)
 
   axios
-    .post(`/api/order/get-order/${orderID}`, body, config)
+    .get(`/api/order/single_order/${orderID}`, config)
     .then(
       (res) => {
         console.log("got order successfully")
   
         console.log("MESSAGE res ", res.data)
+
+        dispatch({
+          type: "GET_ORDER",
+          payload: res.data
+        })
       }
       // console.log("this is the res ", res)
     )
     .catch((err) => {
-      console.warn("error ", err);
+      console.log("error ", err);
 
     });
 };

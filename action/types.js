@@ -115,6 +115,7 @@ export const RIDE_UPDATED="RIDE_UPDATED"
 
 // destination name of the user
 export const DESTINATION="DESTINATION"
+export const DRIVER_HEADING="DRIVER_HEADING"
 
 // set the type of logistic
 export const LOGISTIC_TYPE="LOGISTIC_TYPE"
@@ -124,6 +125,7 @@ export const LOGISTIC_TYPE="LOGISTIC_TYPE"
 export const COORDINATE_DRIVER_LOCATION="COORDINATE_DRIVER_LOCATION"
 // cCANCEL AN ORDER
 export const CANCEL_ORDER="CANCEL_ORDER"
+export const GET_ORDER="GET_ORDER"
 
 
 // Clean up redux states

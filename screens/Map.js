@@ -49,7 +49,7 @@ import CustomModal from "./components/Modal";
 import LottieLoader from "react-native-lottie-loader";
 
 // redux imports
-import { makeOrder, cancelOrder } from "../action/orderActions";
+import { makeOrder, cancelOrder,getOrder } from "../action/orderActions";
 import { Divider } from "react-native-paper";
 
 import { Audio } from "expo-av";
@@ -95,7 +95,9 @@ class Map extends PureComponent {
     const {user, token} = this.props.auth
     
     if (!this.pusher && user) {
-      console.log("creating a new pusher connection");
+
+
+      console.log("creating a new pusher connection!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
       this.pusher = new Pusher("eead8d5075773e7aca0a", {
         // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
         authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
@@ -105,6 +107,9 @@ class Map extends PureComponent {
         },
         encrypted: true,
       });
+
+
+      Pusher.logToConsole = true;
 
       // store.dispatch({
       //   type: "PUSHER_AUTH",
@@ -220,6 +225,8 @@ class Map extends PureComponent {
   show_driver_marker=()=>{
 
     const {driver, coordinate, logistic_type} = this.props.order
+
+    console.log("driver heading!!!!!!!!!!!!!!!!!!!!!!", driver)
     return(
       
       <Marker.Animated
@@ -247,7 +254,7 @@ class Map extends PureComponent {
       width: 40,
       height: 40,
       transform: [{
-        rotate: driver.heading === undefined ? '0deg' : `${driver.heading}deg`
+        rotate: driver.heading === undefined ? '40deg' : `${driver.heading}deg`
       }]
     }}
   /> : 
@@ -281,7 +288,7 @@ style={{
           width: 50,
           height: 50,
           transform: [{
-            rotate: driver.heading === undefined ? '0deg' : `${driver.heading}deg`
+            rotate: driver.heading === undefined ? '40deg' : `${driver.heading}deg`
           }]
         }}
       />
@@ -289,6 +296,349 @@ style={{
     </Marker.Animated>
 
     )
+  }
+
+  client_driver_location =async(data)=>{
+    try {
+      if (data) {
+        const { longitude, latitude, accuracy, heading } = data;
+
+        const {state} =  this.props.order.order
+        console.log(
+          "client driver location updated!! ? ",
+          latitude,
+          longitude,
+          accuracy,
+          heading
+        );
+
+        const newCoordinate = {
+          latitude,
+          longitude,
+        };
+
+        // driver location received
+        let driverLocation = regionFrom(latitude, longitude, accuracy);
+        console.log("the drivers new location ", driverLocation);
+
+        var data = {
+          location: driverLocation, //the drivers location
+          driver: {
+            latitude: latitude,
+            longitude: longitude,
+            heading : heading.magHeading
+          },
+        };
+
+       await store.dispatch({
+          type: "DRIVER_LOCATION",
+          payload: data,
+        });
+
+        var diff_in_meter_pickup = getLatLonDiffInMeters(
+          this.props.order.region.latitude,
+          this.props.order.region.longitude,
+          latitude,
+          longitude
+        );
+
+        // this.setState({
+        //   distance: diff_in_meter_pickup,
+        // });
+
+        this.animate(latitude, longitude);
+        // this.setState({
+        //   coordinate: {
+        //     ...this.state.coordinate,
+        //     longitude: longitude,
+        //     latitude: latitude,
+        //   },
+        //   driver_location: {
+        //     ...this.state.driver_location,
+        //     longitude: longitude,
+        //     latitude: latitude,
+        //   },
+        // });
+
+        var COORDINATE_DRIVER_LOCATION = {
+          coordinate: {
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+          driver_location: {
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+          distance: diff_in_meter_pickup,
+        };
+
+        // this.setState({
+        //   distance: diff_in_meter_pickup,
+        // });
+
+
+
+      await  store.dispatch({
+          type: "COORDINATE_DRIVER_LOCATION",
+          payload: COORDINATE_DRIVER_LOCATION,
+        });
+
+        // console.log("maops", this.map)
+        console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!")
+
+        this.centerCamera()
+       
+        // this.map.animateCamera(
+        //   {
+        //     center: {
+        //       longitude: longitude,
+        //       latitude: latitude,
+        //     },
+        //     pitch: 2,
+        //     heading: 60,
+        //     altitude: 18,
+        //     zoom: 18,
+        //   },
+        //   500
+        // ); 
+        // this.props.order.going
+
+        // this.map.animateToRegion(
+        //   {
+        //     latitudeDelta: LATITUDE_DELTA,
+        //     longitudeDelta: LONGITUDE_DELTA,
+        //     longitude: longitude,
+        //     latitude: latitude,
+        //   },
+        //   500
+        // );
+      }
+    } catch (error) {
+      console.warn(error)
+    }
+  }
+
+
+  client_found_driver =async(data)=>{
+           // found driver, the passenger has no say about this.
+        // once a driver is found, this will be the driver that's going to drive the user
+        // to their destination
+        // Vibration.vibrate({pattern:500});
+
+        try {
+          console.log("Found driver!!!!!!!!!!!!!!!!!!")
+        let driverLocation = regionFrom(
+          data.location.latitude,
+          data.location.longitude,
+          data.location.accuracy
+        );
+
+        // this.setState({
+        //   coordinate: {
+        //     ...this.state.coordinate,
+        //     longitude: driverLocation.longitude,
+        //     latitude: driverLocation.latitude,
+        //   },
+
+        //   // the drivers locatio to be passed to the mapviewdirections
+        //   driver_location: {
+        //     ...this.state.driver_location,
+        //     longitude: driverLocation.longitude,
+        //     latitude: driverLocation.latitude,
+        //   },
+        // });
+
+        // update coordinate and drivers location in redux
+
+        const found_driver = {
+          has_ride: true,
+          is_searching: false,
+          location: driverLocation,
+          driver: {
+            latitude: data.location.latitude,
+            longitude: data.location.longitude,
+            accuracy: data.location.accuracy,
+          },
+
+          driver_details: data.driver,
+        };
+
+       await store.dispatch({
+          type: "FOUND_DRIVER",
+          payload: found_driver,
+        });
+
+        // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
+
+        var diff_in_meter_pickup = getLatLonDiffInMeters(
+          this.props.order.region.latitude,
+          this.props.order.region.longitude,
+          data.location.latitude,
+          data.location.longitude
+        );
+
+        var COORDINATE_DRIVER_LOCATION = {
+          coordinate: {
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+          driver_location: {
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+          distance: diff_in_meter_pickup,
+        };
+
+        // this.setState({
+        //   distance: diff_in_meter_pickup,
+        // });
+
+        await store.dispatch({
+          type: "COORDINATE_DRIVER_LOCATION",
+          payload: COORDINATE_DRIVER_LOCATION,
+        });
+
+        this.loadSounds();
+
+        // console.log("Driver accepted and animating to driver location ", data);
+        // this.props.order.region;
+
+        this.map &&
+          // this.map.animateCamera(
+          //   {
+          //     center: {
+          //       longitude: data.location.longitude,
+          //       latitude: data.location.latitude,
+          //     },
+          //     pitch: 2,
+          //     heading: 60,
+          //     altitude: 18,
+          //     zoom: 10,
+          //   },
+          //   500
+          // );
+
+          this.map &&    this.map.fitToCoordinates(
+            [
+              {
+                latitude : data.location.latitude,
+                longitude : data.location.longitude,
+              },
+  
+              {
+                latitude: this.props.order.region.latitude,
+                longitude: this.props.order.region.longitude,
+              },
+            ],
+            {
+              edgePadding: {
+                bottom: hp("60%"),
+                right: wp("40%"),
+                top: hp("20%"),
+                left: wp("10%"),
+              },
+              animated: true,
+            }
+          )
+
+        // this.map.animateToRegion(
+        //   {
+        //     latitudeDelta: LATITUDE_DELTA,
+        //     longitudeDelta: LONGITUDE_DELTA,
+        //     longitude: data.location.longitude,
+        //     latitude: data.location.latitude,
+        //   },
+        //   1500
+        // );
+        // this.driver_marker && this.driver_marker.showCallout();
+        } catch (error) {
+          console.warn(error)
+        }
+  }
+
+
+  client_driver_message =async(data)=>{
+
+    try {
+      if (data.type == "near_pickup") {
+        //remove passenger marker
+
+       await  store.dispatch({
+          type: "HAS_RIDDEN",
+          // payload: data,
+        });
+        // this.setState({
+        //   has_ridden: true,
+        // });
+      }
+
+      // when the driver starts the ride
+      if (data.type == "ride_started") {
+        console.log("ride started by driver triggered ", data.order);
+
+        this.loadSounds();
+       await store.dispatch({
+          type: "RIDE_UPDATED",
+          payload: data.order,
+        });
+      }
+      if (data.type == "ride_ended") {
+        console.log("ride ended by driver triggered ", data.order);
+
+        this.loadSounds();
+      await  store.dispatch({
+          type: "RIDE_UPDATED",
+          payload: data.order,
+        });
+      }
+      if (data.type == "ride_completed") {
+        console.log("ride completed by driver triggered ", data.order);
+
+        const driver_id = data.order.driver;
+
+        this.loadSounds();
+       
+        //  this.centerCamera();
+
+        // passing the id of the driver as params to the rating page
+         this.reset_navigation("driver_rating", driver_id);
+
+      return  await store.dispatch({
+          type: "RIDE_COMPLETED",
+        });
+        // this.props.navigation.navigate("Driver_Rating")
+      }
+
+      if (data.type == "near_dropoff") {
+         this.centerCamera();
+      }
+
+      Alert.alert(
+        data.title,
+        data.msg,
+        [
+          {
+            text: "Okay!",
+          },
+        ],
+        { cancelable: false }
+      );
+      this.setState({
+        pusher : this.pusher,
+        available_drivers_channel : this.available_drivers_channel,
+        user_ride_channel : this.user_ride_channel
+      })
+    } catch (error) {
+      console.warn(error)
+    }
   }
 
   isDay=()=> {
@@ -570,28 +920,31 @@ return true
   reconnect_client =()=>{
     
     const {user, token} = this.props.auth
-    if (!this.pusher && user) {
-      console.log("creating a new pusher connection");
-      this.pusher = new Pusher("eead8d5075773e7aca0a", {
-        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-        cluster: "eu",
-        auth: {
-          headers: { "x-auth-token": `${token}` },
-        },
-        encrypted: true,
-      });
+ 
+    // if (!this.pusher && user) {
+    //   console.log("creating a new pusher connection");
+    //   this.pusher = new Pusher("eead8d5075773e7aca0a", {
+    //     // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
+    //     authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
+    //     cluster: "eu",
+    //     auth: {
+    //       headers: { "x-auth-token": `${token}` },
+    //     },
+    //     encrypted: true,
+    //   });
 
-      // store.dispatch({
-      //   type: "PUSHER_AUTH",
-      //   payload: this.pusher,
-      // });<D
-    }
-    // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-    Pusher.logToConsole = false;
+    //   // store.dispatch({
+    //   //   type: "PUSHER_AUTH",
+    //   //   payload: this.pusher,
+    //   // });<D
+    // }
+    // // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
+    // Pusher.logToConsole = false;
 
     //  if(!this.props.pusher.available_drivers_channel){
-
+if(this.props.order.order){
+  this.props.getOrder(token, this.props.order.order._id )
+}
 
     this.available_drivers_channel = this.pusher.subscribe(
       `private-available-drivers-${
@@ -601,10 +954,10 @@ return true
       }`
     );
 
-
     this.user_ride_channel = this.pusher.subscribe(
       "private-ride-" + this.props.auth.user._id
     );
+
 
     this.user_ride_channel.bind("client-driver-available", (data) => {
       console.log("clients driver response!!!!!");
@@ -626,9 +979,22 @@ return true
 
     this.user_ride_channel.bind("client-driver-location", (data) => {
      
+      // console.log("Reveiced location on the reconnect client channel!!!!!!!!!!!!!!!!!!!!!")
+      this.client_driver_location(data)
+    });
+
+    // get the heading for the driver
+    this.user_ride_channel.bind("client-driver-heading", (data) => {
+     store.dispatch({
+       type : "DRIVER_HEADING",
+       payload : data.heading.magHeading ? data.heading.magHeading : 0
+     })
+ 
     });
 
     this.user_ride_channel.bind("client-driver-message", (data) => {
+
+      this.client_driver_message(data)
   });
 
   // }
@@ -684,7 +1050,7 @@ this.reconnect_client()
 
  
  if(this.props.order.order){
-if(this.props.order.order.state!=="Accepted" || this.props.order.order.state!=="Pending"){
+if(this.props.order.order.state=="Started" ){
 
   var {latitude, longitude} = this.props.order.driver_location
   console.log("centering ,map Destination requested with order!!!!!!!!!!!", this.props.order.order)
@@ -816,7 +1182,7 @@ const longitude = this.props.order.going.longitude
     // let pusher
 
     // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-    Pusher.logToConsole = true;
+ 
 
     //  if(!this.props.pusher.available_drivers_channel){
 
@@ -882,144 +1248,7 @@ const longitude = this.props.order.going.longitude
       });
 
       this.user_ride_channel.bind("client-found-driver", async (data) => {
-        // found driver, the passenger has no say about this.
-        // once a driver is found, this will be the driver that's going to drive the user
-        // to their destination
-        // Vibration.vibrate({pattern:500});
-
-        try {
-          console.log("Found driver!!!!!!!!!!!!!!!!!!")
-        let driverLocation = regionFrom(
-          data.location.latitude,
-          data.location.longitude,
-          data.location.accuracy
-        );
-
-        // this.setState({
-        //   coordinate: {
-        //     ...this.state.coordinate,
-        //     longitude: driverLocation.longitude,
-        //     latitude: driverLocation.latitude,
-        //   },
-
-        //   // the drivers locatio to be passed to the mapviewdirections
-        //   driver_location: {
-        //     ...this.state.driver_location,
-        //     longitude: driverLocation.longitude,
-        //     latitude: driverLocation.latitude,
-        //   },
-        // });
-
-        // update coordinate and drivers location in redux
-
-        const found_driver = {
-          has_ride: true,
-          is_searching: false,
-          location: driverLocation,
-          driver: {
-            latitude: data.location.latitude,
-            longitude: data.location.longitude,
-            accuracy: data.location.accuracy,
-          },
-
-          driver_details: data.driver,
-        };
-
-       await store.dispatch({
-          type: "FOUND_DRIVER",
-          payload: found_driver,
-        });
-
-        // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
-
-        var diff_in_meter_pickup = getLatLonDiffInMeters(
-          this.props.order.region.latitude,
-          this.props.order.region.longitude,
-          data.location.latitude,
-          data.location.longitude
-        );
-
-        var COORDINATE_DRIVER_LOCATION = {
-          coordinate: {
-            latitudeDelta: 0.3,
-            longitudeDelta: 0.3,
-            longitude: driverLocation.longitude,
-            latitude: driverLocation.latitude,
-          },
-          driver_location: {
-            latitudeDelta: 0.3,
-            longitudeDelta: 0.3,
-            longitude: driverLocation.longitude,
-            latitude: driverLocation.latitude,
-          },
-          distance: diff_in_meter_pickup,
-        };
-
-        // this.setState({
-        //   distance: diff_in_meter_pickup,
-        // });
-
-        await store.dispatch({
-          type: "COORDINATE_DRIVER_LOCATION",
-          payload: COORDINATE_DRIVER_LOCATION,
-        });
-
-        this.loadSounds();
-
-        // console.log("Driver accepted and animating to driver location ", data);
-        // this.props.order.region;
-
-        this.map &&
-          // this.map.animateCamera(
-          //   {
-          //     center: {
-          //       longitude: data.location.longitude,
-          //       latitude: data.location.latitude,
-          //     },
-          //     pitch: 2,
-          //     heading: 60,
-          //     altitude: 18,
-          //     zoom: 10,
-          //   },
-          //   500
-          // );
-
-          this.map &&    this.map.fitToCoordinates(
-            [
-              {
-                latitude : data.location.latitude,
-                longitude : data.location.longitude,
-              },
-  
-              {
-                latitude: this.props.order.region.latitude,
-                longitude: this.props.order.region.longitude,
-              },
-            ],
-            {
-              edgePadding: {
-                bottom: hp("60%"),
-                right: wp("40%"),
-                top: hp("20%"),
-                left: wp("10%"),
-              },
-              animated: true,
-            }
-          )
-
-        // this.map.animateToRegion(
-        //   {
-        //     latitudeDelta: LATITUDE_DELTA,
-        //     longitudeDelta: LONGITUDE_DELTA,
-        //     longitude: data.location.longitude,
-        //     latitude: data.location.latitude,
-        //   },
-        //   1500
-        // );
-        // this.driver_marker && this.driver_marker.showCallout();
-        } catch (error) {
-          console.warn(error)
-        }
+ this.client_found_driver()
 
         
       });
@@ -1027,205 +1256,14 @@ const longitude = this.props.order.going.longitude
       this.user_ride_channel.bind("client-driver-location", async(data) => {
 
 
-        try {
-          if (data) {
-            const { longitude, latitude, accuracy, heading } = data;
-  
-            const {state} =  this.props.order.order
-            console.log(
-              "client driver location updated!! ? ",
-              latitude,
-              longitude,
-              accuracy,
-              heading
-            );
-  
-            const newCoordinate = {
-              latitude,
-              longitude,
-            };
-  
-            // driver location received
-            let driverLocation = regionFrom(latitude, longitude, accuracy);
-            console.log("the drivers new location ", driverLocation);
-  
-            var data = {
-              location: driverLocation, //the drivers location
-              driver: {
-                latitude: latitude,
-                longitude: longitude,
-                heading : heading.magHeading
-              },
-            };
-  
-           await store.dispatch({
-              type: "DRIVER_LOCATION",
-              payload: data,
-            });
-  
-            var diff_in_meter_pickup = getLatLonDiffInMeters(
-              this.props.order.region.latitude,
-              this.props.order.region.longitude,
-              latitude,
-              longitude
-            );
-  
-            // this.setState({
-            //   distance: diff_in_meter_pickup,
-            // });
-  
-            this.animate(latitude, longitude);
-            // this.setState({
-            //   coordinate: {
-            //     ...this.state.coordinate,
-            //     longitude: longitude,
-            //     latitude: latitude,
-            //   },
-            //   driver_location: {
-            //     ...this.state.driver_location,
-            //     longitude: longitude,
-            //     latitude: latitude,
-            //   },
-            // });
-  
-            var COORDINATE_DRIVER_LOCATION = {
-              coordinate: {
-                latitudeDelta: 0.3,
-                longitudeDelta: 0.3,
-                longitude: driverLocation.longitude,
-                latitude: driverLocation.latitude,
-              },
-              driver_location: {
-                latitudeDelta: 0.3,
-                longitudeDelta: 0.3,
-                longitude: driverLocation.longitude,
-                latitude: driverLocation.latitude,
-              },
-              distance: diff_in_meter_pickup,
-            };
-  
-            // this.setState({
-            //   distance: diff_in_meter_pickup,
-            // });
-
-    
-  
-          await  store.dispatch({
-              type: "COORDINATE_DRIVER_LOCATION",
-              payload: COORDINATE_DRIVER_LOCATION,
-            });
-  
-            // console.log("maops", this.map)
-            console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!")
-
-            this.centerCamera()
-           
-            // this.map.animateCamera(
-            //   {
-            //     center: {
-            //       longitude: longitude,
-            //       latitude: latitude,
-            //     },
-            //     pitch: 2,
-            //     heading: 60,
-            //     altitude: 18,
-            //     zoom: 18,
-            //   },
-            //   500
-            // ); 
-            // this.props.order.going
-
-            // this.map.animateToRegion(
-            //   {
-            //     latitudeDelta: LATITUDE_DELTA,
-            //     longitudeDelta: LONGITUDE_DELTA,
-            //     longitude: longitude,
-            //     latitude: latitude,
-            //   },
-            //   500
-            // );
-          }
-        } catch (error) {
-          console.warn(error)
-        }
-    
+    this.client_driver_location(data) 
       });
 
       this.user_ride_channel.bind("client-driver-message", async(data) => {
 
-        try {
-          if (data.type == "near_pickup") {
-            //remove passenger marker
-  
-           await  store.dispatch({
-              type: "HAS_RIDDEN",
-              // payload: data,
-            });
-            // this.setState({
-            //   has_ridden: true,
-            // });
-          }
-  
-          // when the driver starts the ride
-          if (data.type == "ride_started") {
-            console.log("ride started by driver triggered ", data.order);
-  
-            this.loadSounds();
-           await store.dispatch({
-              type: "RIDE_UPDATED",
-              payload: data.order,
-            });
-          }
-          if (data.type == "ride_ended") {
-            console.log("ride ended by driver triggered ", data.order);
-  
-            this.loadSounds();
-          await  store.dispatch({
-              type: "RIDE_UPDATED",
-              payload: data.order,
-            });
-          }
-          if (data.type == "ride_completed") {
-            console.log("ride completed by driver triggered ", data.order);
-  
-            const driver_id = data.order.driver;
-  
-            this.loadSounds();
-           
-            //  this.centerCamera();
-  
-            // passing the id of the driver as params to the rating page
-             this.reset_navigation("driver_rating", driver_id);
-  
-          return  await store.dispatch({
-              type: "RIDE_COMPLETED",
-            });
-            // this.props.navigation.navigate("Driver_Rating")
-          }
-  
-          if (data.type == "near_dropoff") {
-             this.centerCamera();
-          }
-  
-          Alert.alert(
-            data.title,
-            data.msg,
-            [
-              {
-                text: "Okay!",
-              },
-            ],
-            { cancelable: false }
-          );
-          this.setState({
-            pusher : this.pusher,
-            available_drivers_channel : this.available_drivers_channel,
-            user_ride_channel : this.user_ride_channel
-          })
-        } catch (error) {
-          console.warn(error)
-        }
        
+       
+      this.client_driver_message(data)
       });
 
     // }
@@ -1788,6 +1826,13 @@ const longitude = this.props.order.going.longitude
 
   render() {
 
+    var show_user_location
+
+    if(this.props.order.order){
+      show_user_location = this.props.order.order.state!=="Started"
+    }
+
+    console.log({show_user_location})
     return (
       <View style={styles.container}>
         {/* Loading Animation */}
@@ -1838,12 +1883,12 @@ this.drawer_button()
       {this.current_location_button()}
 
           <MapView
-            followUserLocation={this.state.follow_user_location}
+            followUserLocation={show_user_location}
             initialRegion={this.props.order.region}
             rotateEnabled={false}
             
             customMapStyle = {this.getMapStyles()}
-            showsUserLocation={this.state.show_user_location}
+            showsUserLocation={show_user_location}
             showsBuildings={false}
             zoomEnabled={true}
             showsCompass={false}
@@ -2001,7 +2046,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { makeOrder, cancelOrder })(Map);
+export default connect(mapStateToProps, { makeOrder, cancelOrder,getOrder })(Map);
 
 const styles = StyleSheet.create({
   container: {
