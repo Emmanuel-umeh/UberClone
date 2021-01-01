@@ -22,7 +22,7 @@ class Driver_Rating extends Component{
                 this.props.navigation.dispatch(
                     StackActions.replace('setLogisticsScreen')
                   )
-                this.props.navigation.pop() 
+                // this.props.navigation.pop() 
                 // && this.props.navigation.navigate('setLogisticsScreen');
                 
     }

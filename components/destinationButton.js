@@ -57,8 +57,9 @@ export default class DestinantionButton extends Component{
     
     <View style = {styles.rightCol}>
 
-        {this.props.logistics == "bike" &&   <Ionicons name = 'md-bicycle' color = "black" size ={24} style ={{alignSelf:'center'}} /> }
-        {this.props.logistics != "bike" &&   <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} /> }
+        {/* {this.props.logistics == "bike" &&   <Ionicons name = 'md-bicycle' color = "black" size ={24} style ={{alignSelf:'center'}} /> }
+        {this.props.logistics != "bike" &&   <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} /> } */}
+          <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} />
           
     </View>
 

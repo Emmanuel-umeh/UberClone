@@ -23,7 +23,7 @@ console.log({order})
 
         <TouchableOpacity onPress ={ ()=>{
             cb()
-        }} style = {[styles.container, {top : order ? hp(30) : destination ? hp(60) : hp(80)}]}>
+        }} style = {[styles.container, {top : order ? hp(30) : destination ? hp(50) : hp(80)}]}>
 
         <MaterialIcons name = "my-location"
         size = {25}  />

@@ -28,7 +28,7 @@ const AuthenticatedStack = ({ navigation }) => (
 
 
 
-    <AuthStack.Screen name="setLogisticsScreen" component={SetLogistics} />
+    {/* <AuthStack.Screen name="setLogisticsScreen" component={SetLogistics} /> */}
 
     <AuthStack.Screen  name="Map" component={Map} />
     {/* <AuthStack.Screen name="SplashScreen" component={AuthSplashScreen}/> */}

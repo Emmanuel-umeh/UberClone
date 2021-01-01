@@ -56,6 +56,8 @@ import { Audio } from "expo-av";
 import { persistStore } from "redux-persist";
 import {day_styles, night_styles} from "./map_styles/styles"
 import { PureComponent } from "react";
+import Bike from "./material/SelectLogistics";
+import SelectLogistics from "./material/SelectLogistics";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -92,30 +94,6 @@ class Map extends PureComponent {
     this.pusher = null;
 
 
-    const {user, token} = this.props.auth
-    
-    if (!this.pusher && user) {
-
-
-      console.log("creating a new pusher connection!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-      this.pusher = new Pusher("eead8d5075773e7aca0a", {
-        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-        cluster: "eu",
-        auth: {
-          headers: { "x-auth-token": `${token}` },
-        },
-        encrypted: true,
-      });
-
-
-      Pusher.logToConsole = true;
-
-      // store.dispatch({
-      //   type: "PUSHER_AUTH",
-      //   payload: this.pusher,
-      // });<D
-    }
 
     this.state ={
       available_drivers_channel : null,
@@ -249,7 +227,7 @@ class Map extends PureComponent {
     {logistic_type == "Bike" ?
     
     <Image
-    source={require("../assets/images/bike_icon.png")}
+    source={require("../assets/images/bike.png")}
     style={{
       width: 40,
       height: 40,
@@ -262,7 +240,7 @@ class Map extends PureComponent {
   logistic_type == "Car"? 
 
   <Image
-  source={require("../assets/images/car_icon.png")}
+  source={require("../assets/images/car.png")}
   style={{
     width: 40,
     height: 40,
@@ -273,7 +251,7 @@ class Map extends PureComponent {
 /> :  logistic_type =="Truck" ?
 
 <Image
-source={require("../assets/images/truck_icon.png")}
+source={require("../assets/images/truck.png")}
 style={{
   width: 40,
   height: 40,
@@ -703,7 +681,7 @@ style={{
     if(this.isDay()){
       return day_styles
     }else{
-      return night_styles
+      return day_styles
     }
     }
 
@@ -711,18 +689,18 @@ style={{
       return(
         <BottomSheet
         ref={this.sheetRef}
-        snapPoints={["30%", "5%"]}
+        snapPoints={["65%", "30%", "10%"]}
         borderRadius={20}
         renderContent={this.renderContent}
         renderHeader={this.renderHeader}
-        enabledContentTapInteraction={false}
+      
         isBackDrop={true}
         isBackDropDismisByPress={true}
         isRoundBorderWithTipHeader={true}
         ref="BottomSheet"
         // isModal
         // containerStyle={{backgroundCol or:"red"}}
-        tipStyle={{ backgroundColor: "red" }}
+        tipStyle={{ backgroundColor: "black" }}
         headerStyle={{ backgroundColor: "red" }}
         // bodyStyle={{backgroundColor:"red",flex:1}}
         header={
@@ -811,6 +789,8 @@ return true
         ref={(marker) => {
           this.destinationMarker = marker;
         }}
+
+        key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
         coordinate={{
         
           latitude:  this.props.order.going
@@ -835,11 +815,11 @@ return true
   <Icon active name='pin' style={{
     color : "blue",
     
-    fontSize : 25,
+    fontSize : 20,
   }} />
   <Text style ={{
-    fontSize : 18,
-    fontFamily : "Quicksand-Bold"
+    fontSize : 12,
+    fontFamily : "Quicksand-Medium"
   }}>{this.props.order.going.name ? this.props.order.going.name : "Your Destination"}</Text>      
   
       </Item>
@@ -872,6 +852,8 @@ return true
         ref={(marker) => {
           this.destinationMarker = marker;
         }}
+
+                key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
         coordinate={{
         
           latitude:  this.props.order.going
@@ -889,17 +871,17 @@ return true
   tooltip ={false}
   >
   
-  <Content style ={{width : undefined , backgroundColor : "white"}}>
+  <Content style ={{width : undefined , height : 20, backgroundColor : "white"}}>
   <Item style ={{
   padding : 10
   }}>
   <Icon active name='pin' style={{
     color : "blue",
     
-    fontSize : 25,
+    fontSize : 18,
   }} />
   <Text style ={{
-    fontSize : 18,
+    fontSize : 15,
     fontFamily : "Quicksand-Bold"
   }}>{this.props.order.going.name ? this.props.order.going.name : "Your Destination"}</Text>      
   
@@ -1015,17 +997,19 @@ if(this.props.order.order){
     //   type : "PURGE"
     // })
 
+
     store.dispatch({
       type :"PERFORMING_TASK_ENDED"
     })
 
-    console.log("has ride ? ", this.props.order)
+
 
     if(this.props.order.has_ride){
 this.reconnect_client()
 
     }else{
-      this.pusher_actions();
+      // this.pusher_actions();
+      this._getLocationAsync()
    
 
     }
@@ -1137,15 +1121,22 @@ const longitude = this.props.order.going.longitude
       ],
       {
         edgePadding: {
-          bottom: hp("60%"),
+          bottom: hp("80%"),
           right: wp("40%"),
-          top: hp("20%"),
+          top: hp("40%"),
           left: wp("10%"),
         },
         animated: true,
       }
     )
 
+
+    try {
+      this.destinationMarker.showCallout()
+    } catch (error) {
+      console.warn("Could not callotu destination marker")
+    }
+   
 }
     
     
@@ -1179,21 +1170,43 @@ const longitude = this.props.order.going.longitude
 
   pusher_actions = async () => {
     const { token, user } = this.props.auth;
-    // let pusher
+
+
+
+      console.log("creating a new pusher connection!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
+      this.pusher = new Pusher("eead8d5075773e7aca0a", {
+        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
+        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
+        cluster: "eu",
+        auth: {
+          headers: { "x-auth-token": `${token}` },
+        },
+        encrypted: true,
+      });
+
+
+      Pusher.logToConsole = true;
+
+      // store.dispatch({
+      //   type: "PUSHER_AUTH",
+      //   payload: this.pusher,
+      // });<D
+
 
     // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
  
 
     //  if(!this.props.pusher.available_drivers_channel){
 
-
+console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.props.order.logistic_type)
     this.available_drivers_channel = this.pusher.subscribe(
       `private-available-drivers-${
-        this.props.route.params
-          ? this.props.route.params.logistics
-          : this.props.order.logistic_type
+       
+          this.props.order.logistic_type? this.props.order.logistic_type.toLowerCase() : "car"
       }`
     );
+
+    console.log("connected to private available drivers!!")
 
       // store.dispatch({
       //   type: "AVAILABLE_DRIVERS",
@@ -1373,7 +1386,7 @@ const longitude = this.props.order.going.longitude
   
       console.log({ diff_in_meter_pickup });
   
-      var price = diff_in_meter_pickup * 0.2;
+      var price = diff_in_meter_pickup * 0.15;
   
       console.log("price of transportation ", price);
   
@@ -1387,7 +1400,6 @@ const longitude = this.props.order.going.longitude
   
       //  this._getLocationAsync
   
-      this.destinationMarker.showCallout()
       this.map
         ? this.map.fitToCoordinates(
             [
@@ -1403,9 +1415,9 @@ const longitude = this.props.order.going.longitude
             ],
             {
               edgePadding: {
-                bottom: hp("60%"),
+                bottom: hp("80%"),
           right: wp("40%"),
-          top: hp("20%"),
+          top: hp("40%"),
           left: wp("10%"),
               },
               animated: true,
@@ -1422,6 +1434,15 @@ const longitude = this.props.order.going.longitude
           );
 
      
+
+          setTimeout(() => {
+            try {
+              this.destinationMarker.showCallout()
+            } catch (error) {
+              console.warn("Could not callotu destination marker 2")
+            }
+          }, 2000);
+
     } catch (error) {
       console.warn(error)
     }
@@ -1434,6 +1455,14 @@ const longitude = this.props.order.going.longitude
   bookRide = async (payment_method) => {
 
     try {
+
+      
+    const {token} = this.props.auth
+    
+
+
+      // connect to pushe rwhen booking ride
+      await this.pusher_actions()
       console.log("booking ride");
 
     let from_address ;
@@ -1450,7 +1479,7 @@ const longitude = this.props.order.going.longitude
   //  longitude:  this.props.order.going.longitude
   //   })
 
-    from_address = from_address_full[0].street
+    from_address =  from_address_full[0].street ?from_address_full[0].street  : from_address_full[0].name
     // going_address = going_address_full.street
 
 
@@ -1725,95 +1754,117 @@ const longitude = this.props.order.going.longitude
   }
 
   renderContent = () => (
-    <Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
-      {/* <Text style={styles.totalAmount}>Total Amount</Text> */}
-      <Text style={styles.n3500}>
-        {" "}
-        ₦{Math.ceil(this.props.order.price / 100) * 100}
-      </Text>
 
-      <Divider
-        style={{
-          margin: 10,
-        }}
-      />
-      <View style={styles.materialButtonPinkRow}>
-        <TouchableOpacity
-          onPress={() => {
-            this.bookRide("Cash");
-          }}
-        >
-          <Button disabled rounded dark style={styles.materialButtonPink1}>
-            <Text
-              style={{
-                fontSize: 22,
-                color: "white",
-                alignSelf: "center",
-                paddingLeft: wp("10%"),
-              }}
-            >
-              Cash
-            </Text>
-          </Button>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            this.bookRide("Cashless");
-          }}
-        >
-          <Button disabled rounded warning style={styles.materialButtonPink1}>
-            <Text
-              style={{ fontSize: 22, color: "white", paddingLeft: wp("10%") }}
-            >
-              Card
-            </Text>
-          </Button>
-        </TouchableOpacity>
-      </View>
 
-      <TouchableOpacity
-        onPress={() => {
-          // this.setState({
-          //   destinationRequested: false,
-          // });
-          // store.dispatch({
-          //   type: "DESTINATION_CANCELLED",
-          // });
-          //  this.centerCamera();;
 
-          this.cancelOrder();
-        }}
-      >
-        <Animatable.View
-          animation="bounceIn"
-          delay={1500}
-          style={{
-            width: WIDTH,
-          }}
-        >
-          <Text
-            style={{
-              // marginLeft: WIDTH / 3,
-              alignSelf: "center",
-              fontWeight: "bold",
-              fontSize: 20,
-              // top: 20,
-              color: "#c90c02",
-            }}
-          >
-            <Icon
-              active
-              style={{
-                fontSize: 50,
-                color: "red",
-              }}
-              name="ios-close"
-            />
-          </Text>
-        </Animatable.View>
-      </TouchableOpacity>
-    </Animatable.View>
+<Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
+            <SelectLogistics
+              style={
+                (styles.Bike,
+                { backgroundColor: this.state.isBikeSelected ? "gold" : null })
+              }
+            ></SelectLogistics>
+
+</Animatable.View>
+
+
+
+
+
+
+
+
+
+    // <Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
+    //   {/* <Text style={styles.totalAmount}>Total Amount</Text> */}
+    //   <Text style={styles.n3500}>
+    //     {" "}
+    //     ₦{Math.ceil(this.props.order.price / 100) * 100}
+    //   </Text>
+
+    //   <Divider
+    //     style={{
+    //       margin: 10,
+    //     }}
+    //   />
+    //   <View style={styles.materialButtonPinkRow}>
+    //     <TouchableOpacity
+    //       onPress={() => {
+    //         this.bookRide("Cash");
+    //       }}
+    //     >
+    //       <Button disabled rounded dark style={styles.materialButtonPink1}>
+    //         <Text
+    //           style={{
+    //             fontSize: 22,
+    //             color: "white",
+    //             alignSelf: "center",
+    //             paddingLeft: wp("10%"),
+    //           }}
+    //         >
+    //           Cash
+    //         </Text>
+    //       </Button>
+    //     </TouchableOpacity>
+
+    //     <TouchableOpacity
+    //       onPress={() => {
+    //         this.bookRide("Cashless");
+    //       }}
+    //     >
+    //       <Button disabled rounded warning style={styles.materialButtonPink1}>
+    //         <Text
+    //           style={{ fontSize: 22, color: "white", paddingLeft: wp("10%") }}
+    //         >
+    //           Card
+    //         </Text>
+    //       </Button>
+    //     </TouchableOpacity>
+    //   </View>
+
+    //   <TouchableOpacity
+    //     onPress={() => {
+    //       // this.setState({
+    //       //   destinationRequested: false,
+    //       // });
+    //       // store.dispatch({
+    //       //   type: "DESTINATION_CANCELLED",
+    //       // });
+    //       //  this.centerCamera();;
+
+    //       this.cancelOrder();
+    //     }}
+    //   >
+    //     <Animatable.View
+    //       animation="bounceIn"
+    //       delay={1500}
+    //       style={{
+    //         width: WIDTH,
+    //       }}
+    //     >
+    //       <Text
+    //         style={{
+    //           // marginLeft: WIDTH / 3,
+    //           alignSelf: "center",
+    //           fontWeight: "bold",
+    //           fontSize: 20,
+    //           // top: 20,
+    //           color: "#c90c02",
+    //         }}
+    //       >
+    //         <Icon
+    //           active
+    //           style={{
+    //             fontSize: 50,
+    //             color: "red",
+    //           }}
+    //           name="ios-close"
+    //         />
+    //       </Text>
+    //     </Animatable.View>
+    //   </TouchableOpacity>
+    // </Animatable.View>
   );
 
   renderHeader = () => {
@@ -1826,7 +1877,7 @@ const longitude = this.props.order.going.longitude
 
   render() {
 
-    var show_user_location
+    var show_user_location = true 
 
     if(this.props.order.order){
       show_user_location = this.props.order.order.state!=="Started"
@@ -1882,6 +1933,22 @@ this.drawer_button()
 
       {this.current_location_button()}
 
+
+        <>
+
+
+        {/* <View
+  pointerEvents="none"
+  style={{position: 'absolute', top: 200, left: 200}}>
+  <Image source={require("../assets/images/preloader.png")} />
+</View> */}
+{/* 
+          <View style = {styles.preloader}>
+          <Image source = {require("../assets/images/preloader.png")}></Image>
+
+          <Text style ={{top : 100}} > I am here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</Text>
+        </View> */}
+    
           <MapView
             followUserLocation={show_user_location}
             initialRegion={this.props.order.region}
@@ -1913,15 +1980,6 @@ this.drawer_button()
             ref={(map) => {
               this.map = map;
             }}
-            //comment this if any error
-            // region={{
-            //   latitude: this.props.order.region.latitude ?this.props.order.region.latitude : 9.04,
-
-            //   longitude: this.props.order.region.longitude ?  this.props.order.region.longitude : 7.04,
-
-            //   latitudeDelta: 0.5,
-            //   longitudeDelta: LONGITUDE_DELTA,
-            // }}
 
             style={{
               // flex: 1,
@@ -1932,40 +1990,17 @@ this.drawer_button()
             //   this.map = map;
             // }}
           >
+
+            {/* {this.state.map_is_ready && 
+            
+            <View style = {styles.preloader}> 
+                <Image source = {require("../assets/images/preloader.png")}></Image>
+
+            </View>
+            } */}
             {/* {this.state.my_location &&  */}
 
-            {/* {!this.props.order.destinationRequested &&
-              this.props.order.region &&
-              !this.props.order.driver && (
-                <Marker.Animated
-                  ref={(marker) => {
-                    this.marker = marker;
-                  }}
-                  image={require("../assets/images/marker.png")}
-                  style={{
-                    width: 30,
-                    height: 30,
-                  }}
-                  coordinate={{
-                    latitude: this.props.order.region
-                      ? this.props.order.region.latitude
-                      : 9.0765,
-                    longitude: this.props.order.region
-                      ? this.props.order.region.longitude
-                      : 7.3986,
-                  }}
-                  titleStyle={{
-                    fontFamily: "Quicksand-Bold",
-                  }}
-                  title={`Hello ${
-                    user && !this.props.order.fromChanged
-                      ? user.firstName ?  user.firstName.charAt(0).toUpperCase() +
-                        user.firstName.slice(1) : " There!"
-                      : "Pick Up Location"
-                  }`}
-                ></Marker.Animated>
-              )} */}
-
+          
             {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
 
             {this.props.order.destinationRequested &&
@@ -1994,24 +2029,11 @@ this.destination_marker()
             )}
           </MapView>
 
-             {/* <OverlayComponent
-      style={{position: "absolute", bottom: 50}}
-    /> */}
         {/* over lay image */}
 
 
-{/* {!this.state.map_is_ready &&
 
-<View style ={{
-   ...StyleSheet.absoluteFillObject,
-}}>
-<Image source = {require("../assets/images/map_ready.png")} resizeMode = "contain" ></Image>
-
-</View>
-
-
-} */}
-
+</>
         <StatusBar style="auto" hidden = {true} />
 
         {/* <View
@@ -2031,8 +2053,30 @@ this.destination_marker()
         {this.props.order.destinationRequested &&
         !this.props.order.driver &&
         !this.props.order.is_searching ? (
-        this.bottom_sheet()
+
+
+
+<Animatable.View animation="slideInUp" delay={1000} style={styles.rect}>
+<SelectLogistics
+  style={
+    (styles.Bike,
+    { backgroundColor: this.state.isBikeSelected ? "gold" : null })
+  }
+
+  bookRide = {this.bookRide}
+></SelectLogistics>
+
+</Animatable.View>
+
         ) : null}
+
+
+
+
+
+
+
+        
       </View>
     );
   }
@@ -2056,8 +2100,11 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   rect: {
-    height: "100%",
-    backgroundColor: "whitesmoke",
+    height: hp(40),
+    top : hp(60),
+    // backgroundColor: 'transparent'
+
+    // backgroundColor: "transparent",
     // top: "10%",
     // borderTopLeftRadius: 63,
     // borderTopRightRadius: 63,
@@ -2099,5 +2146,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: hp("1%"),
     marginRight: 4,
+  },
+
+  preloader : {
+    position : "absolute",
+   marginTop : 500
+   
+    
+  },
+  Bike: {
+    height: hp("50%"),
+    width: wp("100%"),
+    marginTop: 10,
+    // backgroundColor : this.state.isTruckSelected
   },
 });

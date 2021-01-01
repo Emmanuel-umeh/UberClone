@@ -347,10 +347,10 @@ animation="fade"
               keyboardShouldPersistTaps={'handled'}
 data={this.state.predictions}
 initialNumToRender={4}
-keyExtractor={item => item.place_id}
+keyExtractor={(item, index) => index.toString()}
 renderItem={({ item }) => 
 <TouchableOpacity
-key={item.place_id}
+// key={item.place_id}
 
    onPress={async () => {
 
@@ -478,10 +478,10 @@ keyboardShouldPersistTaps={'handled'}
 data={this.state.fromPredictions}
 initialNumToRender={4}
 
-keyExtractor={item => item.place_id}
+keyExtractor={(item, index) => index.toString()}
 renderItem={({ item }) => 
 <TouchableOpacity
-key={item.place_id}
+// key={item.place_id}
 onPress={async () => {
 
 
