@@ -93,7 +93,22 @@ class Map extends PureComponent {
 
     this.pusher = null;
 
+    const {token} = this.props.auth
+    
 
+    console.log("creating a new pusher connection!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
+    this.pusher = new Pusher("eead8d5075773e7aca0a", {
+      // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
+      authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
+      cluster: "eu",
+      auth: {
+        headers: { "x-auth-token": `${token}` },
+      },
+      encrypted: true,
+    });
+
+
+    Pusher.logToConsole = true;
 
     this.state ={
       available_drivers_channel : null,
@@ -409,28 +424,17 @@ style={{
 
         try {
           console.log("Found driver!!!!!!!!!!!!!!!!!!")
-        let driverLocation = regionFrom(
+        let driverLocation = await regionFrom(
           data.location.latitude,
           data.location.longitude,
           data.location.accuracy
         );
 
-        // this.setState({
-        //   coordinate: {
-        //     ...this.state.coordinate,
-        //     longitude: driverLocation.longitude,
-        //     latitude: driverLocation.latitude,
-        //   },
-
-        //   // the drivers locatio to be passed to the mapviewdirections
-        //   driver_location: {
-        //     ...this.state.driver_location,
-        //     longitude: driverLocation.longitude,
-        //     latitude: driverLocation.latitude,
-        //   },
-        // });
+    
 
         // update coordinate and drivers location in redux
+
+        console.log({driverLocation})
 
         const found_driver = {
           has_ride: true,
@@ -452,7 +456,7 @@ style={{
 
         // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
 
-        var diff_in_meter_pickup = getLatLonDiffInMeters(
+        var diff_in_meter_pickup = await getLatLonDiffInMeters(
           this.props.order.region.latitude,
           this.props.order.region.longitude,
           data.location.latitude,
@@ -474,6 +478,7 @@ style={{
           },
           distance: diff_in_meter_pickup,
         };
+        console.log({COORDINATE_DRIVER_LOCATION})
 
         // this.setState({
         //   distance: diff_in_meter_pickup,
@@ -489,20 +494,7 @@ style={{
         // console.log("Driver accepted and animating to driver location ", data);
         // this.props.order.region;
 
-        this.map &&
-          // this.map.animateCamera(
-          //   {
-          //     center: {
-          //       longitude: data.location.longitude,
-          //       latitude: data.location.latitude,
-          //     },
-          //     pitch: 2,
-          //     heading: 60,
-          //     altitude: 18,
-          //     zoom: 10,
-          //   },
-          //   500
-          // );
+     
 
           this.map &&    this.map.fitToCoordinates(
             [
@@ -903,27 +895,7 @@ return true
     
     const {user, token} = this.props.auth
  
-    // if (!this.pusher && user) {
-    //   console.log("creating a new pusher connection");
-    //   this.pusher = new Pusher("eead8d5075773e7aca0a", {
-    //     // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-    //     authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-    //     cluster: "eu",
-    //     auth: {
-    //       headers: { "x-auth-token": `${token}` },
-    //     },
-    //     encrypted: true,
-    //   });
-
-    //   // store.dispatch({
-    //   //   type: "PUSHER_AUTH",
-    //   //   payload: this.pusher,
-    //   // });<D
-    // }
-    // // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-    // Pusher.logToConsole = false;
-
-    //  if(!this.props.pusher.available_drivers_channel){
+   console.log("reconnecting me!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 if(this.props.order.order){
   this.props.getOrder(token, this.props.order.order._id )
 }
@@ -962,21 +934,21 @@ if(this.props.order.order){
     this.user_ride_channel.bind("client-driver-location", (data) => {
      
       // console.log("Reveiced location on the reconnect client channel!!!!!!!!!!!!!!!!!!!!!")
-      this.client_driver_location(data)
+      // this.client_driver_location(data)
     });
 
     // get the heading for the driver
     this.user_ride_channel.bind("client-driver-heading", (data) => {
-     store.dispatch({
-       type : "DRIVER_HEADING",
-       payload : data.heading.magHeading ? data.heading.magHeading : 0
-     })
+    //  store.dispatch({
+    //    type : "DRIVER_HEADING",
+    //    payload : data.heading.magHeading ? data.heading.magHeading : 0
+    //  })
  
     });
 
     this.user_ride_channel.bind("client-driver-message", (data) => {
 
-      this.client_driver_message(data)
+      // this.client_driver_message(data)
   });
 
   // }
@@ -1173,19 +1145,6 @@ const longitude = this.props.order.going.longitude
 
 
 
-      console.log("creating a new pusher connection!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-      this.pusher = new Pusher("eead8d5075773e7aca0a", {
-        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-        cluster: "eu",
-        auth: {
-          headers: { "x-auth-token": `${token}` },
-        },
-        encrypted: true,
-      });
-
-
-      Pusher.logToConsole = true;
 
       // store.dispatch({
       //   type: "PUSHER_AUTH",
@@ -1278,6 +1237,15 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
        
       this.client_driver_message(data)
       });
+
+
+      this.user_ride_channel.bind("client-driver-heading", (data) => {
+         store.dispatch({
+           type : "DRIVER_HEADING",
+           payload : data.heading.magHeading ? data.heading.magHeading : 0
+         })
+     
+        });
 
     // }
 
