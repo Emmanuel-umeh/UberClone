@@ -265,12 +265,15 @@ export default function (state = initialState, action) {
         driver,
         driver_details,
       } = action.payload
+
+      console.log("found driver redux ",action.payload)
       return {
         ...state,
         //   is_searching: false,
-        order : {...order, state :"Accepted"},
+        order : {...state.order, state :"Accepted"},
         has_ride: has_ride,
         is_searching: is_searching,
+        is_fetching: is_searching,
         location: location,
         driver: driver,
         driver_details: driver_details,
@@ -283,7 +286,11 @@ export default function (state = initialState, action) {
   
       return {
        
-        driver: {...driver, heading : action.payload},
+      ...state, 
+          driver : {
+          ...state.driver,
+          heading : action.payload}
+        
       
       };
     }
@@ -302,7 +309,7 @@ export default function (state = initialState, action) {
 
 
     case DRIVER_LOCATION:
-      console.log("Driver location updatinmg!!!!!!!!!!")
+      console.log("Driver location updatinmg!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", action.payload)
       {
         const { location, driver } = action.payload;
         return {

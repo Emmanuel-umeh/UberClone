@@ -89,6 +89,43 @@ export const setUserToken = (token) => (dispatch) => {
   });
 };
 
+export const test_redux_promisify =()=>(dispatch)=>{
+
+  // new Promise(function(resolve,reject){
+
+    try {
+  
+
+      dispatch({
+        type: "SET_FETCHING"
+      })
+
+      setTimeout(() => {
+
+         
+      dispatch({
+        type: "END_FETCHING"
+      })
+
+        
+      }, 4000);
+      return Promise.resolve(true);
+      
+      // } else { // Otherwise display an error to the user
+      //     await new Promise((resolve, reject) => setTimeout(() => resolve(), 1500));
+      //     dispatch(loginFailed("Incorrect email or password"))
+      //     return Promise.resolve(false);
+      // }
+  } catch (err) { // When something goes wrong
+      console.log(err)
+      // dispatch(loginFailed("Something went wrong"));
+      return Promise.reject()
+  }
+    
+
+  // })
+}
+
 // BEGIN LOADING ANIMATON
 export const setLoading = () => (dispatch, getState) => {
   dispatch({ type: SET_LOADING }); // dispatch user loading

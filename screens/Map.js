@@ -49,7 +49,7 @@ import CustomModal from "./components/Modal";
 import LottieLoader from "react-native-lottie-loader";
 
 // redux imports
-import { makeOrder, cancelOrder,getOrder } from "../action/orderActions";
+import { makeOrder, cancelOrder,getOrder,test_redux_promisify } from "../action/orderActions";
 import { Divider } from "react-native-paper";
 
 import { Audio } from "expo-av";
@@ -96,19 +96,21 @@ class Map extends PureComponent {
     const {token} = this.props.auth
     
 
-    console.log("creating a new pusher connection!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-    this.pusher = new Pusher("eead8d5075773e7aca0a", {
-      // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-      authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-      cluster: "eu",
-      auth: {
-        headers: { "x-auth-token": `${token}` },
-      },
-      encrypted: true,
-    });
-
-
-    Pusher.logToConsole = true;
+    if(!this.pusher){
+      this.pusher = new Pusher("408c824d8bed77ca6684", {
+        // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
+        authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
+        cluster: "eu",
+        auth: {
+          headers: { "x-auth-token": `${token}` },
+        },
+        encrypted: true,
+      });
+  
+  
+      Pusher.logToConsole = true;
+  
+    }
 
     this.state ={
       available_drivers_channel : null,
@@ -319,9 +321,11 @@ style={{
           driver: {
             latitude: latitude,
             longitude: longitude,
-            heading : heading.magHeading
+            heading : heading? heading.magHeading : 0
           },
         };
+
+        console.log({data})
 
        await store.dispatch({
           type: "DRIVER_LOCATION",
@@ -335,6 +339,8 @@ style={{
           longitude
         );
 
+        console.log({diff_in_meter_pickup})
+        
         // this.setState({
         //   distance: diff_in_meter_pickup,
         // });
@@ -423,7 +429,7 @@ style={{
         // Vibration.vibrate({pattern:500});
 
         try {
-          console.log("Found driver!!!!!!!!!!!!!!!!!!")
+          // console.log("Found driver!!!!!!!!!!!!!!!!!!", data)
         let driverLocation = await regionFrom(
           data.location.latitude,
           data.location.longitude,
@@ -434,7 +440,7 @@ style={{
 
         // update coordinate and drivers location in redux
 
-        console.log({driverLocation})
+
 
         const found_driver = {
           has_ride: true,
@@ -449,6 +455,8 @@ style={{
           driver_details: data.driver,
         };
 
+        // console.log({found_driver})
+
        await store.dispatch({
           type: "FOUND_DRIVER",
           payload: found_driver,
@@ -456,6 +464,7 @@ style={{
 
         // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
 
+        console.log("getting lat long meters")
         var diff_in_meter_pickup = await getLatLonDiffInMeters(
           this.props.order.region.latitude,
           this.props.order.region.longitude,
@@ -463,6 +472,8 @@ style={{
           data.location.longitude
         );
 
+
+        console.log({diff_in_meter_pickup})
         var COORDINATE_DRIVER_LOCATION = {
           coordinate: {
             latitudeDelta: 0.3,
@@ -478,6 +489,8 @@ style={{
           },
           distance: diff_in_meter_pickup,
         };
+      
+
         console.log({COORDINATE_DRIVER_LOCATION})
 
         // this.setState({
@@ -559,6 +572,8 @@ style={{
           type: "RIDE_UPDATED",
           payload: data.order,
         });
+
+        this.centerCamera()
       }
       if (data.type == "ride_ended") {
         console.log("ride ended by driver triggered ", data.order);
@@ -568,6 +583,8 @@ style={{
           type: "RIDE_UPDATED",
           payload: data.order,
         });
+        
+        this.centerCamera()
       }
       if (data.type == "ride_completed") {
         console.log("ride completed by driver triggered ", data.order);
@@ -575,6 +592,7 @@ style={{
         const driver_id = data.order.driver;
 
         this.loadSounds();
+        
        
         //  this.centerCamera();
 
@@ -902,9 +920,8 @@ if(this.props.order.order){
 
     this.available_drivers_channel = this.pusher.subscribe(
       `private-available-drivers-${
-        this.props.route.params
-          ? this.props.route.params.logistics
-          : this.props.order.logistic_type
+   
+         this.props.order.logistic_type? this.props.order.logistic_type.toLowerCase() : "car"
       }`
     );
 
@@ -928,27 +945,29 @@ if(this.props.order.order){
     });
 
     this.user_ride_channel.bind("client-found-driver", (data) => {
+
+      this.client_found_driver(data)
   
     });
 
     this.user_ride_channel.bind("client-driver-location", (data) => {
      
       // console.log("Reveiced location on the reconnect client channel!!!!!!!!!!!!!!!!!!!!!")
-      // this.client_driver_location(data)
+      this.client_driver_location(data)
     });
 
     // get the heading for the driver
     this.user_ride_channel.bind("client-driver-heading", (data) => {
-    //  store.dispatch({
-    //    type : "DRIVER_HEADING",
-    //    payload : data.heading.magHeading ? data.heading.magHeading : 0
-    //  })
+     store.dispatch({
+       type : "DRIVER_HEADING",
+       payload : data.trigger_heading ? data.trigger_heading : 0
+     })
  
     });
 
     this.user_ride_channel.bind("client-driver-message", (data) => {
 
-      // this.client_driver_message(data)
+      this.client_driver_message(data)
   });
 
   // }
@@ -962,12 +981,13 @@ if(this.props.order.order){
 
 
   }
-  componentDidMount() {
+ async componentDidMount() {
     // persistStore(store).purge();
     // persistStore(store).purge();
     // store.dispatch({
     //   type : "PURGE"
     // })
+
 
 
     store.dispatch({
@@ -1116,8 +1136,7 @@ const longitude = this.props.order.going.longitude
 
       console.log("all the above failed")
       const {
-        latitudeDelta,
-        longitudeDelta,
+     
         latitude,
         longitude,
       } = this.props.order.region;
@@ -1220,7 +1239,7 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
       });
 
       this.user_ride_channel.bind("client-found-driver", async (data) => {
- this.client_found_driver()
+ this.client_found_driver(data)
 
         
       });
@@ -1242,7 +1261,7 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
       this.user_ride_channel.bind("client-driver-heading", (data) => {
          store.dispatch({
            type : "DRIVER_HEADING",
-           payload : data.heading.magHeading ? data.heading.magHeading : 0
+           payload : data.trigger_heading ? data.trigger_heading : 0
          })
      
         });
@@ -1264,6 +1283,8 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
 
     try {
    
+
+      console.log("supposed to be animating by now!!!")
       const newCoordinate = new AnimatedRegion ({
         latitude: latitude,
         longitude: longitude,
@@ -1596,7 +1617,7 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
     //   "private-ride-" + this.props.order.passenger.userID
     // );
 
-     this.centerCamera();;
+     this._getLocationAsync()
   };
   
   _getLocationAsync = async () => {
@@ -1634,8 +1655,7 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
         location.coords.accuracy
       );
   
-  
-      console.log("my location!!!!!!!!!!!!", my_location)
+
       this.setState({
         my_location : my_location
       });
@@ -1705,20 +1725,7 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
 
     this.soundObject && this.soundObject.unloadAsync();
 
-    // this.user_ride_channel.unbind("client-driver-response");
 
-    // this.user_ride_channel.unbind("client-found-driver");
-
-    // this.user_ride_channel.unbind("client-driver-location");
-
-    // this.user_ride_channel.unbind("client-driver-message");
-    // this.user_ride_channel && this.user_ride_channel.unbind_all()
-
-    // this.user_ride_channel.unbind_all()
-    // this.pusher &&
-    // this.pusher.unsubscribe(
-    //   "private-ride-" + this.props.order.passenger.phoneNumber
-    // );
   }
 
   renderContent = () => (
@@ -1851,7 +1858,6 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
       show_user_location = this.props.order.order.state!=="Started"
     }
 
-    console.log({show_user_location})
     return (
       <View style={styles.container}>
         {/* Loading Animation */}
@@ -2058,7 +2064,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { makeOrder, cancelOrder,getOrder })(Map);
+export default connect(mapStateToProps, { makeOrder, cancelOrder,getOrder,test_redux_promisify })(Map);
 
 const styles = StyleSheet.create({
   container: {

@@ -86,43 +86,61 @@ export const setUserToken = (token) => (dispatch) => {
 
 // authenticate a user on load of app
 export const loadUser = () => (dispatch, getState) => {
-  console.log("getting user");
-  // dispatch({type:USER_LOADING}) // dispatch user loading
 
-  // user loading
-  dispatch({ type: USER_LOADING }); // dispatch user loading
 
-  console.log("token config ", tokenConfig(getState))
-
-    axios
-      .get(`/api/auth/oneUser`, tokenConfig(getState))
-      .then((res) => {
-        // console.log("response ", res.data);
-        if (res.data.message === "error") {
-          // AsyncStorage.removeItem("token");
-          // return dispatch({
-          //   type: AUTH_ERROR,
-          // });
-          
-         return console.log("login failed")
-        }
-        // console.log("user data!!! ", res.data)
-        dispatch({
-          type: USER_LOADED,
-          payload: res.data,
+  try {
+    console.log("getting user");
+    // dispatch({type:USER_LOADING}) // dispatch user loading
+  
+    // user loading
+    dispatch({ type: USER_LOADING }); // dispatch user loading
+  
+    console.log("token config ", tokenConfig(getState))
+  
+      axios
+        .get(`/api/auth/oneUser`, tokenConfig(getState))
+        .then((res) => {
+          // console.log("response ", res.data);
+          if (res.data.message === "error") {
+            // AsyncStorage.removeItem("token");
+            // return dispatch({
+            //   type: AUTH_ERROR,
+            // });
+            
+            
+           return console.log("login failed")
+          }
+          // console.log("user data!!! ", res.data)
+          dispatch({
+            type: USER_LOADED,
+            payload: res.data,
+          });
+          console.log("shoulr return promisify action")
+  
+          return Promise.resolve(true);
+          //  console
+        })
+  
+        .catch((err) => {
+          dispatch({
+            type: AUTH_ERROR,
+          });
+          console.log("error occured ", err);
+          return Promise.reject()
+          // console.log("Eroor" , err.response.data)
+          // console.clear()
         });
-        //  console
-      })
-
-      .catch((err) => {
-        dispatch({
-          type: AUTH_ERROR,
-        });
-        console.log("error occured ", err);
-        // console.log("Eroor" , err.response.data)
-        // console.clear()
-      });
-
+  
+  } catch (error) {
+      dispatch({
+            type: AUTH_ERROR,
+          });
+          console.log("error occured ", err);
+          return Promise.reject()
+          // console.log("Eroor" , err.response.data)
+          // console.clear()
+  }
+ 
   
 };
 

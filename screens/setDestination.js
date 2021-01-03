@@ -189,27 +189,20 @@ this.setState({
       <SafeAreaView style={styles.container}>
           <StatusBar style="auto" />
 
-      <Header style={{
-                          backgroundColor : "whitesmoke",
+          <Header style={{
+                          backgroundColor : "white",
                           // top : hp("2%")
                         }} 
-                        // androidStatusBarColor = "whitesmoke"
-                        // iosBarStyle	= "light-content"
+                        androidStatusBarColor = "light"
+                        iosBarStyle	= "dark-content"
                         >
-        <Left  style={{
-            zIndex : 999
-          }}>
-          <TouchableOpacity  onPress={() => {
-                // this.props.navigation.replace("Map");
-                this.props.navigation.goBack(null);
+        <Left>
+          <TouchableOpacity onPress={() => {
+                props.navigation.pop();
               }}> 
           <Button transparent>
             <Icon
               name="arrow-back"
-              style={{
-
-                color : "black"
-              }}
         
             />
           </Button>
@@ -219,15 +212,14 @@ this.setState({
         </Left>
         <Body>
                     <Title style ={{
-                    fontFamily : "Quicksand-Bold",
-                    color : "black",
-                    fontSize : 18
-                      // marginLeft : wp("10%")
-                    }}>Select Destination</Title>
+                     fontFamily : "Quicksand-Bold",
+                      
+                      marginLeft : wp("2%")
+                    }}>Set Destination</Title>
                   </Body>
-                
+                  <Right></Right>   
       </Header>
-      
+    
 <Spinner
 visible={this.state.loading}
 textContent="Loading..."
