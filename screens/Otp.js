@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderWidth: 0,
     color : "black",
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
   },
   icon3: {
     color: "rgba(1,1,1,1)",

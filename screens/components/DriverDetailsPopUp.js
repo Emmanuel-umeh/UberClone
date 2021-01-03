@@ -154,7 +154,7 @@ class DriverDetailsPopUp extends Component {
                 onSuccess={(res) => {
                   // handle response here
                   const tokens = this.props.auth.token;
-                  console.log({user_ride_channel})
+    
                  
                   cashless_payment(tokens, order._id, user_ride_channel);
                   this.setState({

@@ -22,7 +22,7 @@ import {
 
 } from "native-base";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-
+import { StatusBar } from 'expo-status-bar';
 class PhoneNumber extends Component {
   constructor(props) {
     super(props);
@@ -57,10 +57,10 @@ class PhoneNumber extends Component {
 
     var edited_number = phoneNumber.replace(phoneNumber[0], '');
 
-    number = "+234" + edited_number
+    number = "234" + edited_number
 
   }else{
-    number = "+234" + phoneNumber
+    number = "234" + phoneNumber
   }
 
      
@@ -109,7 +109,10 @@ class PhoneNumber extends Component {
     // console.log("endpoint details ", this.props.auth)
    
     return (
+      
       <Animatable.View animation="slideInUp" style={styles.container}>
+
+<StatusBar style="dark" hidden = {true} />
 
        
 <Header

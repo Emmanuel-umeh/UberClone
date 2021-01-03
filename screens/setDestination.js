@@ -23,12 +23,9 @@ import {
 
 import * as Location from "expo-location";
 
-import  FloatingActionButton  from "react-native-floating-action-button";
  import { connect } from 'react-redux'
  import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
 
- import Geocoder from "react-native-geocoding";
-import store from "../store"
 
 import { Spinner as Loading } from "native-base";
 import Spinner  from 'react-native-loading-spinner-overlay';
@@ -187,23 +184,26 @@ this.setState({
     
 
       <SafeAreaView style={styles.container}>
-          <StatusBar style="auto" />
+
+<StatusBar style="dark" hidden = {true} />
 
           <Header style={{
                           backgroundColor : "white",
                           // top : hp("2%")
                         }} 
-                        androidStatusBarColor = "light"
+                        androidStatusBarColor = "dark"
                         iosBarStyle	= "dark-content"
                         >
         <Left>
           <TouchableOpacity onPress={() => {
-                props.navigation.pop();
+                this.props.navigation.pop();
               }}> 
           <Button transparent>
             <Icon
               name="arrow-back"
-        
+              style ={{
+                color : "black"
+              }}        
             />
           </Button>
 
@@ -213,9 +213,10 @@ this.setState({
         <Body>
                     <Title style ={{
                      fontFamily : "Quicksand-Bold",
-                      
-                      marginLeft : wp("2%")
-                    }}>Set Destination</Title>
+                      color : "black",
+                      marginLeft : wp("2%"),
+                      fontSize: 17
+                    }}>Destination</Title>
                   </Body>
                   <Right></Right>   
       </Header>

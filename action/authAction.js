@@ -61,7 +61,7 @@ export const saveToken = async (token) => {
   }
 }
 
-getToken = async () =>{
+getToken = async () =>{                                                                                                                                                                                                                                                                                                                         
    token = await AsyncStorage.getItem('token')
   console.log("redux action js ", token)
 
@@ -107,8 +107,12 @@ export const loadUser = () => (dispatch, getState) => {
             //   type: AUTH_ERROR,
             // });
             
-            
-           return console.log("login failed")
+            dispatch({
+              type: AUTH_ERROR,
+            });
+            console.log("error occured ", err);
+            return Promise.reject()
+           
           }
           // console.log("user data!!! ", res.data)
           dispatch({
@@ -174,7 +178,7 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
   // REQUEST BODY
   const body = JSON.stringify({ phoneNumber });
 
-  // console.log("body recieved ", body);
+  console.log("body recieved ", phoneNumber);
 
   axios
     .post(`/api/users/phone`, body, config)
@@ -185,6 +189,24 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
         // dispatch({
         //   type : END_LOADING
         // })
+
+        console.log(res.data)
+
+        if(res.data.error_text){
+          hideLoader()
+        
+          return Notifier.showNotification({
+            title: "Signup Error",
+         
+            description:'Something went wrong. Please use a different number or check your internet connection and try again',
+            duration: 5000,
+            showAnimationDuration: 800,
+            showEasing: Easing.bounce,
+            onHidden: () => console.log("Hidden"),
+            onPress: () => console.log("Press"),
+            hideOnPress: true,
+          });
+        }
      
         
         // status code 10 means otp has already been sent
@@ -203,10 +225,11 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
     )
     .catch((err) => {
 
-      console.log(err.response.data.msg ?err.response.data.msg : err.response.data)
+      console.log(err.response.data)
       Notifier.showNotification({
         title: "Signup Error",
-        description: `${"Something went wrong. Please check your network and try again" }`,
+     
+        description: err.response.data ? err.response.data.msg : 'Something went wrong. Please check your internet connection and try again',
         duration: 5000,
         showAnimationDuration: 800,
         showEasing: Easing.bounce,
@@ -245,17 +268,26 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
     .post(`/api/users/phone/verify`, body, config)
     .then(
       (res) => {
-        
-        // dispatch({
+
+        try {
+                  // dispatch({
         //   type: REGISTER_SUCCESS,
         //   payload: res.data,
         // });
 
         saveToken(res.data.token)
 
+        console.log(res.data)
+
 
         if(res.data.exists){
-          return  store.dispatch({
+
+          
+    dispatch({
+      type: USER_LOADED,
+      payload: res.data.user
+    });
+          return  dispatch({
             type : "IS_AUTHENTICATED"
           })
         }
@@ -271,6 +303,11 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
         // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });
 
         // console.log("MESSAGE res ", res)
+        } catch (error) {
+          console.warn(error)
+        }
+        
+
       }
       // console.log("this is the res ", res)
     )
@@ -290,22 +327,24 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
     
       Notifier.showNotification({
         title: 'The request was failed',
-        description: 'Check your internet connection, please',
+        description: err.response ? err.response.data.msg : 'Something went wrong. Please check your internet connection and try again',
         Component: NotifierComponents.Alert,
         componentProps: {
           alertType: 'error',
         },
       });
-      console.log("error ", err);
+      console.warn("error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", err.response );
 
       return dispatch(
-        returnErrors(err.response.data, err.response.status, "AUTH_MESSAGE_FAILED"),
+        returnErrors(err.response, err.response.status, "AUTH_MESSAGE_FAILED"),
         {
           type: AUTH_MESSAGE_FAILED,
         }
       );
     });
 };
+
+
 
 
 export const registerDetails = (firstName, lastName, email, id,tokens) => (

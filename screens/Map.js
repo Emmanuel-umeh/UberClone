@@ -619,11 +619,11 @@ style={{
         ],
         { cancelable: false }
       );
-      this.setState({
-        pusher : this.pusher,
-        available_drivers_channel : this.available_drivers_channel,
-        user_ride_channel : this.user_ride_channel
-      })
+      // this.setState({
+      //   pusher : this.pusher,
+      //   available_drivers_channel : this.available_drivers_channel,
+      //   user_ride_channel : this.user_ride_channel
+      // })
     } catch (error) {
       console.warn(error)
     }
@@ -1175,16 +1175,18 @@ const longitude = this.props.order.going.longitude
  
 
     //  if(!this.props.pusher.available_drivers_channel){
+if(!this.available_drivers_channel){
+  console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.props.order.logistic_type)
+  this.available_drivers_channel = this.pusher.subscribe(
+    `private-available-drivers-${
+     
+        this.props.order.logistic_type? this.props.order.logistic_type.toLowerCase() : "car"
+    }`
+  );
 
-console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.props.order.logistic_type)
-    this.available_drivers_channel = this.pusher.subscribe(
-      `private-available-drivers-${
-       
-          this.props.order.logistic_type? this.props.order.logistic_type.toLowerCase() : "car"
-      }`
-    );
+  console.log("connected to private available drivers!!")
+}
 
-    console.log("connected to private available drivers!!")
 
       // store.dispatch({
       //   type: "AVAILABLE_DRIVERS",
@@ -1199,16 +1201,12 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
       //   }
       // );
 
-      // available_drivers_channel.bind(
-      //   "pusher:subscription_succeeded",
-      //    (data) => {
-      //     console.log("Subscribed succesfully , ", available_drivers_channel);
-      //      store.dispatch({
-      //       type : "AVAILABLE_DRIVERS",
-      //       payload : available_drivers_channel
-      //     })
-      //   }
-      // );
+      this.available_drivers_channel.bind(
+        "pusher:subscription_succeeded",
+         (data) => {
+          console.log("Subscribed succesfully to available_drivers_cahannel ");
+  
+         });
 
       //  }
 
@@ -1217,55 +1215,71 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
 
       //     })
       // if (!this.props.pusher.user_ride_channel) {
-        console.log("subscribing ujser ride channel!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+      // if(!this.user_ride_channel){
+
+      //   console.log("subscribing ujser ride channel!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
       this.user_ride_channel = this.pusher.subscribe(
         "private-ride-" + this.props.auth.user._id
       );
       // this.user_ride_channel = user_ride_channel
 
+      this.user_ride_channel.bind(
+        "pusher:subscription_succeeded",
+         (data) => {
+          console.log("Subscribed succesfully to user_ride_cahnnel ");
   
-      this.user_ride_channel.bind("client-driver-available", (data) => {
-        console.log("clients driver response!!!!!");
-        console.log("driver has ride  ??? ", this.props.order.has_ride);
-        let passenger_response = "no";
-        if (!this.props.order.has_ride) {
-          passenger_response = "yes";
-        }
-
-        // passenger responds to driver's response
-        this.user_ride_channel.trigger("client-driver-response", {
-          response: passenger_response,
-        });
-      });
-
-      this.user_ride_channel.bind("client-found-driver", async (data) => {
- this.client_found_driver(data)
-
-        
-      });
-
-      this.user_ride_channel.bind("client-driver-location", async(data) => {
 
 
-    this.client_driver_location(data) 
-      });
+    
+      
+          this.user_ride_channel.bind("client-driver-available", (data) => {
+            console.log("clients driver response!!!!!");
+            console.log("driver has ride  ??? ", this.props.order.has_ride);
+            let passenger_response = "no";
+            if (!this.props.order.has_ride) {
+              passenger_response = "yes";
+            }
+    
+            // passenger responds to driver's response
+            this.user_ride_channel.trigger("client-driver-response", {
+              response: passenger_response,
+            });
+          });
+    
+          this.user_ride_channel.bind("client-found-driver", async (data) => {
+     this.client_found_driver(data)
+    
+            
+          });
+    
+          this.user_ride_channel.bind("client-driver-location", async(data) => {
+    
+    
+        this.client_driver_location(data) 
+          });
+    
+          this.user_ride_channel.bind("client-driver-message", async(data) => {
+    
+           
+           
+          this.client_driver_message(data)
+          });
+    
+    
+          this.user_ride_channel.bind("client-driver-heading", (data) => {
+             store.dispatch({
+               type : "DRIVER_HEADING",
+               payload : data.trigger_heading ? data.trigger_heading : 0
+             })
+         
+            });
+         });
 
-      this.user_ride_channel.bind("client-driver-message", async(data) => {
-
-       
-       
-      this.client_driver_message(data)
-      });
-
-
-      this.user_ride_channel.bind("client-driver-heading", (data) => {
-         store.dispatch({
-           type : "DRIVER_HEADING",
-           payload : data.trigger_heading ? data.trigger_heading : 0
-         })
-     
-        });
-
+  
+      // }
+  
     // }
 
     
@@ -1699,6 +1713,8 @@ console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.prop
   
       
   
+
+          this.centerCamera()
           // });
           // y address  Object {
           //   "long_name": "9",
@@ -1944,7 +1960,7 @@ this.drawer_button()
                   map_is_ready : true
                 })
           
-                  this.centerCamera();
+                  this._getLocationAsync();
          
               }, 100);
 

@@ -55,12 +55,12 @@ function getStarted({navigation}) {
       <Text style={styles.moveSafely}>Move Safely</Text>
 
       
-
-      <View style={styles.rect}>
-        <TouchableOpacity  onPress ={()=>{
+      <TouchableOpacity  onPress ={()=>{
             navigation.navigate("phoneNumberScreen")
           }}>
 
+      <View style={styles.rect}>
+ 
   
         <Animatable.View 
         animation = "fadeInUp"
@@ -70,9 +70,11 @@ function getStarted({navigation}) {
             navigation.navigate("phoneNumberScreen")
           }} name="md-arrow-forward" style={styles.icon}></Icon>
         </Animatable.View>
-                
-        </TouchableOpacity>
+     
       </View>
+
+                 
+      </TouchableOpacity>
     </Animatable.View>
   );
 }
