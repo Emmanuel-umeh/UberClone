@@ -319,7 +319,7 @@ console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     });
 };
 // get an order  and clkear from database
-export const getOrder = (tokens,orderID) => (dispatch) => {
+export const getOrder = (tokens,orderID) => async(dispatch) => {
   
   const config = {
     headers: {
@@ -329,28 +329,28 @@ export const getOrder = (tokens,orderID) => (dispatch) => {
     },
   };
 
-  const body = {}
-console.log("tokens passed!!!!!!!!!!!!", tokens)
+  try {
+    
 
-  axios
-    .get(`/api/order/single_order/${orderID}`, config)
-    .then(
-      (res) => {
-        console.log("got order successfully")
+    
+  const response = await    axios
+        .get(`/api/order/single_order/${orderID}`, config)
+
+    
+            dispatch({
+              type: "GET_ORDER",
+              payload: response.data
+            })
+
+            return response.data
+
   
-        console.log("MESSAGE res ", res.data)
+      
+  } catch (error) {
+    return false
+  }
 
-        dispatch({
-          type: "GET_ORDER",
-          payload: res.data
-        })
-      }
-      // console.log("this is the res ", res)
-    )
-    .catch((err) => {
-      console.log("error ", err);
-
-    });
+ 
 };
 export const cashless_payment = (tokens,orderID,user_ride_channel) => (dispatch) => {
   console.log("trigerring channel , ", user_ride_channel)

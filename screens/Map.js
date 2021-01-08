@@ -909,13 +909,28 @@ return true
 
 
 // reconnect a user to previous ride
-  reconnect_client =()=>{
+  reconnect_client = async()=>{
     
     const {user, token} = this.props.auth
  
    console.log("reconnecting me!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 if(this.props.order.order){
-  this.props.getOrder(token, this.props.order.order._id )
+const data =  await this.props.getOrder(token, this.props.order.order._id )
+console.log({data})
+if(data.state == "Completed"){
+  // return 
+  this.loadSounds();
+        
+       
+  //  this.centerCamera();
+
+  // passing the id of the driver as params to the rating page
+   this.reset_navigation("driver_rating", data.driver);
+
+return  await store.dispatch({
+    type: "RIDE_COMPLETED",
+  });
+}
 }
 
     this.available_drivers_channel = this.pusher.subscribe(
@@ -1175,7 +1190,7 @@ const longitude = this.props.order.going.longitude
  
 
     //  if(!this.props.pusher.available_drivers_channel){
-if(!this.available_drivers_channel){
+// if(!this.available_drivers_channel){
   console.log("perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ", this.props.order.logistic_type)
   this.available_drivers_channel = this.pusher.subscribe(
     `private-available-drivers-${
@@ -1185,7 +1200,7 @@ if(!this.available_drivers_channel){
   );
 
   console.log("connected to private available drivers!!")
-}
+// }
 
 
       // store.dispatch({
