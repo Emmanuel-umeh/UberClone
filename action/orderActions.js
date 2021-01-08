@@ -353,7 +353,7 @@ export const getOrder = (tokens,orderID) => async(dispatch) => {
  
 };
 export const cashless_payment = (tokens,orderID,user_ride_channel) => (dispatch) => {
-  console.log("trigerring channel , ", user_ride_channel)
+
 
   user_ride_channel.trigger("client-driver-paid",{
     paid:true
