@@ -321,7 +321,7 @@ style={{
           driver: {
             latitude: latitude,
             longitude: longitude,
-            heading : heading? heading.magHeading : 0
+            heading : heading? heading : 0
           },
         };
 
@@ -523,7 +523,7 @@ style={{
             ],
             {
               edgePadding: {
-                bottom: hp("60%"),
+                  bottom: hp("90%"),
                 right: wp("40%"),
                 top: hp("20%"),
                 left: wp("10%"),
@@ -957,13 +957,13 @@ if(this.props.order.order){
     });
 
     // get the heading for the driver
-    this.user_ride_channel.bind("client-driver-heading", (data) => {
-     store.dispatch({
-       type : "DRIVER_HEADING",
-       payload : data.trigger_heading ? data.trigger_heading : 0
-     })
+    // this.user_ride_channel.bind("client-driver-heading", (data) => {
+    //  store.dispatch({
+    //    type : "DRIVER_HEADING",
+    //    payload : data.trigger_heading ? data.trigger_heading : 0
+    //  })
  
-    });
+    // });
 
     this.user_ride_channel.bind("client-driver-message", (data) => {
 
@@ -1048,7 +1048,7 @@ if(this.props.order.order.state=="Started" ){
         ],
         {
           edgePadding: {
-            bottom: hp("60%"),
+              bottom: hp("90%"),
             right: wp("40%"),
             top: hp("20%"),
             left: wp("10%"),
@@ -1081,7 +1081,7 @@ else{
         ],
         {
           edgePadding: {
-            bottom: hp("60%"),
+              bottom: hp("90%"),
             right: wp("40%"),
             top: hp("20%"),
             left: wp("10%"),
@@ -1113,7 +1113,7 @@ const longitude = this.props.order.going.longitude
       ],
       {
         edgePadding: {
-          bottom: hp("80%"),
+            bottom: hp("90%"),
           right: wp("40%"),
           top: hp("40%"),
           left: wp("10%"),
@@ -1268,13 +1268,13 @@ if(!this.available_drivers_channel){
           });
     
     
-          this.user_ride_channel.bind("client-driver-heading", (data) => {
-             store.dispatch({
-               type : "DRIVER_HEADING",
-               payload : data.trigger_heading ? data.trigger_heading : 0
-             })
+          // this.user_ride_channel.bind("client-driver-heading", (data) => {
+          //    store.dispatch({
+          //      type : "DRIVER_HEADING",
+          //      payload : data.trigger_heading ? data.trigger_heading : 0
+          //    })
          
-            });
+          //   });
          });
 
   
@@ -1300,8 +1300,8 @@ if(!this.available_drivers_channel){
 
       console.log("supposed to be animating by now!!!")
       const newCoordinate = new AnimatedRegion ({
-        latitude: latitude,
-        longitude: longitude,
+        latitude: parseFloat(latitude) ,
+        longitude: parseFloat(longitude),
       });
   
       if (Platform.OS === "android") {
@@ -1418,7 +1418,7 @@ if(!this.available_drivers_channel){
             ],
             {
               edgePadding: {
-                bottom: hp("80%"),
+                  bottom: hp("90%"),
           right: wp("40%"),
           top: hp("40%"),
           left: wp("10%"),
@@ -1662,6 +1662,7 @@ if(!this.available_drivers_channel){
         enableHighAccuracy: true,
       });
   
+
      
       var my_location = regionFrom(
         location.coords.latitude,
@@ -1670,6 +1671,8 @@ if(!this.available_drivers_channel){
       );
   
 
+
+      console.log({my_location})
       this.setState({
         my_location : my_location
       });
