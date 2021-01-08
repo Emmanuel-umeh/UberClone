@@ -202,8 +202,8 @@ return(
   <AnimatedSplash
   translucent={true}
   isLoaded={!this.state.loading}
-  logoImage={require("./assets/logo2.png")}
-  backgroundColor={"#000000"}
+  logoImage={require("./assets/images/logo.png")}
+  backgroundColor={"#fff"}
   logoHeight={hp(40)}
   logoWidth={wp(80)}
 ></AnimatedSplash>
