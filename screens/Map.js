@@ -639,7 +639,7 @@ style={{
       <DriverDetailsPopUp
       driver={this.props.order.driver_details}
       distance={this.props.order.distance}
-      user_ride_channel={this.state.user_ride_channel}
+      user_ride_channel={this.user_ride_channel}
     />
     )
   }
