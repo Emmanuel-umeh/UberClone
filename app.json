@@ -33,7 +33,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/logo3.png"
+      "favicon": "./assets/images/icon.png"
     },
     "description": "White Axis Solution"
   }

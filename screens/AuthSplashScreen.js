@@ -1,143 +1,143 @@
-import React, { Component, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  StyleSheet,
-  StatusBar,
-  Image,
-} from "react-native";
-import { connect } from "react-redux";
-import {LinearGradient} from 'expo-linear-gradient'
-import * as Animatable from "react-native-animatable"
+// import React, { Component, useEffect } from "react";
+// import {
+//   View,
+//   Text,
+//   TouchableOpacity,
+//   Dimensions,
+//   StyleSheet,
+//   StatusBar,
+//   Image,
+// } from "react-native";
+// import { connect } from "react-redux";
+// import {LinearGradient} from 'expo-linear-gradient'
+// import * as Animatable from "react-native-animatable"
 
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-function AuthSplashScreen({ navigation }) {
-  useEffect(()=>{
-    // console.log("stuff")
+// import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+// function AuthSplashScreen({ navigation }) {
+//   useEffect(()=>{
+//     // console.log("stuff")
     
-    setTimeout(() => {
-      // console.log("timeout done")
-      navigation.navigate("Map")
-    }, 2000);
-  })
+//     setTimeout(() => {
+//       // console.log("timeout done")
+//       navigation.navigate("Map")
+//     }, 2000);
+//   })
 
 
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        {/* <Text> Header</Text>
-         */}
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         {/* <Text> Header</Text>
+//          */}
 
-        <Animatable.Image
-        animation = "fadeInUpBig"
-        delay = {2}
-          source={require("../assets/logo5.png")}
-          style={styles.logo}
-          resizeMode="stretch"
-        />
+//         <Animatable.Image
+//         animation = "fadeInUpBig"
+//         delay = {2}
+//           source={require("../assets/logo5.png")}
+//           style={styles.logo}
+//           resizeMode="stretch"
+//         />
 
 
-      </View>
+//       </View>
 
-      {/* <Animatable.View style={styles.footer}
-       animation = "fadeInUpBig"
-       >
-        <Text style={styles.title}> Welcome to Axis</Text>
-        <Text style={styles.text}>Get Started</Text>
+//       {/* <Animatable.View style={styles.footer}
+//        animation = "fadeInUpBig"
+//        >
+//         <Text style={styles.title}> Welcome to Axis</Text>
+//         <Text style={styles.text}>Get Started</Text>
 
-        <View style={styles.button}>
-          <TouchableOpacity onPress = {()=>{
-              navigation.navigate("SignInScreen")
-          }}>
-            <LinearGradient
-              colors={["#08d4c44", "#01ab9d"]}
-              style={styles.signIn}
-            >
-              <Text style={styles.textSign}>Get Started</Text>
+//         <View style={styles.button}>
+//           <TouchableOpacity onPress = {()=>{
+//               navigation.navigate("SignInScreen")
+//           }}>
+//             <LinearGradient
+//               colors={["#08d4c44", "#01ab9d"]}
+//               style={styles.signIn}
+//             >
+//               <Text style={styles.textSign}>Get Started</Text>
 
-              <MaterialIcons 
+//               <MaterialIcons 
               
-              name ="navigate-next"
-              color = "#fff"
-              size = {20}
+//               name ="navigate-next"
+//               color = "#fff"
+//               size = {20}
 
-              />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </Animatable.View>
-     */}
+//               />
+//             </LinearGradient>
+//           </TouchableOpacity>
+//         </View>
+//       </Animatable.View>
+//      */}
     
     
-    </View>
-  );
-}
+//     </View>
+//   );
+// }
 
 
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-  error: state.error,
-});
+// const mapStateToProps = (state) => ({
+//   auth: state.auth,
+//   error: state.error,
+// });
 
-// export default ProjectForm
-export default connect(mapStateToProps, { })(
-  AuthSplashScreen
-);
-
-
-
-const { height, width } = Dimensions.get("screen");
-const height_logo = height * 0.15;
+// // export default ProjectForm
+// export default connect(mapStateToProps, { })(
+//   AuthSplashScreen
+// );
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000000",
-  },
-  header: {
-    flex: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  footer: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingVertical: 50,
-    paddingHorizontal: 30,
-  },
-  logo: {
-    width: width ,
-    height: height_logo,
-  },
-  title: {
-    color: "#05375a",
-    fontSize: 30,
-    fontWeight: "bold",
-  },
-  text: {
-    color: "grey",
-    marginTop: 5,
-  },
-  button: {
-    alignItems: "flex-end",
-    marginTop: 30,
-  },
-  signIn: {
-    width: 150,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 50,
-    flexDirection: "row",
-  },
-  textSign: {
-    color: "white",
-    fontWeight: "bold",
-  },
-});
+
+// const { height, width } = Dimensions.get("screen");
+// const height_logo = height * 0.15;
+
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#000000",
+//   },
+//   header: {
+//     flex: 2,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   footer: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//     borderTopLeftRadius: 30,
+//     borderTopRightRadius: 30,
+//     paddingVertical: 50,
+//     paddingHorizontal: 30,
+//   },
+//   logo: {
+//     width: width ,
+//     height: height_logo,
+//   },
+//   title: {
+//     color: "#05375a",
+//     fontSize: 30,
+//     fontWeight: "bold",
+//   },
+//   text: {
+//     color: "grey",
+//     marginTop: 5,
+//   },
+//   button: {
+//     alignItems: "flex-end",
+//     marginTop: 30,
+//   },
+//   signIn: {
+//     width: 150,
+//     height: 40,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     borderRadius: 50,
+//     flexDirection: "row",
+//   },
+//   textSign: {
+//     color: "white",
+//     fontWeight: "bold",
+//   },
+// });
