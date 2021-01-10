@@ -1738,7 +1738,7 @@ const longitude = this.props.order.going.longitude
       );
       }
       let location = await Location.getCurrentPositionAsync({
-        enableHighAccuracy: true,
+    accuracy  :Accuracy.BestForNavigation
       });
   
 
