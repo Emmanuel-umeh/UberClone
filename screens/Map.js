@@ -1751,7 +1751,7 @@ const longitude = this.props.order.going.longitude
   
 
 
-      console.log({my_location})
+      console.log("my location!!!!!!!!!!!!!!!!!!!!" , my_location)
       this.setState({
         my_location : my_location
       });

@@ -181,24 +181,25 @@ this.setState({
     // console.log("predictions", predictions)
     return (
 
+    <>
+
     
-
-      <SafeAreaView style={styles.container}>
-
-<StatusBar style="dark" hidden = {true} />
-
-          <Header style={{
+<Header style={{
                           backgroundColor : "white",
+                          // position : "absolute",
+                          // zIndex : 9999
                           // top : hp("2%")
                         }} 
                         androidStatusBarColor = "dark"
                         iosBarStyle	= "dark-content"
                         >
         <Left>
-          <TouchableOpacity onPress={() => {
+          {/* <TouchableOpacity onPress={() => {
                 this.props.navigation.pop();
-              }}> 
-          <Button transparent>
+              }}>  */}
+          <Button transparent onPress={() => {
+                this.props.navigation.pop();
+              }}>
             <Icon
               name="arrow-back"
               style ={{
@@ -207,7 +208,7 @@ this.setState({
             />
           </Button>
 
-          </TouchableOpacity>
+          {/* </TouchableOpacity> */}
          
         </Left>
         <Body>
@@ -221,6 +222,11 @@ this.setState({
                   <Right></Right>   
       </Header>
     
+
+      <SafeAreaView style={styles.container}>
+
+{/* <StatusBar style="dark" hidden = {true} /> */}
+
 <Spinner
 visible={this.state.loading}
 textContent="Loading..."
@@ -571,7 +577,7 @@ keyExtractor={item => item.id}
         {/* </View> */}
      
       </SafeAreaView>
- );
+</> );
   }
 }
 
@@ -716,14 +722,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     marginTop: 5,
   },
-  icon6Row: {
-    height: 29,
-    flexDirection: "row",
-    flex: 1,
-    marginRight: wp("10%"),
-    marginLeft: 79,
-    marginTop: 11,
-  },
+ 
   button2: {
     // top: 181,
     left: 0,
