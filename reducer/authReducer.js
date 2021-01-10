@@ -116,15 +116,16 @@ export default function (state = initialState, action) {
         ...state,
         isAuthenticated: true,
         isLoading: false,
-        user: action.payload,
-        type: "USER_LOADED",
+        user: action.payload.user,
+        token :action.payload.token? action.payload.token : state.token,
+        type: action.type,
       };
 
     case USER_LOADING:
       return {
         ...state,
         isLoading: true,
-        type: "USER_LOADED",
+        type: action.type,
       };
 
     // case AUTH_MESSAGE_SENT:

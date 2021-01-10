@@ -85,7 +85,7 @@ export const setUserToken = (token) => (dispatch) => {
 };
 
 // authenticate a user on load of app
-export const loadUser = () => (dispatch, getState) => {
+export const loadUser = () =>   async(dispatch, getState) => {
 
 
   try {
@@ -97,52 +97,49 @@ export const loadUser = () => (dispatch, getState) => {
   
     console.log("token config ", tokenConfig(getState))
   
-      axios
+     const response = await axios
         .get(`/api/auth/oneUser`, tokenConfig(getState))
-        .then((res) => {
+        // .then((res) => {
+          
+        // })
+
+
+        if(response){
           // console.log("response ", res.data);
-          if (res.data.message === "error") {
+          if (response.data.message === "error") {
             // AsyncStorage.removeItem("token");
             // return dispatch({
             //   type: AUTH_ERROR,
             // });
-            
-            dispatch({
+            console.log("error occured ", response.data.message);
+           return dispatch({
               type: AUTH_ERROR,
             });
-            console.log("error occured ", err);
-            return Promise.reject()
+    
+
            
           }
-          // console.log("user data!!! ", res.data)
+          // console.log("user data!!! ", response.data)
           dispatch({
             type: USER_LOADED,
-            payload: res.data,
+            payload: response.data,
           });
           console.log("shoulr return promisify action")
   
-          return Promise.resolve(true);
+          // return Promise.resolve(true);
           //  console
-        })
+        }
   
-        .catch((err) => {
-          dispatch({
-            type: AUTH_ERROR,
-          });
-          console.log("error occured ", err);
-          return Promise.reject()
-          // console.log("Eroor" , err.response.data)
-          // console.clear()
-        });
+   
+
+       
   
   } catch (error) {
       dispatch({
             type: AUTH_ERROR,
           });
           console.log("error occured ", err);
-          return Promise.reject()
-          // console.log("Eroor" , err.response.data)
-          // console.clear()
+     
   }
  
   
@@ -285,7 +282,7 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
           
     dispatch({
       type: USER_LOADED,
-      payload: res.data.user
+      payload: res.data
     });
           return  dispatch({
             type : "IS_AUTHENTICATED"

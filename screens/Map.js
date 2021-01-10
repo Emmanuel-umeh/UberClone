@@ -1713,15 +1713,6 @@ const longitude = this.props.order.going.longitude
 
 
 
-  disconnect_client = () => {
-    // this.this.user_ride_channel.unbind();
-    // this.pusher.unsubscribe(
-    //   "private-ride-" + this.props.order.passenger.userID
-    // );
-
-     this._getLocationAsync()
-  };
-  
   _getLocationAsync = async () => {
 
 
@@ -1805,7 +1796,7 @@ const longitude = this.props.order.going.longitude
       
   
 
-          this.centerCamera()
+   
           // });
           // y address  Object {
           //   "long_name": "9",
@@ -2055,14 +2046,19 @@ this.drawer_button()
             // pitchEnabled = {true}
             showsAnnotationCallouts = {true}
             onMapReady={() => {
-              this._getLocationAsync();
 
               setTimeout(() => {
                 this.setState({
                   map_is_ready : true
                 })
+
+
+                
+              // this._getLocationAsync();
+                this.centerCamera()
       
               }, 2000);
+
 
          
             }}
