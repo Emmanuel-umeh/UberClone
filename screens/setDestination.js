@@ -190,7 +190,7 @@ this.setState({
                           // zIndex : 9999
                           // top : hp("2%")
                         }} 
-                        androidStatusBarColor = "dark"
+                        androidStatusBarColor = "#000"
                         iosBarStyle	= "dark-content"
                         >
         <Left>
