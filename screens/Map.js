@@ -2077,16 +2077,6 @@ this.drawer_button()
             // }}
           >
 
-
-            {/* {this.state.map_is_ready && 
-            
-            <View style = {styles.preloader}> 
-                <Image source = {require("../assets/images/preloader.png")}></Image>
-
-            </View>
-            } */}
-            {/* {this.state.my_location &&  */}
-
           
             {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
 
