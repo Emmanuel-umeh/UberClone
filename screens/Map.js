@@ -19,7 +19,7 @@ import {
 import * as Permissions from "expo-permissions";
 import store from "../store";
 import MapView, { Marker, AnimatedRegion, Callout, Overlay } from "react-native-maps";
-
+import * as Notifications from 'expo-notifications';
 import * as Location from "expo-location";
 import DestinationButton from "../components/destinationButton";
 
@@ -75,6 +75,57 @@ console.warn = (message) => {
   }
 };
 
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+async function schedulePushNotification(title, body, data) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `${title}! 📬`,
+      body: `${body}`,
+      data: { data: 'goes here' },
+    },
+    trigger: { seconds: 1 },
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+  // if (Constants.isDevice) {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  // } else {
+  //   alert('Must use physical device for Push Notifications');
+  // }
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  return token;
+}
+
 class Map extends PureComponent {
   constructor(props) {
     super(props);
@@ -123,6 +174,25 @@ class Map extends PureComponent {
    
 
   }
+
+
+  notifications_settings = ()=>{
+    registerForPushNotificationsAsync().then(token => this.setState({
+      token:token
+    }));
+
+    this.notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      console.log({notification})
+      this.setState({
+        notification : notification
+      });
+    });
+
+   this. responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+  }
+
 
 
   drawer_button=()=>{
@@ -619,6 +689,8 @@ style={{
         ],
         { cancelable: false }
       );
+
+        await schedulePushNotification(data.title, data.msg, null);
       // this.setState({
       //   pusher : this.pusher,
       //   available_drivers_channel : this.available_drivers_channel,
