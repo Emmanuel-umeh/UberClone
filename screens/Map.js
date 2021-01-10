@@ -9,6 +9,7 @@ import {
   Dimensions,
   Alert,
   Vibration,
+  ImageBackground,
   TouchableOpacity,
   Linking,
   YellowBox,
@@ -2028,6 +2029,17 @@ this.drawer_button()
 
           <Text style ={{top : 100}} > I am here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</Text>
         </View> */}
+
+
+{!this.state.map_is_ready && <View style = {[styles.container, {position : "absolute", zIndex: 777
+
+
+}]}>
+        <ImageBackground source = {require("../assets/images/preloader.png")} resizeMethod = "resize" style={{width: wp(100), height: hp(140), top : -hp(18)}} />
+
+      </View> }
+
+
     
           <MapView
             followUserLocation={show_user_location}
@@ -2043,16 +2055,14 @@ this.drawer_button()
             // pitchEnabled = {true}
             showsAnnotationCallouts = {true}
             onMapReady={() => {
-
+              this._getLocationAsync();
 
               setTimeout(() => {
                 this.setState({
                   map_is_ready : true
                 })
-          
-                  this._getLocationAsync();
-         
-              }, 100);
+      
+              }, 2000);
 
          
             }}
@@ -2070,6 +2080,7 @@ this.drawer_button()
             //   this.map = map;
             // }}
           >
+
 
             {/* {this.state.map_is_ready && 
             
