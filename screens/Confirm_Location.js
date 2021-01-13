@@ -11,7 +11,7 @@ import {
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
 import { Divider } from 'react-native-paper'
-  
+import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
   const latitudeDelta = 0.025
   const longitudeDelta = 0.025
   
@@ -85,10 +85,18 @@ var {latitude, longitude} = this.props.order.region
 
             <View>
               <Text style = {styles.bold}> Confirm Pickup Location</Text>
-              <Text>700</Text>
+              <Text style = {styles.price}>700</Text>
             </View>
 
-            <Divider />            
+            <Divider style ={{
+              height :1,
+              top : 5
+            }} />     
+
+
+            <View>
+              
+              </View>       
           </SafeAreaView>
         </View>
       )
@@ -97,7 +105,7 @@ var {latitude, longitude} = this.props.order.region
   
   const styles = StyleSheet.create({
     map: {
-      flex: 3,
+      flex: 2.98,
 
     },
     markerFixed: {
@@ -105,7 +113,7 @@ var {latitude, longitude} = this.props.order.region
       marginLeft: -24,
       marginTop: -48,
       position: 'absolute',
-      top: hp(50)
+      top: hp(30)
     },
     marker: {
       height: 48,
@@ -116,7 +124,7 @@ var {latitude, longitude} = this.props.order.region
       borderTopLeftRadius : 20,
       borderTopRightRadius : 20,
       bottom: 0,
-      flex : 1,
+      flex : 2.02,
       // position: 'absolute',
       width: '100%'
     },
@@ -130,6 +138,14 @@ var {latitude, longitude} = this.props.order.region
       fontFamily: "Quicksand-Bold",
       color: "#121212",
       fontSize: 20,
+      marginTop: 10,
+      // marginLeft: WIDTH / 3,
+      alignSelf: "center",
+    },
+    price: {
+      fontFamily: "Quicksand-Medium",
+      color: "#121212",
+      fontSize: 17,
       marginTop: 10,
       // marginLeft: WIDTH / 3,
       alignSelf: "center",
