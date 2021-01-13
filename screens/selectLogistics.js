@@ -199,7 +199,7 @@ class SetLogistics extends PureComponent {
         {/* </SafeAreaView> */}
 
         <ScrollView>
-{/* 
+
         <TouchableOpacity onPress ={()=>{
          this._next("bike")
           }}>
@@ -215,7 +215,7 @@ class SetLogistics extends PureComponent {
             ></Bike>
 
 </View>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
 
           <TouchableOpacity onPress ={()=>{
              this._next("car")
