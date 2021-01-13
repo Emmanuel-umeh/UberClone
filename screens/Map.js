@@ -460,32 +460,26 @@ style={{
         // console.log("maops", this.map)
         console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!")
 
-        this.centerCamera()
-       
-        // this.map.animateCamera(
-        //   {
-        //     center: {
-        //       longitude: longitude,
-        //       latitude: latitude,
-        //     },
-        //     pitch: 2,
-        //     heading: 60,
-        //     altitude: 18,
-        //     zoom: 18,
-        //   },
-        //   500
-        // ); 
-        // this.props.order.going
 
-        // this.map.animateToRegion(
-        //   {
-        //     latitudeDelta: LATITUDE_DELTA,
-        //     longitudeDelta: LONGITUDE_DELTA,
-        //     longitude: longitude,
-        //     latitude: latitude,
-        //   },
-        //   500
-        // );
+        if(diff_in_meter_pickup <=100){
+          this.map.animateCamera(
+            {
+              center: {
+                latitude,
+                longitude,
+              },
+              pitch: 20,
+              heading: 30,
+              altitude: 100,
+              zoom: 18,
+            },
+            800
+          );
+        }else{
+          this.centerCamera()
+        }
+    
+       
       }
     } catch (error) {
       console.warn(error)
@@ -1087,21 +1081,11 @@ return  await store.dispatch({
     if(this.props.order.has_ride){
 this.reconnect_client()
 
-    }else{
-      // this.pusher_actions();
-      this._getLocationAsync()
-   
-
     }
+    
   
 
-    // console.log("initial region ", this.props.order.region);\
-    // if(this.map){
-    //    this.centerCamera();;
-    // }
-    // this._getLocationAsync();
-    // this.pusher_actions()
-    // console.log("Mounted with props, ", this.props.navigation)
+   
   }
 
  
@@ -1506,7 +1490,7 @@ const longitude = this.props.order.going.longitude
             ],
             {
               edgePadding: {
-                  bottom: hp("90%"),
+                  bottom: hp("70%"),
           right: wp("40%"),
           top: hp("40%"),
           left: wp("10%"),
@@ -1843,101 +1827,6 @@ const longitude = this.props.order.going.longitude
 
 
 
-
-
-
-
-
-
-    // <Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
-    //   {/* <Text style={styles.totalAmount}>Total Amount</Text> */}
-    //   <Text style={styles.n3500}>
-    //     {" "}
-    //     ₦{Math.ceil(this.props.order.price / 100) * 100}
-    //   </Text>
-
-    //   <Divider
-    //     style={{
-    //       margin: 10,
-    //     }}
-    //   />
-    //   <View style={styles.materialButtonPinkRow}>
-    //     <TouchableOpacity
-    //       onPress={() => {
-    //         this.bookRide("Cash");
-    //       }}
-    //     >
-    //       <Button disabled rounded dark style={styles.materialButtonPink1}>
-    //         <Text
-    //           style={{
-    //             fontSize: 22,
-    //             color: "white",
-    //             alignSelf: "center",
-    //             paddingLeft: wp("10%"),
-    //           }}
-    //         >
-    //           Cash
-    //         </Text>
-    //       </Button>
-    //     </TouchableOpacity>
-
-    //     <TouchableOpacity
-    //       onPress={() => {
-    //         this.bookRide("Cashless");
-    //       }}
-    //     >
-    //       <Button disabled rounded warning style={styles.materialButtonPink1}>
-    //         <Text
-    //           style={{ fontSize: 22, color: "white", paddingLeft: wp("10%") }}
-    //         >
-    //           Card
-    //         </Text>
-    //       </Button>
-    //     </TouchableOpacity>
-    //   </View>
-
-    //   <TouchableOpacity
-    //     onPress={() => {
-    //       // this.setState({
-    //       //   destinationRequested: false,
-    //       // });
-    //       // store.dispatch({
-    //       //   type: "DESTINATION_CANCELLED",
-    //       // });
-    //       //  this.centerCamera();;
-
-    //       this.cancelOrder();
-    //     }}
-    //   >
-    //     <Animatable.View
-    //       animation="bounceIn"
-    //       delay={1500}
-    //       style={{
-    //         width: WIDTH,
-    //       }}
-    //     >
-    //       <Text
-    //         style={{
-    //           // marginLeft: WIDTH / 3,
-    //           alignSelf: "center",
-    //           fontWeight: "bold",
-    //           fontSize: 20,
-    //           // top: 20,
-    //           color: "#c90c02",
-    //         }}
-    //       >
-    //         <Icon
-    //           active
-    //           style={{
-    //             fontSize: 50,
-    //             color: "red",
-    //           }}
-    //           name="ios-close"
-    //         />
-    //       </Text>
-    //     </Animatable.View>
-    //   </TouchableOpacity>
-    // </Animatable.View>
   );
 
   renderHeader = () => {
@@ -2039,7 +1928,7 @@ this.drawer_button()
             
             customMapStyle = {this.getMapStyles()}
             showsUserLocation={show_user_location}
-            showsBuildings={false}
+            showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
 
@@ -2047,17 +1936,19 @@ this.drawer_button()
             showsAnnotationCallouts = {true}
             onMapReady={() => {
 
-              setTimeout(() => {
+              // setTimeout(() => {
                 this.setState({
                   map_is_ready : true
-                })
+                }, ()=>{
+                  this.centerCamera()
+                } )
 
 
                 
               // this._getLocationAsync();
-                this.centerCamera()
+               
       
-              }, 2000);
+              // }, 2000);
 
 
          
@@ -2177,8 +2068,8 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   rect: {
-    height: hp(40),
-    top : hp(60),
+    height: hp(30),
+    top : hp(70),
     // backgroundColor: 'transparent'
 
     // backgroundColor: "transparent",

@@ -61,26 +61,9 @@ class SelectLogistics extends Component {
     return (
     
   
-      <Container style ={{
-        paddingTop : 10
-      }} >
+      <Container>
 
-{/*        d
-                   <View
-          style={{
-            width: wp("15%"),
-            backgroundColor: "#c9c7c7",
-            padding: 3,
-            // left  : wp("40%"),
-            alignSelf: "center",
-            marginTop : 1,
-            marginBottom : 10,
-            // height : 2,
-            borderRadius: 50,
-          }}
-        ></View>
-         */}
-        {/* <View style ={{ flex : 1, flexDirection : "row"}}> */}
+
 
         <LinearGradient
   // Button Linear Gradient
@@ -90,85 +73,7 @@ class SelectLogistics extends Component {
   }}
   colors={["white", "#ffffff00"]}
   >
-  
-  <ScrollView 
-  horizontal = {true}
-  showsHorizontalScrollIndicator = {false}
-  alwaysBounceHorizontal = {true}>
-  
-  
-  <TouchableOpacity  onPress={()=>{
-    this.setState({
-      selected : "Bike"
-    })
-  }} style = {[styles.box, {
-    borderColor : this.state.selected=="Bike" ? "gold" : "#c9c7c7"
-  }]}>
 
-<Image resizeMode ="contain" style={{
-        width: 60,
-         height: 70,
-         
-      }} source = {require("../../assets/logistics/bikee.png")}></Image>
-         <Text style = {styles.price}>Bike</Text>
-  </TouchableOpacity >
-  <TouchableOpacity onPress={()=>{
-    this.setState({
-      selected : "Car"
-    })
-  }}   style = {[styles.box,{
-    borderColor : this.state.selected=="Car" ? "gold" : "#c9c7c7"
-  }]}>
-      {/* <Icon name = "car" style ={{
-        fontSize :50,
-        paddingTop : 20
-      }} /> */}
-
-      <Image resizeMode ="contain" style={{
-        width: 60,
-         height: 70,
-         
-      }} source = {require("../../assets/logistics/car_icon.png")}></Image>
-         <Text style = {styles.price}>Car</Text>
-  </TouchableOpacity >
-  
-  <TouchableOpacity 
-  onPress={()=>{
-    this.setState({
-      selected : "Truck"
-    })
-  }}  style = {[styles.box,{
-    borderColor : this.state.selected=="Truck" ? "gold" : "#c9c7c7"
-  }]}>
- 
- <Image resizeMode ="contain" style={{
-        width: 60,
-         height: 70,
-         
-      }} source = {require("../../assets/logistics/truck.png")}></Image>
-         <Text style = {styles.price}>Truck</Text>
-  </TouchableOpacity>
-  <TouchableOpacity onPress={()=>{
-    this.setState({
-      selected : "Tanker"
-    })
-  }}  style = {[styles.box,
-  {
-    borderColor : this.state.selected=="Tanker" ? "gold" : "#c9c7c7"
-  }]}>
-
-<Image resizeMode ="contain" style={{
-        width: 60,
-         height: 70,
-         
-      }} source = {require("../../assets/logistics/tanker.png")}></Image>
-         <Text style = {styles.price}>Tanker</Text>
-  </TouchableOpacity>
-  
-  
-  
-  </ScrollView>
-    
   </LinearGradient>
    
 

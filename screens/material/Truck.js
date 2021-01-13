@@ -12,7 +12,7 @@ function Truck(props) {
           {/* <Text style={styles.subtitleStyle}>7 min</Text> */}
 
           <View style ={{
-            marginTop : -hp(9)
+            // marginTop : -hp(9)
           }}>
           <Image style={{
           width : wp(50)
