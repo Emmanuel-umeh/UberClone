@@ -3,7 +3,7 @@ import MapView, {Marker, Overlay} from 'react-native-maps'
 import {day_styles, night_styles} from "./map_styles/styles"
 
 import { connect } from 'react-redux'
-import { StyleSheet,Image, View,Text, SafeAreaView } from 'react-native'
+import { StyleSheet,Image, View,Text, SafeAreaView, TouchableOpacity , Button} from 'react-native'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -11,7 +11,17 @@ import {
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
 import { Divider } from 'react-native-paper'
-import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
+import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body,  } from 'native-base';
+
+import { Platform } from 'react-native';
+
+// let TouchableHighlight,TouchableOpacity;
+// if (Platform.OS === 'ios') {
+//     ({ TouchableHighlight,TouchableOpacity } = require('react-native-gesture-handler'));
+// } else {
+//     ({ TouchableHighlight,TouchableOpacity } = require('react-native'));
+// }
+
   const latitudeDelta = 0.025
   const longitudeDelta = 0.025
   
@@ -81,6 +91,20 @@ var {latitude, longitude} = this.props.order.region
             }} source={marker} />
           </View>
           <SafeAreaView style={styles.footer}>
+
+          <View
+        style={{
+          width: wp("10%"),
+          backgroundColor: "#515357",
+          padding: 3,
+          // left  : wp("40%"),
+          alignSelf: "center",
+          // height : 2,
+          borderRadius: 50,
+
+        }}
+      ></View>
+
             {/* <Text style={styles.region}>{JSON.stringify(region, null, 2)}</Text> */}
 
             <View>
@@ -94,9 +118,43 @@ var {latitude, longitude} = this.props.order.region
             }} />     
 
 
-            <View>
-              
-              </View>       
+            <View style ={{
+              marginTop : hp(5)
+            }}>
+
+            {/* <Card> */}
+        
+            <CardItem>
+              <Icon active name="md-locate" style={{
+                color : "coral"
+              }} />
+              <Text style ={{
+                 fontFamily : "Quicksand-Bold",
+                 fontSize : 18
+              }}>Angwa Rukuba</Text>
+              <Right style={{
+                  left : 0
+              }}>
+                <Icon name="arrow-forward" style ={{
+                  color : "black"
+                }} />
+              </Right>
+             </CardItem>
+
+             <TouchableOpacity onPress ={()=>{
+               alert("Coming Soon!!")
+             }}>
+                        </TouchableOpacity>
+               {/* </Card>             */}
+              </View>     
+
+
+              <View style={{
+                flex : 1, 
+                flexDirection : "row"
+              }}>
+          <Button title ="Test"></Button>
+                </View>  
           </SafeAreaView>
         </View>
       )
