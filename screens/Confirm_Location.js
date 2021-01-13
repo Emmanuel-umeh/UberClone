@@ -10,6 +10,7 @@ import {
   } from "react-native-responsive-screen";
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
+import { Divider } from 'react-native-paper'
   
   const latitudeDelta = 0.025
   const longitudeDelta = 0.025
@@ -80,8 +81,14 @@ var {latitude, longitude} = this.props.order.region
             }} source={marker} />
           </View>
           <SafeAreaView style={styles.footer}>
-            <Text style={styles.region}>{JSON.stringify(region, null, 2)}</Text>
-            
+            {/* <Text style={styles.region}>{JSON.stringify(region, null, 2)}</Text> */}
+
+            <View>
+              <Text style = {styles.bold}> Confirm Pickup Location</Text>
+              <Text>700</Text>
+            </View>
+
+            <Divider />            
           </SafeAreaView>
         </View>
       )
@@ -106,8 +113,8 @@ var {latitude, longitude} = this.props.order.region
     },
     footer: {
       backgroundColor: "white",
-      borderTopLeftRadius : 50,
-      borderTopRightRadius : 50,
+      borderTopLeftRadius : 20,
+      borderTopRightRadius : 20,
       bottom: 0,
       flex : 1,
       // position: 'absolute',
@@ -117,8 +124,18 @@ var {latitude, longitude} = this.props.order.region
       color: '#fff',
       lineHeight: 20,
       margin: 20
-    }
-  })
+    },
+
+    bold: {
+      fontFamily: "Quicksand-Bold",
+      color: "#121212",
+      fontSize: 20,
+      marginTop: 10,
+      // marginLeft: WIDTH / 3,
+      alignSelf: "center",
+    },
+      })
+
 
 const mapStateToProps = (state) => ({
     auth: state.auth,
