@@ -1070,6 +1070,8 @@ return  await store.dispatch({
     //   type : "PURGE"
     // })
 
+this.props.navigation.navigate("confirm_location")
+
 
 
     store.dispatch({

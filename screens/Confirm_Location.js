@@ -1,18 +1,58 @@
 import React, { Component } from 'react'
-import MapView from 'react-native-maps'
+import MapView, {Marker} from 'react-native-maps'
 import {day_styles, night_styles} from "./map_styles/styles"
+
+import { connect } from 'react-redux'
+import { StyleSheet } from 'react-native'
+
 class Confirm_Location extends Component{
 
 
 
-      
-  getMapStyles = ()=>{
-    // console.log("time of the day !!!!!!!!" ,this.isDay())
-    if(this.isDay()){
-      return day_styles
-    }else{
-      return day_styles
+    constructor(props){
+        super(props)
+
+        this.marker= null
+        this.map = null
     }
+    setDestination(coords) {
+        // const { destination } = this.props;
+        // const lat = coords.lat();
+        // const long = coords.lng();
+        // console.log('seperate:', lat, long);
+        console.log('destina:', coords);
+        // this.props
+        //   .dispatch($setDestination(coords.lat(), coords.lng()))
+        //   .catch((error) => this.props.dispatch(Activity.$toast('failure', error.message)));
+    
+        // this.setState((prevState) => ({
+        //   isVisible: !prevState.isVisible,
+        //   destination: destination[0].fullAddress,
+        // }));
+        
+    }
+
+    centerCamera =()=>{
+
+        const {latitude, longitude} = this.props.order.region
+        this.map &&
+        this.map.animateCamera(
+          {
+            center: {
+              latitude,
+              longitude,
+            },
+            pitch: 20,
+            heading: 30,
+            altitude: 100,
+            zoom: 19,
+          },
+          800
+        );
+    }
+
+    componentDidMount(){
+        this.centerCamera()
     }
     render(){
 
@@ -21,14 +61,24 @@ class Confirm_Location extends Component{
 
             <MapView 
             
-            followUserLocation={show_user_location}
+
+            style={{
+                // flex: 1,
+                ...StyleSheet.absoluteFillObject,
+                // zIndex: 0,
+              }}
+            followUserLocation={false}
             initialRegion={this.props.order.region}
             rotateEnabled={false}
-            
-            customMapStyle = {this.getMapStyles()}
-            showsUserLocation={show_user_location}
+            onMapReady ={this.centerCamera}
+            customMapStyle = {day_styles}
+            showsUserLocation={false}
             showsBuildings={false}
             zoomEnabled={true}
+            ref={(map) => {
+                this.map = map;
+              }}
+  
             showsCompass={false}>
 
 
@@ -36,12 +86,19 @@ class Confirm_Location extends Component{
         ref={(ref) => { this.marker = ref; }}
         draggable
         onDragEnd={(t, map, coords) => this.setDestination(coords)}
-        coordinate={destination}
-        position={destination}
+        coordinate={{
+            latitude : this.props.order.region.latitude,
+            longitude:this.props.order.region.longitude
+        }}
+        // position={destination}
         centerOffset={{ x: -18, y: -60 }}
         anchor={{ x: 0.69, y: 1 }}
-        pinColor={COLOR.marker}
-        onDragStart={() => this.setMarkerPosition()}
+        // pinColor={COLOR.marker}
+
+        image ={require("../assets/markers/marker3.png")}
+
+        style={{ width: 80, height: 80 }}
+        // onDragStart={() => this.setMarkerPosition()}
       />
 
             </MapView>
@@ -49,4 +106,11 @@ class Confirm_Location extends Component{
     }
 }
 
-export default Confirm_Location
+
+const mapStateToProps = (state) => ({
+    auth: state.auth,
+    error: state.error,
+    order: state.order,
+  });
+  
+export default connect(mapStateToProps, {} )(Confirm_Location)
