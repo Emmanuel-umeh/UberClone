@@ -97,7 +97,7 @@ class Confirm_Location extends Component{
 
         image ={require("../assets/markers/marker3.png")}
 
-        style={{ width: 80, height: 80 }}
+        style={{ width: 200, height: 80 }}
         // onDragStart={() => this.setMarkerPosition()}
       />
 
