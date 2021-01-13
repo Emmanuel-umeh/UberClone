@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import LottieView from 'lottie-react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-function Car(props) {
+function Bike(props) {
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.cardBody}>
@@ -16,7 +16,7 @@ function Car(props) {
           }}>
           <Image style={{
           width : wp(50)
-        }} resizeMode ="contain" source ={require("../../assets/logistics/car_icon.png")}>
+        }} resizeMode ="contain" source ={require("../../assets/logistics/bikee.png")}>
 
 
         </Image>
@@ -100,4 +100,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Car;
+export default Bike;
