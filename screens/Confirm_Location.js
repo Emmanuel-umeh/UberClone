@@ -3,7 +3,7 @@ import MapView, {Marker, Overlay} from 'react-native-maps'
 import {day_styles, night_styles} from "./map_styles/styles"
 
 import { connect } from 'react-redux'
-import { StyleSheet,Image, View,Text, SafeAreaView, TouchableOpacity , Button} from 'react-native'
+import { StyleSheet,Image, View,Text, SafeAreaView, TouchableOpacity } from 'react-native'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -11,9 +11,10 @@ import {
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
 import { Divider } from 'react-native-paper'
-import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body,  } from 'native-base';
+import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
 
 import { Platform } from 'react-native';
+import CurrentLocationButton from '../components/currentLocationButton'
 
 // let TouchableHighlight,TouchableOpacity;
 // if (Platform.OS === 'ios') {
@@ -48,6 +49,24 @@ class Confirm_Location extends Component {
         region
       })
     }
+
+    
+  current_location_button =()=>{
+    return(
+      <CurrentLocationButton
+      cb={() => {
+        this.centerCamera();
+      }}
+      order = { this.props.order.driver}
+      destination = {this.props.order.destinationRequested }
+      onPress={() => {
+        this.refs.BottomSheet.current.snapTo(9);
+      }}
+    />
+
+    )
+  }
+
 
     centerCamera= ()=>{
 var {latitude, longitude} = this.props.order.region
@@ -85,10 +104,10 @@ var {latitude, longitude} = this.props.order.region
             showsUserLocation = {true}
             showsCompass = {false}
           />
+
+          {this.current_location_button}
           <View style={styles.markerFixed}>
-            <Image style={styles.marker} style={{
-                width : 60
-            }} source={marker} />
+            <Image style={styles.marker}  source={marker} />
           </View>
           <SafeAreaView style={styles.footer}>
 
@@ -99,6 +118,7 @@ var {latitude, longitude} = this.props.order.region
           padding: 3,
           // left  : wp("40%"),
           alignSelf: "center",
+          top: 8,
           // height : 2,
           borderRadius: 50,
 
@@ -109,7 +129,9 @@ var {latitude, longitude} = this.props.order.region
 
             <View>
               <Text style = {styles.bold}> Confirm Pickup Location</Text>
-              <Text style = {styles.price}>700</Text>
+              <Text style = {styles.price}>500 meters away <Text style ={{
+                fontSize : 50
+              }}>.</Text> ₦800</Text>
             </View>
 
             <Divider style ={{
@@ -149,11 +171,15 @@ var {latitude, longitude} = this.props.order.region
               </View>     
 
 
-              <View style={{
-                flex : 1, 
-                flexDirection : "row"
+              <View style ={{
+                  marginTop : hp(5)
               }}>
-          <Button title ="Test"></Button>
+              <Button full  style ={{
+                borderRadius : 25,
+                backgroundColor : "coral"
+              }}>
+              <Text style = {styles.buttonText}>Confirm Location</Text>
+          </Button>
                 </View>  
           </SafeAreaView>
         </View>
@@ -174,8 +200,9 @@ var {latitude, longitude} = this.props.order.region
       top: hp(30)
     },
     marker: {
-      height: 48,
-      width: 48
+      height: 60,
+      width: 60,
+    
     },
     footer: {
       backgroundColor: "white",
@@ -197,16 +224,25 @@ var {latitude, longitude} = this.props.order.region
       color: "#121212",
       fontSize: 20,
       marginTop: 10,
-      // marginLeft: WIDTH / 3,
-      alignSelf: "center",
+      marginLeft: wp(4),
+      alignSelf: "flex-start",
+
+    },
+    buttonText: {
+      fontFamily: "Quicksand-Bold",
+      color: "white",
+      fontSize: 20,
+ 
+      alignSelf: "flex-start",
+
     },
     price: {
       fontFamily: "Quicksand-Medium",
       color: "#121212",
       fontSize: 17,
-      marginTop: 10,
-      // marginLeft: WIDTH / 3,
-      alignSelf: "center",
+      marginTop: -wp(10),
+      marginLeft: wp(6),
+      alignSelf: "flex-start",
     },
       })
 
