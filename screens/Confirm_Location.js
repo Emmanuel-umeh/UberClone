@@ -3,7 +3,7 @@ import MapView, {Marker} from 'react-native-maps'
 import {day_styles, night_styles} from "./map_styles/styles"
 
 import { connect } from 'react-redux'
-import { StyleSheet } from 'react-native'
+import { StyleSheet,Image } from 'react-native'
 
 class Confirm_Location extends Component{
 
@@ -14,6 +14,10 @@ class Confirm_Location extends Component{
 
         this.marker= null
         this.map = null
+    }
+
+    state = {
+        scrollEnabled : true
     }
     setDestination(coords) {
         // const { destination } = this.props;
@@ -30,6 +34,11 @@ class Confirm_Location extends Component{
         //   destination: destination[0].fullAddress,
         // }));
         
+    }
+    setMarkerPosition =()=>{
+        this.setState({
+scrollEnabled : false
+        })
     }
 
     centerCamera =()=>{
@@ -67,6 +76,8 @@ class Confirm_Location extends Component{
                 ...StyleSheet.absoluteFillObject,
                 // zIndex: 0,
               }}
+
+              scrollEnabled ={this.state.scrollEnabled}
             followUserLocation={false}
             initialRegion={this.props.order.region}
             rotateEnabled={false}
@@ -95,11 +106,17 @@ class Confirm_Location extends Component{
         anchor={{ x: 0.69, y: 1 }}
         // pinColor={COLOR.marker}
 
-        image ={require("../assets/markers/marker3.png")}
+   
+        // style={{ width: 200, height: 80 }}
+        onDragStart={() => this.setMarkerPosition()}
+      >
 
-        style={{ width: 200, height: 80 }}
-        // onDragStart={() => this.setMarkerPosition()}
-      />
+<Image
+            source={require('../assets/markers/marker1.png')}
+            style={{width: 60, height: 70 }}
+            resizeMode="contain"
+          />
+      </Marker>
 
             </MapView>
         )
