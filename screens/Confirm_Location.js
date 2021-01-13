@@ -11,7 +11,7 @@ import {
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
 import { Divider } from 'react-native-paper'
-import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
+import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
   const latitudeDelta = 0.025
   const longitudeDelta = 0.025
   
