@@ -43,13 +43,16 @@ class SelectLogistics extends Component {
       }
 
 
-    await store.dispatch({
-      type : "LOGISTIC_TYPE",
-      payload : this.state.selected
-    })
+    // await store.dispatch({
+    //   type : "LOGISTIC_TYPE",
+    //   payload : this.state.selected
+    // })
 
+
+    this.props.navigation.navigate("confirm_location", {
+      book_ride : this.props.bookRide(this.state.payment_method)
+    })
   
-    this.props.bookRide(this.state.payment_method)
     }
     
 

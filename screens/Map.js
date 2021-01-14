@@ -2027,6 +2027,8 @@ this.destination_marker()
 
 
 <Animatable.View animation="slideInUp" delay={1000} style={styles.rect}>
+
+  {/* will be renamed to request ride  */}
 <SelectLogistics
   style={
     (styles.Bike,
