@@ -204,8 +204,8 @@ return(
   isLoaded={!this.state.loading}
   logoImage={require("./assets/images/logo.png")}
   backgroundColor={"#fff"}
-  logoHeight={hp(40)}
-  logoWidth={wp(80)}
+  logoHeight={hp(90)}
+  logoWidth={wp(90)}
 ></AnimatedSplash>
 )
     
