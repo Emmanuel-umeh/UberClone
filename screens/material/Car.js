@@ -15,7 +15,7 @@ function Car(props) {
             marginTop : -hp(9)
           }}>
           <Image style={{
-          width : wp(50)
+          width : wp(45)
         }} resizeMode ="contain" source ={require("../../assets/logistics/car_icon.png")}>
 
 

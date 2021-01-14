@@ -8,7 +8,7 @@ function Tanker(props) {
     <View style={[styles.container, props.style]}>
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
-          <Text style={styles.car2}>Car</Text>
+          <Text style={styles.car2}>Tanker</Text>
           {/* <Text style={styles.subtitleStyle}>7 min</Text> */}
 
           <View style ={{

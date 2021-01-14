@@ -42,13 +42,62 @@ class Confirm_Location extends Component {
         latitude: 25.1948475,
         longitude: 55.2682899
       }
+      , loading : false,
+      address_name  : null
     }
   
-    onRegionChange = region => {
-      this.setState({
-        region
-      })
+    onRegionChange =async (region) => {
+
+      try {
+        this.setState({
+          loading:true,
+          region
+        })
+  
+       var location = await Location.reverseGeocodeAsync({
+       latitude:   region.latitude, 
+      longitude  :  region.longitude
+        })
+  
+        console.log({location})
+  
+        this.setState({
+          location :false
+        })
+      } catch (error) {
+        console.warn(error)
+      }
+   
     }
+
+
+      async componentDidMount(){
+
+        try {
+           
+        var {latitude, longitude} = this.props.order.region
+
+        const location = await Location.reverseGeocodeAsync({
+          latitude, longitude
+        })
+        // console.log({location})
+
+        location? 
+        this.setState({
+
+          address_name : location[0].street ? location[0].street : location[0].name
+        })
+
+        : alert("Could not not get your location. Please make sure you are connected to the internet and your location is switched on")
+
+        } catch (error) {
+
+          alert("Could not not get your location. Please make sure you are connected to the internet and your location is switched on")
+        }
+       
+
+    }
+
 
     
   current_location_button =()=>{
@@ -105,7 +154,7 @@ var {latitude, longitude} = this.props.order.region
             showsCompass = {false}
           />
 
-          {this.current_location_button}
+          {this.current_location_button()}
           <View style={styles.markerFixed}>
             <Image style={styles.marker}  source={marker} />
           </View>
@@ -153,7 +202,7 @@ var {latitude, longitude} = this.props.order.region
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
                  fontSize : 18
-              }}>Angwa Rukuba</Text>
+              }}>{this.state.address_name}</Text>
               <Right style={{
                   left : 0
               }}>
