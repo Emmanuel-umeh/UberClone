@@ -8,14 +8,14 @@ function Bike(props) {
     <View style={[styles.container, props.style]}>
       <View style={styles.cardBody}>
         <View style={styles.bodyContent}>
-          <Text style={styles.car2}>Car</Text>
+          <Text style={styles.car2}>Bike</Text>
           {/* <Text style={styles.subtitleStyle}>7 min</Text> */}
 
           <View style ={{
             marginTop : -hp(9)
           }}>
           <Image style={{
-          width : wp(50)
+          width : wp(40)
         }} resizeMode ="contain" source ={require("../../assets/logistics/bikee.png")}>
 
 
