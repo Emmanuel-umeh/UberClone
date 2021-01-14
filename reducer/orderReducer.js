@@ -144,6 +144,9 @@ distance: null,
 fromChanged : false,
 
 
+my_address : null
+
+
 
 
 
@@ -298,12 +301,19 @@ export default function (state = initialState, action) {
 
     case GET_LOCATION:
       {
-        const { region, address, addressShortName } = action.payload;
+        const { region, address, addressShortName,
+          // this is the logged in users address gptyten with expo location
+        my_address 
+        } = action.payload;
+
+        console.log("my address!!!!!!!!!!", my_address)
         return {
           ...state,
-          region: region,
-          address: address,
-          addressShortName: addressShortName,
+          region: region ? region : state.region,
+          address: address ? address : state.address,
+          addressShortName: addressShortName ? addressShortName : state.addressShortName ,
+
+          my_address : my_address
         };
       }
 
@@ -484,6 +494,7 @@ export default function (state = initialState, action) {
       
       fromChanged : false,
           
+      // my_address : null
       
       
       

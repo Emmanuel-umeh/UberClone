@@ -96,6 +96,11 @@ class SetLogistics extends PureComponent {
       my_location : my_location
     });
 
+    const address =  await Location.reverseGeocodeAsync({
+      latitude :location.coords.latitude , longitude:  location.coords.longitude 
+    })
+    console.log(address[0])
+
     let region = {
       latitude: my_location.latitude,
       longitude: my_location.longitude,
@@ -123,9 +128,11 @@ class SetLogistics extends PureComponent {
 
        var data = {
           region: region,
-          // address: json.results[0].formatted_address,
+          my_address: address[0].street ? address[0].street : address[0].name,
           // addressShortName: addressComponent,
         };
+
+        // console.log("dataaaaa!!! ", data)
         store.dispatch({
           type: "GET_LOCATION",
           payload: data,

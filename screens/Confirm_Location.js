@@ -11,7 +11,7 @@ import {
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
 import { Divider } from 'react-native-paper'
-import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
+import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Spinner } from 'native-base';
 
 import { Platform } from 'react-native';
 import CurrentLocationButton from '../components/currentLocationButton'
@@ -62,7 +62,8 @@ class Confirm_Location extends Component {
         console.log({location})
   
         this.setState({
-          location :false
+          loading :false,
+          address_name : location[0].street ?  location[0].street :  location[0].name
         })
       } catch (error) {
         console.warn(error)
@@ -73,27 +74,33 @@ class Confirm_Location extends Component {
 
       async componentDidMount(){
 
-        try {
-           
-        var {latitude, longitude} = this.props.order.region
-
-        const location = await Location.reverseGeocodeAsync({
-          latitude, longitude
-        })
-        // console.log({location})
-
-        location? 
         this.setState({
-
-          address_name : location[0].street ? location[0].street : location[0].name
+          address_name : this.props.order.my_address
         })
 
-        : alert("Could not not get your location. Please make sure you are connected to the internet and your location is switched on")
+        // try {
+           
+        // var {latitude, longitude} = this.props.order.region
 
-        } catch (error) {
+        // const location = await Location.reverseGeocodeAsync({
+        //   latitude, longitude
+        // })
+        // console.log(location[0])
 
-          alert("Could not not get your location. Please make sure you are connected to the internet and your location is switched on")
-        }
+        // // location? 
+        // this.setState({
+
+        //   address_name : location[0].street ? location[0].street : location[0].name
+        // })
+
+        // // : alert("Could not not get your location. Please make sure you are connected to the internet and your location is switched on")
+
+        // } catch (error) {
+
+        //   console.warn(error)
+
+        //   alert("Could not not get your location. Please make sure you are connected to the internet and your location is switched on")
+        // }
        
 
     }
@@ -197,12 +204,31 @@ var {latitude, longitude} = this.props.order.region
         
             <CardItem>
               <Icon active name="md-locate" style={{
-                color : "coral"
+                color : "#C68E17"
               }} />
-              <Text style ={{
+
+
+              
+             
+
+{this.state.loading ?
+
+<View style={{
+  marginLeft : wp(20),
+  marginTop : -hp(4)
+}}>
+<Spinner color='red' />
+</View>
+
+:
+ <Text style ={{
                  fontFamily : "Quicksand-Bold",
                  fontSize : 18
-              }}>{this.state.address_name}</Text>
+              }}>{this.state.address_name == "Nigeria" || this.state.address_name == "Abuja" ? "Unnamed Road" : this.state.address_name  }</Text> 
+
+      }
+          
+
               <Right style={{
                   left : 0
               }}>
@@ -219,17 +245,21 @@ var {latitude, longitude} = this.props.order.region
                {/* </Card>             */}
               </View>     
 
-
+              {!this.state.loading && 
+              
               <View style ={{
-                  marginTop : hp(5)
-              }}>
-              <Button full  style ={{
-                borderRadius : 25,
-                backgroundColor : "coral"
-              }}>
-              <Text style = {styles.buttonText}>Confirm Location</Text>
-          </Button>
-                </View>  
+                marginTop : hp(5)
+            }}>
+
+          
+            <Button  full  style ={{
+              borderRadius : 25,
+              backgroundColor : "#C68E17"
+            }}>
+            <Text style = {styles.buttonText}>Confirm Location</Text>
+        </Button>
+              </View>  }
+           
           </SafeAreaView>
         </View>
       )
