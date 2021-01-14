@@ -1823,6 +1823,8 @@ const longitude = this.props.order.going.longitude
                 (styles.Bike,
                 { backgroundColor: this.state.isBikeSelected ? "gold" : null })
               }
+
+              navigation = {this.props.navigation}
             ></SelectLogistics>
 
 </Animatable.View>

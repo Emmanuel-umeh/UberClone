@@ -111,23 +111,24 @@ export const loadUser = () =>   async(dispatch, getState) => {
             // return dispatch({
             //   type: AUTH_ERROR,
             // });
-            console.log("error occured ", response.data.message);
+            console.warn("error occured ", response.data.message);
            return dispatch({
               type: AUTH_ERROR,
             });
     
 
            
+          }else{
+ // console.log("user data!!! ", response.data)
+ dispatch({
+  type: USER_LOADED,
+  payload: response.data,
+});
+
+// return Promise.resolve(true);
+//  console
           }
-          // console.log("user data!!! ", response.data)
-          dispatch({
-            type: USER_LOADED,
-            payload: response.data,
-          });
-          console.log("shoulr return promisify action")
-  
-          // return Promise.resolve(true);
-          //  console
+         
         }
   
    
@@ -138,7 +139,7 @@ export const loadUser = () =>   async(dispatch, getState) => {
       dispatch({
             type: AUTH_ERROR,
           });
-          console.log("error occured ", err);
+          console.warn("error occured ", err);
      
   }
  

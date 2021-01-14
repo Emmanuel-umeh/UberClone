@@ -54,6 +54,10 @@ class SelectLogistics extends Component {
     })
   
     }
+
+    componentDidMount(){
+      console.log(this.props)
+    }
     
 
   render(){
@@ -122,15 +126,16 @@ class SelectLogistics extends Component {
   // width : wp(80)
 }}>
 
-  <TouchableOpacity onPress ={this.request_ride}>
+  {/* <TouchableOpacity onPress ={this.request_ride}> */}
 
-<Button  onPress ={this.request_ride} dark rounded large  style ={{
-  width : wp(80)
+<Button  onPress ={this.request_ride} dark block large  style ={{
+  width : wp(80),
+  borderRadius : 25
 }}><View style ={{alignSelf :"center"}}>
   
-  <Text style = {{left : wp(15),  fontFamily : "Quicksand-Medium" }}> Request Ride </Text></View></Button>
+  <Text style = {{ fontFamily : "Quicksand-Medium" }}> Request Ride </Text></View></Button>
       
-  </TouchableOpacity>
+  {/* </TouchableOpacity> */}
 </View>
         
   </View>
