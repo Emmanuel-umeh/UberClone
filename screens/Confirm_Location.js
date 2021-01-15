@@ -78,7 +78,7 @@ class Confirm_Location extends Component {
 
         const {region, address_name} = this.state
 
-
+const {state} = this.props
         const data = {
           region, address_name
         }
@@ -87,8 +87,9 @@ class Confirm_Location extends Component {
           payload : data
         })
         
+        const payment_method = state.payment_method
 
-        this.props.book_ride()
+        this.props.book_ride(payment_method)
         this.close_modal()
   
      

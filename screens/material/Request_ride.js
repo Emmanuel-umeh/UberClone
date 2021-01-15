@@ -18,29 +18,34 @@ class Request_ride extends Component {
     super(props)
   }
 
-  state = {
-    payment_method : "Cash",
-    selected : "Bike"
-  }
+  // state = {
+  //   payment_method : "Cash",
+  //   selected : "Bike"
+  // }
 
   payment_method=(e)=>{
     console.log({e})
-    this.setState({
-      payment_method : e
-    })
+
+    // updates parent state in mapview with payment method
+    this.props.payment_method(e)
+    
+    
+    // setState({
+    //   payment_method : e
+    // })
     }
 
 
     request_ride = async()=>{
 
 
-      if(!this.state.payment_method){
+      if(!this.props.state.payment_method){
         return alert("Please select a payment method")
       }
 
-      if(!this.state.selected  ){
-        return alert("Please select a vehicle")
-      }
+      // if(!this.props.state.selected  ){
+      //   return alert("Please select a vehicle")
+      // }
 
 
     // await store.dispatch({

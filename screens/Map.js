@@ -194,7 +194,9 @@ class Map extends PureComponent {
 
     // set destination location toggler
 
-    set_destination_modal : false
+    set_destination_modal : false,
+
+    payment_method : "Cash"
     };
   }
 
@@ -220,6 +222,13 @@ class Map extends PureComponent {
       }
     );
   };
+
+  payment_method =(e)=>{
+    
+    setState({
+      payment_method : e
+    })
+  }
 
   drawer_button = () => {
     return (
@@ -1557,7 +1566,7 @@ class Map extends PureComponent {
       const { token } = this.props.auth;
 
 
-
+console.log("payment method!!!!!!!!!!!!!! ", payment_method)
       // connect to pushe rwhen booking ride
       await this.pusher_actions();
       console.log("booking ride");
@@ -1992,6 +2001,8 @@ open_modal = ()=>{
             {/* will be renamed to request ride  */}
             <Request_ride
           
+
+          state = {this.state}
               style={
                 (styles.Bike,
                 { backgroundColor: this.state.isBikeSelected ? "gold" : null })
@@ -2041,7 +2052,7 @@ open_modal = ()=>{
         presentationStyle ="fullScreen"
       >
 
-          <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  />
+          <Confirm_Location state ={this.state} close_modal = {this.close_modal} book_ride={this.bookRide}  />
      </Modal>
 
     </View>
