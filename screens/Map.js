@@ -19,7 +19,7 @@ import {
 } from "react-native";
 
 
-const Pulse = require('react-native-pulse');
+import Pulse from 'react-native-pulse'
  
 import * as Permissions from "expo-permissions";
 import store from "../store";
@@ -75,6 +75,7 @@ import Bike from "./material/Request_ride";
 import Request_ride from "./material/Request_ride";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Confirm_Location from "./Confirm_Location";
+import SetDestination from "./SetDestination";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -186,7 +187,14 @@ class Map extends PureComponent {
       pusher: null,
       follow_user_location: true,
       show_user_location: true,
-    modal_visible : false
+
+      // comfirm location modal toggler
+    modal_visible : false,
+
+
+    // set destination location toggler
+
+    set_destination_modal : false
     };
   }
 
@@ -299,6 +307,8 @@ class Map extends PureComponent {
             : this.props.order.logistic_type
         }
         selectDestination={this.selectDestination}
+
+       show_set_destination = {  this.show_set_destination}
       />
     );
   };
@@ -919,6 +929,9 @@ class Map extends PureComponent {
 
        {/* the user marker */}
 
+
+
+
        <Marker
             title={
               this.props.order.my_address
@@ -948,6 +961,8 @@ class Map extends PureComponent {
                     padding: 10,
                   }}
                 >
+
+{/* <Pulse color='orange' numPulses={3} diameter={400} speed={20} duration={2000} > */}
                   <Icon
                     active
                     name="pin"
@@ -957,6 +972,9 @@ class Map extends PureComponent {
                       fontSize: 20,
                     }}
                   />
+
+                       
+       {/* </Pulse> */}
                   <Text
                     style={{
                       fontSize: 12,
@@ -971,6 +989,7 @@ class Map extends PureComponent {
               </Content>
             </Callout>
           </Marker>
+
        
 
        
@@ -1143,6 +1162,7 @@ class Map extends PureComponent {
     store.dispatch({
       type: "PERFORMING_TASK_ENDED",
     });
+    
 
     if (this.props.order.has_ride) {
       this.reconnect_client();
@@ -1248,6 +1268,7 @@ class Map extends PureComponent {
 
       try {
         this.destinationMarker.showCallout();
+     
       } catch (error) {
         console.warn("Could not callotu destination marker");
       }
@@ -1460,6 +1481,10 @@ class Map extends PureComponent {
 
       // });
 
+      this.setState({
+        show_user_location : false
+      })
+
       const latitude = going.latitude;
       const longitude = going.longitude;
 
@@ -1484,10 +1509,12 @@ class Map extends PureComponent {
 
       // });
 
+     await this.close_set_destination()
+
       //  this._getLocationAsync
 
       this.map
-        ? this.map.fitToCoordinates(
+       && this.map.fitToCoordinates(
             [
               {
                 latitude,
@@ -1509,15 +1536,7 @@ class Map extends PureComponent {
               animated: true,
             }
           )
-        : this.map.animateToRegion(
-            {
-              latitudeDelta,
-              longitudeDelta,
-              latitude,
-              longitude,
-            },
-            500
-          );
+      
 
       setTimeout(() => {
         try {
@@ -1529,12 +1548,15 @@ class Map extends PureComponent {
       }, 1000);
     } catch (error) {
       console.warn(error);
+      alert("Oops, an error occured. Please try again")
     }
   };
 
   bookRide = async (payment_method) => {
     try {
       const { token } = this.props.auth;
+
+
 
       // connect to pushe rwhen booking ride
       await this.pusher_actions();
@@ -1603,6 +1625,11 @@ class Map extends PureComponent {
       };
 
       const tokens = this.props.auth.token;
+
+      this.setState({
+        show_user_location : true
+      })
+
       // console.log("sening redux action for book ride", data);
       this.props.makeOrder(data, tokens);
     } catch (error) {
@@ -1658,6 +1685,10 @@ class Map extends PureComponent {
 
                 // persistStore(store).purge();
 
+                this.setState({
+                  show_user_location : true
+                })
+
                 await this._getLocationAsync();
                 await this.centerCamera();
                 store.dispatch({
@@ -1682,6 +1713,9 @@ class Map extends PureComponent {
         });
         this._getLocationAsync();
         this.centerCamera();
+        this.setState({
+          show_user_location : true
+        })
       }
     } catch (error) {
       console.warn(error);
@@ -1810,6 +1844,16 @@ close_modal =()=>{
     modal_visible : false
   })
 }
+show_set_destination =()=>{
+  this.setState({
+    set_destination_modal : true
+  })
+}
+close_set_destination =async()=>{
+ await this.setState({
+    set_destination_modal : false
+  })
+}
 
 // open confirm location modal
 
@@ -1824,8 +1868,8 @@ open_modal = ()=>{
 
   render() {
 
-    console.log("driver!!!!!!!!!!!!! " , this.props.order.destinationRequested )
-    var show_user_location = true;
+
+    var show_user_location = this.state.show_user_location;
 
     if (this.props.order.order) {
       show_user_location = this.props.order.order.state !== "Started";
@@ -1927,38 +1971,12 @@ open_modal = ()=>{
               </>
               // this.driverLocation()
             )}
+
+            
           </MapView>
 
-          {/* over lay image */}
-        </>
-        <StatusBar style="auto" hidden={true} />
 
-
-
-        <View style={styles.centeredView}>
-      <Modal
-        animationType="slide"
-        // transparent={true}
-        onRequestClose = {()=>{
-          this.setState({
-            modal_visible : false
-          })
-        }}
-        visible={this.state.modal_visible}
-        presentationStyle ="fullScreen"
-        onRequestClose={() => {
-         this.setState({
-           modal_visible : false
-         })
-        }}>
-
-          <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  />
-     </Modal>
-
-    </View>
-      
-
-        {this.props.order.destinationRequested &&
+          {this.props.order.destinationRequested &&
         !this.props.order.driver &&
         !this.props.order.is_searching ? (
           <Animatable.View
@@ -1966,6 +1984,7 @@ open_modal = ()=>{
             delay={1000}
             style={styles.rect}
           >
+
             {/* will be renamed to request ride  */}
             <Request_ride
           
@@ -1979,6 +1998,50 @@ open_modal = ()=>{
             ></Request_ride>
           </Animatable.View>
         ) : null}
+          {/* over lay image */}
+        </>
+       
+
+
+{/* set destination modal */}
+        <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        // transparent={true}
+        onRequestClose = {()=>{
+         this.close_set_destination()
+        }}
+        visible={this.state.set_destination_modal}
+        presentationStyle ="fullScreen"
+        >
+
+          {/* <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  /> */}
+          <SetDestination   selectDestination = {this.selectDestination}  show_set_destination = {  this.show_set_destination}  close_set_destination = {this.close_set_destination} />
+     </Modal>
+
+    </View>
+
+
+        <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        // transparent={true}
+        onRequestClose = {()=>{
+          this.setState({
+            modal_visible : false
+          })
+        }}
+        visible={this.state.modal_visible}
+        presentationStyle ="fullScreen"
+      >
+
+          <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  />
+     </Modal>
+
+    </View>
+      
+
+      
       </View>
     );
   }

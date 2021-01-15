@@ -33,14 +33,15 @@ export default class DestinantionButton extends Component{
                 // console.log("where to clicked!!")
                 // console.log("props", this.props)
 
-                console.log("logistics ", this.props.logistics)
-                this.props.navigation.navigate("setDestination",{
-                    address : this.props.state.addressShortName,
-                    longitude : this.props.state.region.longitude,
-                    latitude : this.props.state.region.latitude,
-                    selectDestination :this.props.selectDestination,
-                    logistics : this.props.logistics
-                  })
+                // console.log("logistics ", this.props.logistics)
+                // this.props.navigation.navigate("setDestination",{
+                //     address : this.props.state.addressShortName,
+                //     longitude : this.props.state.region.longitude,
+                //     latitude : this.props.state.region.latitude,
+                //     selectDestination :this.props.selectDestination,
+                //     logistics : this.props.logistics
+                //   })
+                this.props.show_set_destination()
             }}  style = {styles.container}>
     
     

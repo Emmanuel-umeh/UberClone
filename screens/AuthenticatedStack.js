@@ -35,8 +35,8 @@ const AuthenticatedStack = ({ navigation }) => (
     <AuthStack.Screen  name="Map" component={Map} />
     {/* <AuthStack.Screen name="SplashScreen" component={AuthSplashScreen}/> */}
 
-    <AuthStack.Screen name="setDestination" component={setDestination} />
-    <AuthStack.Screen  name="confirm_location" component={Confirm_Location} />
+    {/* <AuthStack.Screen name="setDestination" component={setDestination} /> */}
+    {/* <AuthStack.Screen  name="confirm_location" component={Confirm_Location} /> */}
     <AuthStack.Screen name="creditCardScreen" component={CreditCard} />
 
     <AuthStack.Screen name="profileScreen" component={ProfileScreen} />

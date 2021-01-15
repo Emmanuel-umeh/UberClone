@@ -49,7 +49,7 @@ const LONGITUDE_DELTA = longitudeDelta
 
 
  
-class setDestination extends Component {
+class SetDestination extends Component {
   constructor(props) {
     super(props);
 
@@ -110,15 +110,18 @@ class setDestination extends Component {
 
   destinationChange = async (destination) => {
     // console.log("longitude ", this.props.route.params.longitude);
+    console.log(this.props.order.region)
     if(destination){
       try {
         
 this.setState({
   visible : true
 })
-    const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=500`;
-    const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=${1000}&key=${google_api}`
+    const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=500`;
+    // const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=${1000}&key=${google_api}`
         
+
+    console.log("api url!!!!!!!!!!!!!!", api_url)
     const result = await fetch(api_url);
     const json = await result.json();
     
@@ -130,6 +133,10 @@ this.setState({
 
 
       } catch (error) {
+console.log(error, "an errror occured")
+        this.setState({
+          visible : false
+        })
         console.warn(error)
       }
     }
@@ -142,8 +149,8 @@ this.setState({
         this.setState({
           fromLoading : true
         })
-            const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${fromName}&region=locality&language=en&key=${google_api}&location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=500`;
-            const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=${1000}&key=${google_api}`
+            const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${fromName}&region=locality&language=en&key=${google_api}&location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=500`;
+            const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=${1000}&key=${google_api}`
                 
             const result = await fetch(api_url);
             const json = await result.json();
@@ -163,30 +170,8 @@ this.setState({
   };
 
   render() {
-    // const predictions = this.state.predictions.map((prediction) => (
-    //   <TouchableOpacity key={prediction.id} style={styles.button2}>
-    //     <View style={styles.icon7Row}>
-    //       <EntypoIcon name="home" style={styles.icon7}></EntypoIcon>
-    //       <Text style={styles.addHome}>{prediction.description}</Text>
-    //     </View>
-    //   </TouchableOpacity>
-    // ));
-    // var v = Object.values(this.state.predictions);
 
-    // const predictions = this.state.predictions.map((prediction,key) => (
-
-     
-// const recent_orders =  this.props.auth.user.orders.length>0 ?this.props.auth.user.orders.slice(0,2) : null
     
-
-const all_recent_orders = this.props.auth.user.orders.length> 0 ? this.props.auth.user.orders.reverse() : [] // Some array I got from async call
-
-const unique_orders = Array.from(new Set(all_recent_orders.map(a => a.startLocationName)))
- .map(id => {
-   return all_recent_orders.find(a => a.startLocationName === id)
- })
-    // ));
-    // console.log("recent_orders", unique_orders)
     return (
 
     <>
@@ -211,7 +196,7 @@ style={{
                 this.props.navigation.pop();
               }}>  */}
           <Button transparent onPress={() => {
-                this.props.navigation.pop();
+                this.props.close_set_destination();
               }}>
             <Icon
               name="arrow-back"
@@ -336,19 +321,19 @@ animation="fade"
             {this.state.predictions.length ==0 && 
             <ScrollView>
             {
-unique_orders.length >1000 ? 
-unique_orders.slice(0,11).map((unique_orders, key)=>(
+// unique_orders.length >1000 ? 
+// unique_orders.slice(0,11).map((unique_orders, key)=>(
 
-  <TouchableOpacity style={styles.button2} key ={key}>
-            <View style={styles.icon7Row}>
-              <EntypoIcon name="arrow-long-right" style={styles.icon7}></EntypoIcon>
-              <Text style={styles.addHome}>{unique_orders.endLocationName}</Text>
-            </View>
-          </TouchableOpacity>
+//   <TouchableOpacity style={styles.button2} key ={key}>
+//             <View style={styles.icon7Row}>
+//               <EntypoIcon name="arrow-long-right" style={styles.icon7}></EntypoIcon>
+//               <Text style={styles.addHome}>{unique_orders.endLocationName}</Text>
+//             </View>
+//           </TouchableOpacity>
 
-    ))
+//     ))
 
-    : 
+//     : 
 
     <>
 
@@ -427,24 +412,11 @@ renderItem={({ item }) =>
        return alert("Distance is too great. Please select another location")
      }
    
-     // this.props.navigation.navigate("Map", {
-     //   destination :{
-     //     latitude : json.result.geometry.location.lat,
-     //     longitude : json.result.geometry.location.lng
-     //   }
-     // })
-
-     // console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
-
-     this.props.navigation.navigate("Map", {
-       destination,
-       logistics : this.props.route.params.logistics,
-       from : this.state.from
-     });
+  
       const going = destination
 
 
-     this.props.route.params.selectDestination(going, this.state.from)
+     this.props.selectDestination(going, this.state.from)
      this.setState({
        loading : false
      })
@@ -826,4 +798,4 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {})(setDestination);
+export default connect(mapStateToProps, {})(SetDestination);
