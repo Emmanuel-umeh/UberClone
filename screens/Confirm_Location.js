@@ -175,6 +175,38 @@ var {latitude, longitude} = this.props.order.region
   
       return (
         <View style={styles.map}>
+
+<TouchableOpacity
+        style={{
+          height: 55,
+          width: 55,
+          backgroundColor: "white",
+          borderRadius: 50,
+          position: "absolute",
+          // display: inline-block;
+
+          top: 40,
+          left: 30,
+          zIndex: 999,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onPress={() => {
+     this.props.close_modal()
+        }}
+      >
+        <View>
+          <Icon
+            active
+            style={{
+              fontSize: 50,
+              fontWeight: "bold",
+              // color: "red",
+            }}
+            name="ios-close"
+          />
+        </View>
+      </TouchableOpacity>
           <MapView
             style={styles.map}
             customMapStyle = {day_styles}
@@ -220,7 +252,7 @@ var {latitude, longitude} = this.props.order.region
 
         }}
       >
-<TouchableOpacity onPress ={()=>{
+{/* <TouchableOpacity onPress ={()=>{
     try {
     
       this.props.route.params.cancelOrder()
@@ -235,7 +267,7 @@ var {latitude, longitude} = this.props.order.region
 }}></Icon>
 
 </TouchableOpacity>
-       
+        */}
 
 
       </View>
@@ -363,7 +395,7 @@ var {latitude, longitude} = this.props.order.region
       fontFamily: "Quicksand-Bold",
       color: "#121212",
       fontSize: 20,
-      marginTop: 10,
+      marginTop: hp(4),
       marginLeft: wp(4),
       alignSelf: "flex-start",
 
