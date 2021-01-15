@@ -1752,6 +1752,8 @@ open_modal = ()=>{
   sheetRef = React.createRef(null);
 
   render() {
+
+    console.log("driver!!!!!!!!!!!!! " , this.props.order.driver)
     var show_user_location = true;
 
     if (this.props.order.order) {
@@ -1874,7 +1876,9 @@ open_modal = ()=>{
         visible={this.state.modal_visible}
         presentationStyle ="fullScreen"
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
+         this.setState({
+           modal_visible : false
+         })
         }}>
 
           <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  />
