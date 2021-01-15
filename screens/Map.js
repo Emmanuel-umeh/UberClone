@@ -69,7 +69,7 @@ import { persistStore } from "redux-persist";
 import { day_styles, night_styles } from "./map_styles/styles";
 import { PureComponent } from "react";
 import Bike from "./material/SelectLogistics";
-import SelectLogistics from "./material/SelectLogistics";
+import Request_ride from "./material/Request_ride";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Confirm_Location from "./Confirm_Location";
 
@@ -1070,12 +1070,6 @@ class Map extends PureComponent {
     //   type : "PURGE"
     // })
 
-
-// check if the map got order to book a ride from the confirm location screen
-    if(this.props.route.params.book_ride){
-      this.bookRide(this.props.route.params.payment_method)
-    }
-
     store.dispatch({
       type: "PERFORMING_TASK_ENDED",
     });
@@ -1746,6 +1740,14 @@ close_modal =()=>{
   })
 }
 
+// open confirm location modal
+
+open_modal = ()=>{
+  this.setState({
+    modal_visible : true
+  })
+}
+
   
   sheetRef = React.createRef(null);
 
@@ -1875,18 +1877,9 @@ close_modal =()=>{
           Alert.alert('Modal has been closed.');
         }}>
 
-          <Confirm_Location close_modal = {this.close_modal}  />
+          <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  />
      </Modal>
 
-      <TouchableHighlight
-        style={styles.openButton}
-        onPress={() => {
-          this.setState({
-            modal_visible: true
-          })
-        }}>
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </TouchableHighlight>
     </View>
       
 
@@ -1899,7 +1892,7 @@ close_modal =()=>{
             style={styles.rect}
           >
             {/* will be renamed to request ride  */}
-            <SelectLogistics
+            <Request_ride
               navigation={this.props.navigation}
               style={
                 (styles.Bike,
@@ -1907,7 +1900,7 @@ close_modal =()=>{
               }
               bookRide={this.bookRide}
               cancelOrder={this.cancelOrder}
-            ></SelectLogistics>
+            ></Request_ride>
           </Animatable.View>
         ) : null}
       </View>

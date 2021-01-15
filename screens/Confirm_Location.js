@@ -87,10 +87,8 @@ class Confirm_Location extends Component {
           payload : data
         })
         
-        this.props.navigation.replace("Map", {
-          book_ride : true,
-          payment_method : this.props.route.params.payment_method
-        })
+        this.close_modal()
+        this.props.book_ride()
      
       } catch (error) {
         console.warn(error)

@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import store from "../../store"
 
 
-class SelectLogistics extends Component {
+class Request_ride extends Component {
 
   constructor(props){
     super(props)
@@ -239,4 +239,4 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { })(SelectLogistics);
+export default connect(mapStateToProps, { })(Request_ride);
