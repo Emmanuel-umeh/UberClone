@@ -866,6 +866,8 @@ class Map extends PureComponent {
             ref={(marker) => {
               this.destinationMarker = marker;
             }}
+
+            image = {require("../assets/markers/marker3.png")}
             key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
             coordinate={{
               latitude: this.props.order.going
@@ -888,7 +890,7 @@ class Map extends PureComponent {
                     active
                     name="pin"
                     style={{
-                      color: "blue",
+                      color: "#C68E17",
 
                       fontSize: 20,
                     }}
@@ -1755,7 +1757,7 @@ open_modal = ()=>{
 
   render() {
 
-    console.log("driver!!!!!!!!!!!!! " , this.props.order.driver)
+    console.log("driver!!!!!!!!!!!!! " , this.props.order.destinationRequested )
     var show_user_location = true;
 
     if (this.props.order.order) {
