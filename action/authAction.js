@@ -47,62 +47,23 @@ axios.defaults.baseURL = "https://whiteaxisapi.herokuapp.com";
 // }
 //
 
-var token
-export const saveToken = async (token) => {
-  try {
-
-  await AsyncStorage.setItem("token", token)
-    // token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    console.log(token)
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e)
-  }
-}
-
-getToken = async () =>{                                                                                                                                                                                                                                                                                                                         
-   token = await AsyncStorage.getItem('token')
-  console.log("redux action js ", token)
-
-  // this.props.setUserToken(token)
-  // token = token
-  return token
-};
-
-// AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNmM4MjJiOGJhMGZlM2NmMGVkZjllZCIsImlhdCI6MTYwMTA0MjgzMywiZXhwIjoxMDAwMDAxNjAxMDQyODMyfQ.oaWC5E0Mh4I0blFd5aMNbEHH-hAKbux10ip_dpqaApA")
-
-
-getToken()
-
-export const setUserToken = (token) => (dispatch) => {
-
-  dispatch({
-    type: SET_USER_TOKEN,
-    payload : token
-  });
-
-};
-
 // authenticate a user on load of app
-export const loadUser = () =>   async(dispatch, getState) => {
+export const loadUser = (token) =>   async(dispatch, getState) => {
 
 
   try {
-    console.log("getting user");
-    // dispatch({type:USER_LOADING}) // dispatch user loading
   
     // user loading
     dispatch({ type: USER_LOADING }); // dispatch user loading
   
-    console.log("token config ", tokenConfig(getState))
+
   
      const response = await axios
         .get(`/api/auth/oneUser`, tokenConfig(getState))
         // .then((res) => {
           
         // })
-
+// console.log(response.data)
 
         if(response){
           // console.log("response ", res.data);
@@ -273,9 +234,7 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
         //   payload: res.data,
         // });
 
-        saveToken(res.data.token)
-
-        console.log(res.data)
+      
 
 
         if(res.data.exists){

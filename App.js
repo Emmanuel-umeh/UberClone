@@ -85,6 +85,8 @@ this.loadApp()
 
   prepareResources = async()=>{
 try {
+
+  const {token} = this.props.auth
   
     
     // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYTg1NzI1MGM4NjNjM2E3Y2ZiMWI1NiIsImlhdCI6MTYwNDg3MDI0MywiZXhwIjoxMDAwMDAxNjA0ODcwMjQyfQ.1yMf5nhSj3U4rrOHGyw8yEJ138sFp7c60zp2qOBEBPI")
@@ -115,8 +117,8 @@ await Font.loadAsync({
   // ...Ionicons.font,
 }); await Permissions.askAsync(Permissions.LOCATION);
 
-await this.getToken();
-await this.props.loadUser();
+// await this.getToken();
+await this.props.loadUser(token);
 
   
 this.unsubscribe = NetInfo.addEventListener(state => {
@@ -138,15 +140,6 @@ this.unsubscribe = NetInfo.addEventListener(state => {
 
 }
   }
-
-  getToken = async () => {
-    var token = await AsyncStorage.getItem("token");
- 
-    this.props.setUserToken(token);
-    // token = token
-    return token;
-  };
-
 
   componentWillUnmount(){
     this.unsubscribe()

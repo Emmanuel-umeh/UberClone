@@ -24,70 +24,9 @@ axios.defaults.baseURL = "https://whiteaxisapi.herokuapp.com";
 // }
 //
 
-var token;
-// var orderID
-
-export const saveToken = async (token) => {
-  try {
-    await AsyncStorage.setItem("token", token);
-    // token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    console.log(token);
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e);
-  }
-};
-
-getToken = async () => {
-  token = await AsyncStorage.getItem("token");
-  console.log("redux action js ", token);
-
-  // this.props.setUserToken(token)
-  // token = token
-  return token;
-};
 
 
 
-// save the orders ID
-saveOrder = async (id) => {
-
-  console.log("redux action js saving order id ", id);
- await AsyncStorage.saveItem("order_id", id);
- 
-
-
-};
-
-// Get the orders ID
-// getOrder = async () => {
-//   orderID = await AsyncStorage.getItem("order_id");
-//   console.log("redux action js ", orderID);
-
-//   // this.props.setUserToken(token)
-//   // token = token
-//   return orderID;
-// };
-
-
-// Clear the orders ID
-clearOrder = async () => {
-   await AsyncStorage.removeItem("order_id");
-  console.log("Cleared order successfully");
-
- 
-};
-
-
-getToken();
-// getOrder()
-export const setUserToken = (token) => (dispatch) => {
-  dispatch({
-    type: SET_USER_TOKEN,
-    payload: token,
-  });
-};
 
 export const test_redux_promisify =()=>(dispatch)=>{
 
@@ -278,7 +217,7 @@ export const cancelOrder = (tokens,orderID) => (dispatch) => {
 
 
   // REQUEST BODY
-console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", token)
+console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", tokens)
   axios
     .post(`/api/order/cancel-order/${orderID}`, body, config)
     .then(
@@ -373,13 +312,6 @@ export const cashless_payment = (tokens,orderID,user_ride_channel) => (dispatch)
   const body = {}
 
 
-// dispatch({
-//     type : "SET_LOADING"
-//   })
-
-
-  // REQUEST BODY
-console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", token)
   axios
     .post(`/api/order/cashless-payment/${orderID}`, body, config)
     .then(
