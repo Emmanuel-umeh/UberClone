@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily : "Quicksand-Bold",
     // position : "relative",
-    marginTop: hp("5%"),
+    marginTop: hp("2%"),
     alignSelf: "center",
   },
 });
