@@ -941,7 +941,7 @@ class Map extends PureComponent {
             }}
             pinColor="green"
           >
-            <Callout tooltip={false}>
+            <Callout  tooltip={false}>
               <Content style={{ width: undefined, backgroundColor: "white" }}>
                 <Item
                   style={{
@@ -1522,10 +1522,11 @@ class Map extends PureComponent {
       setTimeout(() => {
         try {
           this.destinationMarker.showCallout();
+        
         } catch (error) {
           console.warn("Could not callotu destination marker 2");
         }
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.warn(error);
     }
