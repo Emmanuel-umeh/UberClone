@@ -213,8 +213,8 @@ class Map extends PureComponent {
     return (
       <TouchableOpacity
         style={{
-          height: 55,
-          width: 55,
+          height: 40,
+          width: 40,
           backgroundColor: "#fff",
           borderRadius: 50,
           position: "absolute",

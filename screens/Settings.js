@@ -65,17 +65,17 @@ class  Settings extends Component{
                         iosBarStyle	= "dark-content"
                         >
                     <Left>
-                  <TouchableOpacity  onPress={() => {
+                  {/* <TouchableOpacity  >  */}
+                  <Button onPress={() => {
                         this.props.navigation.pop();
-                      }}> 
-                  <Button transparent > 
+                      }} transparent > 
                     <Icon
                       name="arrow-back"
                    
                     />
                   </Button>
         
-                  </TouchableOpacity>
+                  {/* </TouchableOpacity> */}
                  
                 </Left>
 

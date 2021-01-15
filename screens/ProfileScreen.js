@@ -62,9 +62,9 @@ class ProfileScreen extends Component{
                 <Text style={styles.profile}>Profile</Text>
                 <Text style={styles.logOut}>Log out</Text>
               </View> */}
-
-              <Animatable.View  animation="bounceIn">
 <ScrollView >
+              <Animatable.View  animation="bounceIn">
+
 
 
 
@@ -215,9 +215,11 @@ class ProfileScreen extends Component{
 <CupertinoButtonPurple
                 style={styles.cupertinoButtonPurple}
               ></CupertinoButtonPurple>
-        
-              </ScrollView>
+       
               </Animatable.View>
+
+               
+              </ScrollView>
             </SafeAreaView >
           );
     }

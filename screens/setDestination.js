@@ -78,31 +78,32 @@ class setDestination extends Component {
  
 
  async componentDidMount(){
+   
+ 
+//   // persistStore(store).purge();
 
-  // persistStore(store).purge();
+//   try {
+//     // let location = await  Geocoder.from({
+//     //   latitude: this.props.order.region.latitude,
+//     //   longitude:  this.props.order.region.longitude,
+//     // })
 
-  try {
-    // let location = await  Geocoder.from({
-    //   latitude: this.props.order.region.latitude,
-    //   longitude:  this.props.order.region.longitude,
-    // })
+//    const location = await Location.reverseGeocodeAsync({
 
-   const location = await Location.reverseGeocodeAsync({
-
-      latitude: this.props.order.region.latitude,
-      longitude:  this.props.order.region.longitude,
-    })
+//       latitude: this.props.order.region.latitude,
+//       longitude:  this.props.order.region.longitude,
+//     })
 
 
    
-    this.setState({
-      my_address : location[0].street
-    })
-    //   .then((json) => {
-    //     var addressComponent = json.results[0].address_components[0].long_name;
-  } catch (error) {
-    console.warn(error)
-  }
+//     this.setState({
+//       my_address : location[0].street
+//     })
+//     //   .then((json) => {
+//     //     var addressComponent = json.results[0].address_components[0].long_name;
+//   } catch (error) {
+//     console.warn(error)
+//   }
     
   }
 
@@ -173,12 +174,12 @@ this.setState({
 
     // const predictions = this.state.predictions.map((prediction,key) => (
 
-
+const recent_orders =  this.props.auth.user.orders.length>0 ?this.props.auth.user.orders.slice(0,2) : null
     
 
 
     // ));
-    // console.log("predictions", predictions)
+    console.log("recent_orders", recent_orders)
     return (
 
     <>
@@ -265,8 +266,8 @@ animation="fade"
                  returnKeyType="next"
                  onSubmitEditing={() => { this.destinationInput.focus(); }}
                   defaultValue={
-                    this.state.my_address
-                      ?    this.state.my_address
+                    this.props.order.my_address
+                      ?     this.props.order.my_address
                       : "Unnamed Road"
                   }
 
