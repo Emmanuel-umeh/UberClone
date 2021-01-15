@@ -50,11 +50,13 @@ class Request_ride extends Component {
     
 
 
-    this.props.navigation.navigate("confirm_location", {
-      book_ride : this.props.bookRide,
-      payment_method : this.state.payment_method,
-      cancelOrder : this.props.cancelOrder
-    })
+    // this.props.navigation.navigate("confirm_location", {
+    //   book_ride : this.props.bookRide,
+    //   payment_method : this.state.payment_method,
+    //   cancelOrder : this.props.cancelOrder
+    // })
+
+    this.props.open_modal()
   
     }
 

@@ -68,7 +68,7 @@ import { Audio } from "expo-av";
 import { persistStore } from "redux-persist";
 import { day_styles, night_styles } from "./map_styles/styles";
 import { PureComponent } from "react";
-import Bike from "./material/SelectLogistics";
+import Bike from "./material/Request_ride";
 import Request_ride from "./material/Request_ride";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Confirm_Location from "./Confirm_Location";
@@ -1893,7 +1893,7 @@ open_modal = ()=>{
           >
             {/* will be renamed to request ride  */}
             <Request_ride
-              navigation={this.props.navigation}
+              open_modal = {this.open_modal}
               style={
                 (styles.Bike,
                 { backgroundColor: this.state.isBikeSelected ? "gold" : null })
