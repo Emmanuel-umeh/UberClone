@@ -1072,6 +1072,8 @@ return  await store.dispatch({
 
 // this.props.navigation.navigate("confirm_location")
 
+// console.log("navigation ,", this.props.navigation)
+
 
 
     store.dispatch({
@@ -1092,6 +1094,11 @@ this.reconnect_client()
 
  
 
+
+  navigate=(name)=>{
+    return this.props.navigation.navigate(name)
+
+  }
 
 
   centerCamera = () => {
@@ -1819,12 +1826,14 @@ const longitude = this.props.order.going.longitude
 
 <Animatable.View animation="slideInUp" delay={1300} style={styles.rect}>
             <SelectLogistics
+
+navigation={this.props.navigation}
               style={
                 (styles.Bike,
                 { backgroundColor: this.state.isBikeSelected ? "gold" : null })
               }
 
-              navigation = {this.props.navigation}
+          
             ></SelectLogistics>
 
 </Animatable.View>
@@ -2032,12 +2041,15 @@ this.destination_marker()
 
   {/* will be renamed to request ride  */}
 <SelectLogistics
+
+navigation = {this.props.navigation}
   style={
     (styles.Bike,
     { backgroundColor: this.state.isBikeSelected ? "gold" : null })
   }
 
   bookRide = {this.bookRide}
+  cancelOrder = {this.cancelOrder}
 ></SelectLogistics>
 
 </Animatable.View>

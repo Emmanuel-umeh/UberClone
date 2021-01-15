@@ -71,6 +71,17 @@ class Confirm_Location extends Component {
    
     }
 
+    book_ride =()=>{
+      try {
+        this.props.navigation.replace("Map")
+        this.props.route.params.book_ride(this.props.route.params(payment_method))
+      } catch (error) {
+        console.warn(error)
+        alert("Failed to book ride. Please kindly restart the ordering process")
+      }
+  
+    }
+
 
       async componentDidMount(){
 
@@ -180,6 +191,28 @@ var {latitude, longitude} = this.props.order.region
 
         }}
       ></View>
+          <View
+        style={{
+          width: wp("10%"),
+          marginTop : -hp(1.5),
+          
+          padding: 3,
+
+          alignSelf: "flex-end",
+      
+
+        }}
+      >
+<TouchableOpacity>
+<Icon name= "md-close" style = {{
+  color:"#C68E17"
+}}></Icon>
+
+</TouchableOpacity>
+       
+
+
+      </View>
 
             {/* <Text style={styles.region}>{JSON.stringify(region, null, 2)}</Text> */}
 

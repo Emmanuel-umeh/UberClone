@@ -180,7 +180,7 @@ class SetLogistics extends PureComponent {
   }
 
   _next =(logistic)=>{
-    console.log("props passed!!!!!!!!!!!!!!!! ", this.props.navigation)
+
 
     store.dispatch({
       type : "LOGISTIC_TYPE",

@@ -80,7 +80,7 @@ export const loadUser = (token) =>   async(dispatch, getState) => {
 
            
           }else{
- // console.log("user data!!! ", response.data)
+
  dispatch({
   type: USER_LOADED,
   payload: response.data,
@@ -326,7 +326,7 @@ export const registerDetails = (firstName, lastName, email, id,tokens) => (
     .post(`/api/users/updateDetails/${id}`,body,config)
     .then(
       (res) => {
-        // console.log("data ", res);
+        console.log("data from u[pdation gdetails", res.data);
     // endLoading()
 
     // dispatch({

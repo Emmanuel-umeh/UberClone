@@ -306,7 +306,6 @@ export default function (state = initialState, action) {
         my_address 
         } = action.payload;
 
-        console.log("my address!!!!!!!!!!", my_address)
         return {
           ...state,
           region: region ? region : state.region,
@@ -319,7 +318,7 @@ export default function (state = initialState, action) {
 
 
     case DRIVER_LOCATION:
-      console.log("Driver location updatinmg!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", action.payload)
+
       {
         const { location, driver } = action.payload;
         return {
@@ -511,7 +510,7 @@ export default function (state = initialState, action) {
 
     
 case PURGE:
-  // console.log("updating payload for user loaded ", action.payload);
+
   
   return {
     initialState

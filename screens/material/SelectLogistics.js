@@ -47,17 +47,17 @@ class SelectLogistics extends Component {
     //   type : "LOGISTIC_TYPE",
     //   payload : this.state.selected
     // })
+    
 
 
     this.props.navigation.navigate("confirm_location", {
-      book_ride : this.props.bookRide(this.state.payment_method)
+      book_ride : this.props.bookRide,
+      payment_method : this.state.payment_method
     })
   
     }
 
-    componentDidMount(){
-      console.log(this.props)
-    }
+   
     
 
   render(){

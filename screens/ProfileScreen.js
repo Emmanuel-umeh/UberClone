@@ -16,6 +16,7 @@ class ProfileScreen extends Component{
 
     render(){
       const {user} = this.props.auth
+   
         return (
             <SafeAreaView  style={styles.container}>
              
