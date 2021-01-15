@@ -11,10 +11,11 @@ import {
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
 import { Divider } from 'react-native-paper'
-import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Spinner } from 'native-base';
+import { CardItem, Icon, Right, Button,Spinner } from 'native-base';
 
 import { Platform } from 'react-native';
 import CurrentLocationButton from '../components/currentLocationButton'
+import store from '../store'
 
 // let TouchableHighlight,TouchableOpacity;
 // if (Platform.OS === 'ios') {
@@ -71,10 +72,26 @@ class Confirm_Location extends Component {
    
     }
 
-    book_ride =()=>{
+    book_ride =async()=>{
       try {
-        this.props.navigation.replace("Map")
-        // this.props.route.params.book_ride(this.props.route.params(payment_method))
+
+
+        const {region, address_name} = this.state
+
+
+        const data = {
+          region, address_name
+        }
+        await store.dispatch({
+          type : "CONFIRM_LOCATION",
+          payload : data
+        })
+        
+        this.props.navigation.replace("Map", {
+          book_ride : true,
+          payment_method : this.props.route.params.payment_method
+        })
+     
       } catch (error) {
         console.warn(error)
         alert("Failed to book ride. Please kindly restart the ordering process")

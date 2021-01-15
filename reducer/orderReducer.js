@@ -28,6 +28,7 @@ import {
   CANCEL_ORDER,
   GET_ORDER,
   DRIVER_HEADING,
+  CONFIRM_LOCATION,
   PURGE
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -448,6 +449,15 @@ export default function (state = initialState, action) {
        driver_location : action.payload.driver_location,
        distance : action.payload.distance,
     
+        type: action.type,
+      };
+    }
+    case CONFIRM_LOCATION:{
+      return {
+        ...state,
+       region: action.payload.region,
+       my_address : action.payload.address_name,
+     
         type: action.type,
       };
     }
