@@ -38,12 +38,12 @@ import Config from "react-native-config";
 const Drawer = createDrawerNavigator();
 
 YellowBox.ignoreWarnings(["Setting a timer"]);
-const _console = _.clone(console);
-console.warn = (message) => {
-  if (message.indexOf("Setting a timer") <= -1) {
-    _console.warn(message);
-  }
-};
+// const _console = _.clone(console);
+// console.warn = (message) => {
+//   if (message.indexOf("Setting a timer") <= -1) {
+//     _console.warn(message);
+//   }
+// };
 class App extends React.Component {
   constructor(props) {
     super(props);

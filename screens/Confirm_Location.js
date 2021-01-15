@@ -203,7 +203,16 @@ var {latitude, longitude} = this.props.order.region
 
         }}
       >
-<TouchableOpacity>
+<TouchableOpacity onPress ={()=>{
+    try {
+    
+      this.props.route.params.cancelOrder()
+      this.props.navigation.replace("Map")
+    } catch (error) {
+      console.warn(error)
+      alert("Failed to cancel order. Please restart your app")
+    }
+}}>
 <Icon name= "md-close" style = {{
   color:"#C68E17"
 }}></Icon>
@@ -285,7 +294,9 @@ var {latitude, longitude} = this.props.order.region
             }}>
 
           
-            <Button  full  style ={{
+            <Button onPress ={()=>{
+              this.book_ride()
+            }}  full  style ={{
               borderRadius : 25,
               backgroundColor : "#C68E17"
             }}>
