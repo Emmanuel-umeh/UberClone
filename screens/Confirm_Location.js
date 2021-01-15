@@ -87,8 +87,10 @@ class Confirm_Location extends Component {
           payload : data
         })
         
-        this.close_modal()
+
         this.props.book_ride()
+        this.close_modal()
+  
      
       } catch (error) {
         console.warn(error)
@@ -276,7 +278,7 @@ var {latitude, longitude} = this.props.order.region
               <Text style = {styles.bold}> Confirm Pickup Location</Text>
               <Text style = {styles.price}>500 meters away <Text style ={{
                 fontSize : 50
-              }}>.</Text> ₦800</Text>
+              }}>.</Text> ₦{this.props.order.price}</Text>
             </View>
 
             <Divider style ={{

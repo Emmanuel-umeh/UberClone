@@ -1885,9 +1885,9 @@ open_modal = ()=>{
         />
         {/* End Loading animation */}
 
-        {/* {this.props.order.is_searching && (
+        {this.props.order.is_searching && (
           <CustomModal cancelOrder={this.cancelOrder} />
-        )} */}
+        )}
         {!this.props.order.destinationRequested && !this.props.order.has_ride
           ? this.destination_button()
           : null}
