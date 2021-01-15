@@ -1840,9 +1840,13 @@ class Map extends PureComponent {
 
 // close the confirm sreen modal
 close_modal =()=>{
+
+
+  this.cancelOrder()
   this.setState({
     modal_visible : false
   })
+  
 }
 show_set_destination =()=>{
   this.setState({
@@ -2027,9 +2031,11 @@ open_modal = ()=>{
         animationType="slide"
         // transparent={true}
         onRequestClose = {()=>{
-          this.setState({
-            modal_visible : false
-          })
+
+          this.close_modal()
+          // this.setState({
+          //   modal_visible : false
+          // })
         }}
         visible={this.state.modal_visible}
         presentationStyle ="fullScreen"

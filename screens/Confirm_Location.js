@@ -276,9 +276,9 @@ var {latitude, longitude} = this.props.order.region
 
             <View>
               <Text style = {styles.bold}> Confirm Pickup Location</Text>
-              <Text style = {styles.price}>500 meters away <Text style ={{
+              <Text style = {styles.price}>Drivers are around you <Text style ={{
                 fontSize : 50
-              }}>.</Text> ₦{this.props.order.price}</Text>
+              }}>.</Text> ₦{ Math.round(this.props.order.price / 100) * 100}</Text>
             </View>
 
             <Divider style ={{
