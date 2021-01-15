@@ -8,6 +8,7 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
+  Image,
   Text,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
@@ -24,7 +25,7 @@ import {
 import * as Location from "expo-location";
 
  import { connect } from 'react-redux'
- import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
+ import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch,  } from 'native-base';
 
 
 import { Spinner as Loading } from "native-base";
@@ -345,166 +346,11 @@ unique_orders.slice(0,11).map((unique_orders, key)=>(
     : 
 
     <>
-<TouchableOpacity 
 
-onPress={async () => {
+    <Image source ={require("../assets/images/search.jpg")} resizeMode = "contain">
 
-  try {
-    
-
-    
-  this.setState({
-    loading : true
-  })
-
-  const destination = {
-    latitude: 9.04084,
-    longitude: 7.519309,
-    name :"Asokoro"
-  };
-
-  console.log({destination})
-
-
-const  distance =   getLatLonDiffInMeters(
-    this.props.order.region.latitude,
-    this.props.order.region.longitude,
-   destination.latitude,
-   destination.longitude
-  );
-  console.log("distance",  distance);
-
-  if(distance > 200000){
-    this.setState({
-      loading : false
-    })
-    return alert("Distance is too great. Please select another location")
-  }
-
-  // this.props.navigation.navigate("Map", {
-  //   destination :{
-  //     latitude : json.result.geometry.location.lat,
-  //     longitude : json.result.geometry.location.lng
-  //   }
-  // })
-
-  // console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
-
-  this.props.navigation.navigate("Map", {
-    destination,
-    logistics : this.props.route.params.logistics,
-    from : this.state.from
-  });
-   const going = destination
-
-
-  this.props.route.params.selectDestination(going, this.state.from)
-  this.setState({
-    loading : false
-  })
-  // returns
-  // Object {
-  //   "lat": 8.969173699999999,
-  //   "lng": 7.440240199999998,
-  // }
-  } catch (error) {
-    console.warn(error)
-    this.setState({
-      loading: false
-    })
-
-    alert("Ooops, Could not direct you to that location. Please choose another location.")
-  }
-
-}}
-
-style={styles.button2}>
-    <View style={styles.icon7Row}>
-      <EntypoIcon name="arrow-long-right" style={styles.icon7}></EntypoIcon>
-      <Text style={styles.addHome}>Asokoro</Text>
-    </View>
-  </TouchableOpacity>
-
-  <TouchableOpacity
-  
-  onPress={async () => {
-
-    this.setState({
-      loading : true
-    })
-    // console.log("id , ",prediction.place_id)
-
-    const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
-   const result = await fetch(place_url);
-    const json = await result.json();
-
-   // the name of the destination to display on callout
-   // using this to return formatted street name
- //   const going_address_name =  await  Location.reverseGeocodeAsync({
- //     latitude: json.result.geometry.location.lat,
- //  longitude:   json.result.geometry.location.lng
- //   })
-
-// going address passed to map
-    const destination = {
-      latitude: json.result.geometry.location.lat,
-      longitude: json.result.geometry.location.lng,
-      name : item.structured_formatting.main_text
-    };
-
-    console.log({destination})
-
-
-  const  distance =   getLatLonDiffInMeters(
-      this.props.order.region.latitude,
-      this.props.order.region.longitude,
-      json.result.geometry.location.lat,
-      json.result.geometry.location.lng
-    );
-    console.log("distance",  distance);
-
-    if(distance > 200000){
-      this.setState({
-        loading : false
-      })
-      return alert("Distance is too great. Please select another location")
-    }
-  
-    // this.props.navigation.navigate("Map", {
-    //   destination :{
-    //     latitude : json.result.geometry.location.lat,
-    //     longitude : json.result.geometry.location.lng
-    //   }
-    // })
-
-    // console.log("passing these logistics selected from set destination screen ", this.props.route.params.logistics)
-
-    this.props.navigation.navigate("Map", {
-      destination,
-      logistics : this.props.route.params.logistics,
-      from : this.state.from
-    });
-     const going = destination
-
-
-    this.props.route.params.selectDestination(going, this.state.from)
-    this.setState({
-      loading : false
-    })
-    // returns
-    // Object {
-    //   "lat": 8.969173699999999,
-    //   "lng": 7.440240199999998,
-    // }
-  }}
-  
-  style={styles.button2}>
-    <View style={styles.icon7Row}>
-      <EntypoIcon name="arrow-long-right" style={styles.icon7}></EntypoIcon>
-      <Text style={styles.addHome}>Wuse 2</Text>
-    </View>
-  </TouchableOpacity>
-    </>
+    </Image>
+   </>
             }
           
           {/* <TouchableOpacity style={styles.button2}>
