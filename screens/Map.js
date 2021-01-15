@@ -727,7 +727,7 @@ class Map extends PureComponent {
             destination={this.props.order.going}
             apikey={google_api}
             strokeWidth={5}
-            strokeColor="black"
+           strokeColor = "#C68E17"
             showsCompass={false}
           ></MapViewDirections>
           <Marker.Animated
@@ -851,7 +851,7 @@ class Map extends PureComponent {
             destination={this.props.order.going}
             apikey={google_api}
             strokeWidth={5}
-            strokeColor="black"
+           strokeColor = "#C68E17"
             showsCompass={false}
             onError={() => {
               alert("Could not find a path to your destination");
@@ -917,6 +917,8 @@ class Map extends PureComponent {
             destination={this.props.order.going}
             apikey={google_api}
             strokeWidth={5}
+
+            mode = "DRIVING"
             strokeColor="white"
             showsCompass={false}
             onError={() => {
@@ -1897,12 +1899,13 @@ open_modal = ()=>{
           >
             {/* will be renamed to request ride  */}
             <Request_ride
-              open_modal = {this.open_modal}
+          
               style={
                 (styles.Bike,
                 { backgroundColor: this.state.isBikeSelected ? "gold" : null })
               }
               bookRide={this.bookRide}
+              open_modal = {this.open_modal}
               cancelOrder={this.cancelOrder}
             ></Request_ride>
           </Animatable.View>
