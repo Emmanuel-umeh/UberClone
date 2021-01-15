@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import {StyleSheet, View, Image} from "react-native"
-import {Container, Header, Content, Card, CardItem, Text, Icon, Right, Picker, Button } from "native-base";
+import {Container,  Text, Icon,  Picker, Button } from "native-base";
 import LottieView from 'lottie-react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { ScrollView } from "react-native";

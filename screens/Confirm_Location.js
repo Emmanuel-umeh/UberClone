@@ -74,7 +74,7 @@ class Confirm_Location extends Component {
     book_ride =()=>{
       try {
         this.props.navigation.replace("Map")
-        this.props.route.params.book_ride(this.props.route.params(payment_method))
+        // this.props.route.params.book_ride(this.props.route.params(payment_method))
       } catch (error) {
         console.warn(error)
         alert("Failed to book ride. Please kindly restart the ordering process")
