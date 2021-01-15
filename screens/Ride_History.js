@@ -24,6 +24,7 @@ import {
 } from "native-base";
 import { TouchableOpacity } from "react-native-gesture-handler";
   import moment from "moment"
+import { ImageBackground } from "react-native";
 
 function Item({ order }) {
   return (
@@ -94,6 +95,13 @@ function Ride_History(props) {
       <Text style={styles.history}>History</Text>
       {/* <ScrollView> */}
 
+      <ImageBackground style={{
+        width :wp(100),
+        height : hp(100),
+        // opacity : 0.6
+      }} source = {require("../assets/images/background.jpg")}>
+
+
  
 {user.orders ? 
 <FlatList
@@ -140,6 +148,8 @@ keyExtractor={item => item._id}
           marginTop: 30,
         }}/> */}
      
+
+     </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -152,7 +162,7 @@ const styles = StyleSheet.create({
     fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 26,
-    marginTop: 49,
+    marginTop: hp(2),
     // marginLeft: wp("35%")
     alignSelf: "center"
   },

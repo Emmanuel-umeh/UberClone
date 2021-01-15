@@ -192,11 +192,16 @@ const unique_orders = Array.from(new Set(all_recent_orders.map(a => a.startLocat
     <>
 
     
-<Header style={{
+<Header 
+noShadow = {true}
+style={{
                           backgroundColor : "white",
-                          // position : "absolute",
-                          // zIndex : 9999
-                          // top : hp("2%")
+                         
+
+    shadowOffset: {height: 0, width: 0},
+    shadowOpacity: 0,
+    elevation: 0
+
                         }} 
                         androidStatusBarColor = "#000"
                         iosBarStyle	= "dark-content"
@@ -347,7 +352,11 @@ unique_orders.slice(0,11).map((unique_orders, key)=>(
 
     <>
 
-    <Image source ={require("../assets/images/search.jpg")} resizeMode = "contain">
+    <Image source ={require("../assets/images/search.jpg")} style={{
+      width : wp(80),
+      height : hp(50),
+      opacity :0.3
+    }} resizeMode = "contain">
 
     </Image>
    </>

@@ -47,7 +47,7 @@ export default class DestinantionButton extends Component{
     
     
     <View style = {styles.leftCol}>
-            <Text  style ={{fontSize :8}}>{'\u25A0'}</Text>
+            <Text  style ={{fontSize :8, color : "#C68E17"}}>{'\u25A0'}</Text>
     </View>
     
     <View style = {styles.centerCol}>

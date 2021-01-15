@@ -18,6 +18,9 @@ import {
   Platform,
 } from "react-native";
 
+
+const Pulse = require('react-native-pulse');
+ 
 import * as Permissions from "expo-permissions";
 import store from "../store";
 import MapView, {
@@ -150,6 +153,7 @@ class Map extends PureComponent {
     this.map = null;
     this.marker = React.createRef();
     this.destinationMarker = React.createRef();
+    this.from_marker  = React.createRef();
     this.driver_marker = React.createRef();
     // this.props.auth.user.phoneNumber = null;
     // this.client_driver_paid = null;
@@ -857,6 +861,8 @@ class Map extends PureComponent {
               alert("Could not find a path to your destination");
             }}
           ></MapViewDirections>
+
+          {/* the destination marker */}
           <Marker
             title={
               this.props.order.going.name
@@ -909,6 +915,66 @@ class Map extends PureComponent {
               </Content>
             </Callout>
           </Marker>
+       
+
+       {/* the user marker */}
+
+       <Marker
+            title={
+              this.props.order.my_address
+                ? this.props.order.my_address
+                : "You are here"
+            }
+            ref={(marker) => {
+              this.from_marker = marker;
+            }}
+
+            image = {require("../assets/markers/marker3.png")}
+            key={`${this.props.order.region.latitude}_${this.props.order.region.longitude}`}
+            coordinate={{
+              latitude: this.props.order.region
+                ? this.props.order.region.latitude
+                : 9.0765,
+              longitude: this.props.order.region
+                ? this.props.order.region.longitude
+                : 7.3986,
+            }}
+            pinColor="green"
+          >
+            <Callout tooltip={false}>
+              <Content style={{ width: undefined, backgroundColor: "white" }}>
+                <Item
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <Icon
+                    active
+                    name="pin"
+                    style={{
+                      color: "#C68E17",
+
+                      fontSize: 20,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontFamily: "Quicksand-Medium",
+                    }}
+                  >
+                    {this.props.order.my_address
+                      ? this.props.order.my_address
+                      : "Your are here"}
+                  </Text>
+                </Item>
+              </Content>
+            </Callout>
+          </Marker>
+       
+
+       
+       
         </>
       );
     } else {
@@ -1774,9 +1840,9 @@ open_modal = ()=>{
         />
         {/* End Loading animation */}
 
-        {this.props.order.is_searching && (
+        {/* {this.props.order.is_searching && (
           <CustomModal cancelOrder={this.cancelOrder} />
-        )}
+        )} */}
         {!this.props.order.destinationRequested && !this.props.order.has_ride
           ? this.destination_button()
           : null}
