@@ -15,7 +15,7 @@ import getStarted from './getStarted';
 import NameScreen from './nameScreen';
 import TermsAndCondition from './termsAndCondition';
 import Otp from './Otp';
-import setDestination from './setDestination';
+import setDestination from './SetDestination';
 import MapDestination from './MapDestination';
 const RootStack = createStackNavigator();
 

@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 
 import { LinearGradient } from 'expo-linear-gradient';
 import store from "../../store"
+import { Divider } from "react-native-paper";
 
 
 class Request_ride extends Component {
@@ -94,14 +95,40 @@ class Request_ride extends Component {
    
 
    
-  <View style= {{ top : -wp(2), left : wp(70)}}> 
+  <View style= {{ top : -wp(2), alignItems : "flex-end"}}> 
+
+  <View
+        style={{
+          width: wp("10%"),
+          backgroundColor: "#515357",
+          padding: 3,
+          // left  : wp("40%"),
+          alignSelf: "center",
+          top: -hp(2),
+          // height : 2,
+          borderRadius: 50,
+
+        }}
+      ></View>
 
 {/* <Text>Total : </Text> */}
+<Text style = {styles.bold}> Confirm Payment Method</Text>
+
+<Divider style ={{
+              height :1,
+              top : 5
+            }} />     
+
+
+<View>
+  
+</View>
 
 <Text style = {{
   fontSize : 25,
   fontFamily : "Quicksand-Bold",
-  marginRight : wp(10)
+  marginRight : wp(10),
+  top : hp(3)
 }}> ₦{Math.round((order ? order.price: 2000) / 100) * 100}</Text>
           </View>
         <View>
@@ -111,11 +138,11 @@ class Request_ride extends Component {
   <Picker
                 mode="dropdown"
                 iosIcon={<Icon name="arrow-down" />}
-                style={{ width: wp(30), alignSelf : "flex-start", top : -hp(7), marginLeft : wp(10) }}
+                style={{ width: wp(30), alignSelf : "flex-start", top : -hp(4), marginLeft : wp(10) }}
                 // placeholder="Cash"
                 placeholderStyle={{ color: "#bfc6ea", fontFamily : "Quicksand-Medium" }}
                 placeholderIconColor="#007aff"
-                selectedValue={this.state.payment_method}
+                selectedValue={this.props.state.payment_method}
             
                 onValueChange={this.payment_method}
               >
@@ -131,7 +158,7 @@ class Request_ride extends Component {
 <View style ={{
   alignSelf : "center",
   alignItems  : "center",
-  top : -hp(5)
+  top : -hp(3)
   // width : wp(80)
 }}>
 
@@ -236,7 +263,17 @@ justifyContent : "center"
     // width: 100,
     // height: 200,
     position: "absolute"
-  }
+  },
+  
+    bold: {
+      fontFamily: "Quicksand-Bold",
+      color: "#121212",
+      fontSize: 20,
+      // marginTop: hp(1),
+      // marginLeft: wp(4),
+      alignSelf: "center",
+
+    },
 });
 
 const mapStateToProps = (state) => ({

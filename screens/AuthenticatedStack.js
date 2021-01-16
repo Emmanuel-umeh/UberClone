@@ -5,7 +5,7 @@ import Map from "./Map";
 import { loadUser } from "../action/authAction";
 import { connect } from "react-redux";
 import AuthSplashScreen from "./AuthSplashScreen";
-import setDestination from "./setDestination";
+import setDestination from "./SetDestination";
 import MapDestination from "./MapDestination";
 import ProfileScreen from "./ProfileScreen";
 import SetLogistics from "./selectLogistics";

@@ -108,7 +108,7 @@ class  Settings extends Component{
                         
                 <Image
                            source={{
-                               uri :"https://lh3.googleusercontent.com/proxy/guhC4W9VIYA-q0W9YGcDcIGO0TS82eh-mJPRd7VA1Myhx7rGyS-R_g4mN4dqitHAmCDL5rJRt_MwAAsWq3KSi4dr23ZvUdmygA"    }}
+                               uri :"https://lh3.googleusercontent.com/proxy/eFWuCq_eyuJWBx4VS5vzdqUy7VQTjQBkMdJUGbzpJVJLsqB-npD1baX2s3jhiFe7YJRSvij9LObYm5eP4opV5Yfu2vTDtDZpVTzqUwEFYgL4dQxUGsu3ako"    }}
                       resizeMode="contain"
                       style={styles.image}
                     ></Image>

@@ -225,7 +225,7 @@ class Map extends PureComponent {
 
   payment_method =(e)=>{
     
-    setState({
+   this.setState({
       payment_method : e
     })
   }
@@ -892,7 +892,7 @@ class Map extends PureComponent {
               this.destinationMarker = marker;
             }}
 
-            image = {require("../assets/markers/marker3.png")}
+            image = {require("../assets/markers/marker6.png")}
             key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
             coordinate={{
               latitude: this.props.order.going
@@ -951,7 +951,7 @@ class Map extends PureComponent {
               this.from_marker = marker;
             }}
 
-            image = {require("../assets/markers/marker3.png")}
+            image = {require("../assets/markers/marker7.png")}
             key={`${this.props.order.region.latitude}_${this.props.order.region.longitude}`}
             coordinate={{
               latitude: this.props.order.region
@@ -1110,7 +1110,9 @@ class Map extends PureComponent {
         this.props.order.logistic_type
           ? this.props.order.logistic_type.toLowerCase()
           : "car"
-      }`
+      }`, (data)=>{
+        console.log(data)
+      }
     );
 
     this.user_ride_channel = this.pusher.subscribe(
@@ -1697,9 +1699,10 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
                 this.setState({
                   show_user_location : true
                 })
-
-                await this._getLocationAsync();
+                this.close_modal()
                 await this.centerCamera();
+                await this._getLocationAsync();
+             
                 store.dispatch({
                   type: "PERFORMING_TASK_ENDED",
                 });
@@ -1720,8 +1723,11 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         await store.dispatch({
           type: "DESTINATION_CANCELLED",
         });
-        this._getLocationAsync();
+
+        this.close_modal()
         this.centerCamera();
+        this._getLocationAsync();
+ 
         this.setState({
           show_user_location : true
         })
@@ -1851,7 +1857,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
 close_modal =()=>{
 
 
-  this.cancelOrder()
+  // this.cancelOrder()
   this.setState({
     modal_visible : false
   })
@@ -2001,7 +2007,7 @@ open_modal = ()=>{
             {/* will be renamed to request ride  */}
             <Request_ride
           
-
+          payment_method = {this.payment_method}
           state = {this.state}
               style={
                 (styles.Bike,

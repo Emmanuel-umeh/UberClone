@@ -90,7 +90,7 @@ const {state} = this.props
         const payment_method = state.payment_method
 
         this.props.book_ride(payment_method)
-        this.close_modal()
+        this.props.close_modal()
   
      
       } catch (error) {

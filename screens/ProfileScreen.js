@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { StyleSheet, View, SafeAreaView, ImageBackground } from "react-native";
 import CupertinoButtonPurple from "./material/CupertinoButtonPurple";
 
 import * as Animatable from "react-native-animatable"
@@ -62,7 +62,14 @@ class ProfileScreen extends Component{
                 <Text style={styles.profile}>Profile</Text>
                 <Text style={styles.logOut}>Log out</Text>
               </View> */}
+              
 <ScrollView >
+
+<ImageBackground style={{
+        width :wp(100),
+        height : hp(100),
+        // opacity : 0.6
+      }} source = {require("../assets/images/background.jpg")}>
               <Animatable.View  animation="bounceIn">
 
 
@@ -218,7 +225,8 @@ class ProfileScreen extends Component{
        
               </Animatable.View>
 
-               
+
+            </ImageBackground>   
               </ScrollView>
             </SafeAreaView >
           );
