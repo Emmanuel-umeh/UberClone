@@ -7,6 +7,9 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
+  FlatList,
+  Image,
+  Alert
 } from "react-native";
 
 
@@ -19,7 +22,7 @@ import Truck from "./material/Truck";
 
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
-import { Button, Header } from "native-base";
+import { Button, Header, Icon } from "native-base";
 
 import * as Animatable from "react-native-animatable";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -34,6 +37,11 @@ import { connect } from 'react-redux'
 
 import { persistStore } from "redux-persist";
 
+const select_car = require("../assets/logistics/select_car.png")
+const select_bike = require("../assets/logistics/select_bike.png")
+const select_truck = require("../assets/logistics/select_truck.png")
+const select_tanker = require("../assets/logistics/select_tanker.png")
+
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
@@ -43,13 +51,33 @@ const longitudeDelta = latitudeDelta * ASPECT_RATIO;
 const LATITUDE_DELTA = latitudeDelta
 const LONGITUDE_DELTA = longitudeDelta
 class SetLogistics extends PureComponent {
-  state = {
-    isTruckSelected: null,
-    isBikeSelected: null,
-    isCarSelected: null,
-    isTankerSelected: null,
-    logistics : null
-  };
+
+  constructor(props){
+    super(props)
+
+
+    this.state = {
+      isTruckSelected: null,
+      isBikeSelected: null,
+      isCarSelected: null,
+      isTankerSelected: null,
+      logistics : null,
+      data: [
+        {id:1, title: "Option 2", image:select_bike},
+        {id:1, title: "Option 1", image:select_car},
+     
+        {id:2, title: "Option 3", image:select_truck} ,
+        {id:3, title: "Option 4", image:select_tanker} ,
+        // {id:4, title: "Option 5", image:"https://img.icons8.com/color/70/000000/shutdown.png"} ,
+        // {id:5, title: "Option 6", image:"https://img.icons8.com/color/70/000000/traffic-jam.png"} ,
+        // {id:6, title: "Option 7", image:"https://img.icons8.com/dusk/70/000000/visual-game-boy.png"} ,
+        // {id:8, title: "Option 8", image:"https://img.icons8.com/flat_round/70/000000/cow.png"} ,
+        // {id:9, title: "Option 9", image:"https://img.icons8.com/color/70/000000/coworking.png"} ,
+        // {id:9, title: "Option 10",image:"https://img.icons8.com/nolan/70/000000/job.png"} ,
+      ]
+    };
+  }
+
 
   componentDidMount(){
 
@@ -58,6 +86,8 @@ class SetLogistics extends PureComponent {
               // store.dispatch({
               //   type : "PURGE"
               // })
+
+        
 
     if(this.props.order.has_ride){
       // if(!this.props.order.fromChanged){
@@ -198,139 +228,124 @@ class SetLogistics extends PureComponent {
     // console.log("state changed,", this.state)
     return (
       <SafeAreaView style={styles.container}>
-        {/* <Header />  */}
-        <StatusBar style="light" hidden = {true} />
 
-        {/* <SafeAreaView> */}
-          <Animatable.Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Vehicle</Animatable.Text>
-        {/* </SafeAreaView> */}
+<Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Vehicle</Text>
+        {/* <View style={styles.container}> */}
 
-        <ScrollView>
+        {/* <ScrollView> */}
 
-        <TouchableOpacity onPress ={()=>{
-         this._next("bike")
-          }}>
+       
+        <FlatList style={styles.list}
+          contentContainerStyle={styles.listContainer}
+          data={this.state.data}
+          horizontal={false}
+          numColumns={2}
+          keyExtractor= {(item) => {
+            return item.id;
+          }}
+          renderItem={({item}) => {
+            return (
+              <Animatable.View animation = "bounceIn" >
+                <TouchableOpacity style={styles.card} onPress={() => {this.clickEventListener(item)}}>
 
-<View 
-            animation = "slideInRight"
-            >
-            <Bike
-              style={
-                (styles.Bike,
-                { backgroundColor: this.state.isBikeSelected ? "gold" : null })
-              }
-            ></Bike>
+                  {/* <Icon name = "tick"></Icon> */}
+                  <Image resizeMode = "contain" style={styles.cardImage} source={item.image}/>
+                </TouchableOpacity>
 
-</View>
-          </TouchableOpacity>
+            
+              </Animatable.View>
+            )
+          }}/>
+      {/* </View> */}
 
-          <TouchableOpacity onPress ={()=>{
-             this._next("car")
-          }}>
-            <View 
-            animation = "slideInLeft"
-            >
-            <Car
-              style={
-                (styles.Car,
-                {  })
-              }
-            ></Car>
-            </View>
-          </TouchableOpacity>
-        
-          <TouchableOpacity 
-          onPress ={()=>{
-            this._next("truck")
-          }}>
-            <View 
-            animation = "slideInUp"
-            >
-            <Truck
-              style={
-                (styles.Truck,
-                { })
-              }
-            ></Truck>
-            </View>
-            {/* <Plane/> */}
-          </TouchableOpacity>
-
-
-          
-          <TouchableOpacity 
-          onPress ={()=>{
-            this._next("tanker")
-          }}>
-            <View 
-            animation = "slideInUp"
-            >
-            <Tanker
-              style={
-                (styles.Truck,
-                { })
-              }
-            ></Tanker>
-            </View>
-            {/* <Plane/> */}
-          </TouchableOpacity>
-        </ScrollView>
-
-        {/* <CupertinoButtonWarning
-          style={styles.cupertinoButtonWarning}
-        ></CupertinoButtonWarning> */}
-        {/* <TouchableOpacity>
-          <Button full warning style={{ height: 70, top: 10, bottom: 10, backgroundColor:"gold" }} onPress ={
-            ()=>{
-              if(!this.state.logistics){
-                return alert("Please Select a Vehicle")
-              }
-              this._next()
-            }
-           }>
-            <Text style={{ fontWeight: "bold", fontSize: 20, color: "black" }}>
-              Select {this.state.logistics}
-            </Text>
-          </Button>
-        </TouchableOpacity> */}
+      <Button block style ={{
+        backgroundColor :"#C68E17",
+        borderRadius : 30,
+        width : wp(50),
+        alignSelf : 'center',
+        top : -hp(3)
+      }}><Text>Select Bike</Text></Button>
+         
+         {/* </ScrollView> */}
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
+  container:{
+    flex:1,
+    marginTop:40,
+    backgroundColor:'#f6f6f6',
   },
-  Car: {
-    height: hp("50%"),
-    width: wp("100%"),
-    marginTop: 10,
-    marginLeft: 1,
-  },
-  Bike: {
-    height: hp("50%"),
-    width: wp("100%"),
-    marginTop: 10,
-    // backgroundColor : this.state.isTruckSelected
-  },
-  Truck: {
-    height: hp("50%"),
-    width: wp("100%"),
-    marginTop: 10,
-    // backgroundColor : this.state.isTruckSelected
-  },
-
-  selectAVechicle: {
-    // fontFamily: "roboto-700",
-    color: "#121212",
-    fontSize: 22,
-    textAlign: "center",
+  selectAVechicle :{
     fontFamily : "Quicksand-Bold",
-    // position : "relative",
-    marginTop: hp("2%"),
-    alignSelf: "center",
+    fontSize : 20,
+     alignSelf  :"center"
+  },
+  list: {
+    paddingHorizontal: 5,
+    backgroundColor:"#f6f6f6",
+  },
+  listContainer:{
+    alignItems:'center'
+  },
+  /******** card **************/
+  card:{
+    // shadowColor: '#474747',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 6,
+    // },
+    // shadowOpacity: 0.37,
+    // shadowRadius: 7.49,
+
+    // // elevation: 12,
+    borderColor : "#C68E17",
+    marginVertical: hp(2),
+    marginHorizontal: wp(
+      1
+    ),
+    backgroundColor:"#e2e2e2",
+    //flexBasis: '42%',
+    width:wp(46),
+    height:hp(36),
+    borderRadius:28,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  cardHeader: {
+    paddingVertical: 17,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 1,
+    borderTopRightRadius: 1,
+    flexDirection: 'row',
+    alignItems:"center", 
+    justifyContent:"center"
+  },
+  cardContent: {
+    paddingVertical: 12.5,
+    paddingHorizontal: 16,
+  },
+  cardFooter:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 12.5,
+    paddingBottom: 25,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 1,
+    borderBottomRightRadius: 1,
+  },
+  cardImage:{
+    height: wp(36),
+    width: hp(21),
+    alignSelf:'center'
+  },
+  title:{
+    fontSize:18,
+    flex:1,
+    alignSelf:'center',
+    color:"#696969"
   },
 });
 
