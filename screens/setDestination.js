@@ -175,10 +175,12 @@ console.log(error, "an errror occured")
     
     return (
 
-    <>
+
+
+      <SafeAreaView style={styles.container}>
 
     
-<Header 
+      <Header 
 noShadow = {true}
 style={{
                           backgroundColor : "white",
@@ -221,9 +223,6 @@ style={{
                   <Right></Right>   
       </Header>
     
-
-      <SafeAreaView style={styles.container}>
-
 {/* <StatusBar style="dark" hidden = {true} /> */}
 
 <Spinner
@@ -564,7 +563,7 @@ keyExtractor={item => item.id}
         {/* </View> */}
      
       </SafeAreaView>
-</> );
+);
   }
 }
 
