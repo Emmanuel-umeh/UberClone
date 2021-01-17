@@ -63,11 +63,11 @@ class SetLogistics extends PureComponent {
       isTankerSelected: null,
       logistics : null,
       data: [
-        {id:1, title: "Option 2", image:select_bike},
-        {id:1, title: "Option 1", image:select_car},
+        {id:0, title: "bike", image:select_bike},
+        {id:1, title: "car", image:select_car},
      
-        {id:2, title: "Option 3", image:select_truck} ,
-        {id:3, title: "Option 4", image:select_tanker} ,
+        {id:2, title: "truck", image:select_truck} ,
+        {id:3, title: "tanker", image:select_tanker} ,
         // {id:4, title: "Option 5", image:"https://img.icons8.com/color/70/000000/shutdown.png"} ,
         // {id:5, title: "Option 6", image:"https://img.icons8.com/color/70/000000/traffic-jam.png"} ,
         // {id:6, title: "Option 7", image:"https://img.icons8.com/dusk/70/000000/visual-game-boy.png"} ,
@@ -78,6 +78,14 @@ class SetLogistics extends PureComponent {
     };
   }
 
+
+  clickEventListener =(item)=>{
+    console.log({item})
+
+    this.setState({
+      logistics : item.title
+    })
+  }
 
   componentDidMount(){
 
@@ -246,7 +254,7 @@ class SetLogistics extends PureComponent {
           renderItem={({item}) => {
             return (
               <Animatable.View animation = "bounceIn"  >
-                <TouchableOpacity onPress={console.log} style={[styles.card, {
+                <TouchableOpacity style={[styles.card, {
 
                       
     borderWidth : 1,
