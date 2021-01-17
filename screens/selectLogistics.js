@@ -61,7 +61,7 @@ class SetLogistics extends PureComponent {
       isBikeSelected: null,
       isCarSelected: null,
       isTankerSelected: null,
-      logistics : null,
+      logistics : "bike",
       data: [
         {id:0, title: "bike", image:select_bike},
         {id:1, title: "car", image:select_car},
@@ -257,8 +257,8 @@ class SetLogistics extends PureComponent {
                 <TouchableOpacity style={[styles.card, {
 
                       
-    borderWidth : 1,
-    borderColor : "#C68E17",
+    borderWidth : item.title == this.state.logistics ? 1 : 0,
+    borderColor : item.title = this.state.logistics ? "#C68E17" : "#e2e2e2"
                 }]} onPress={() => {this.clickEventListener(item)}}>
 
                   {/* <Icon name = "tick"></Icon> */}
