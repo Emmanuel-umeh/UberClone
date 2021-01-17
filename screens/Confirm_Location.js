@@ -348,7 +348,8 @@ var {latitude, longitude} = this.props.order.region
               this.book_ride()
             }}  full  style ={{
               borderRadius : 25,
-              backgroundColor : "#C68E17"
+              backgroundColor : "#C68E17",
+              width : wp(80),
             }}>
             <Text style = {styles.buttonText}>Confirm Location</Text>
         </Button>

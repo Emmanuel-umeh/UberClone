@@ -169,7 +169,7 @@ class Request_ride extends Component {
   borderRadius : 25
 }}><View style ={{alignSelf :"center"}}>
   
-  <Text style = {{ fontFamily : "Quicksand-Medium" }}> Request Ride </Text></View></Button>
+  <Text style = {{ fontFamily : "Quicksand-Bold",  fontSize: 20, }}> Request Ride </Text></View></Button>
       
   {/* </TouchableOpacity> */}
 </View>

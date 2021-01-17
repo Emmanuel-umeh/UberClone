@@ -284,11 +284,11 @@ item.title == this.state.logistics &&
       <Button onPress ={this._next} block style ={{
         backgroundColor :"#C68E17",
         borderRadius : 30,
-        width : wp(50),
+        width : wp(80),
         alignSelf : 'center',
         top : -hp(3)
       }}><Text style={{
-        fontSize : 17,
+        fontSize: 20,
         fontFamily : "Quicksand-Bold"
       }}>Select {this.state.logistics}</Text></Button>
          
