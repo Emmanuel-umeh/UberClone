@@ -258,10 +258,12 @@ class SetLogistics extends PureComponent {
 
                       
     borderWidth : item.title == this.state.logistics ? 1 : 0,
-    borderColor : item.title = this.state.logistics ? "#C68E17" : "#e2e2e2"
+    borderColor : item.title == this.state.logistics ? "#C68E17" : "#e2e2e2"
                 }]} onPress={() => {this.clickEventListener(item)}}>
 
-                  {/* <Icon name = "tick"></Icon> */}
+                  <Icon style={{
+                    color : "#C68E17"
+                  }} name = "checkmark-circle"></Icon>
                   <Image resizeMode = "contain" style={styles.cardImage} source={item.image}/>
                 </TouchableOpacity>
 
@@ -277,7 +279,10 @@ class SetLogistics extends PureComponent {
         width : wp(50),
         alignSelf : 'center',
         top : -hp(3)
-      }}><Text>Select Bike</Text></Button>
+      }}><Text style={{
+        fontSize : 17,
+        fontFamily : "Quicksand-Bold"
+      }}>Select {this.state.logistics}</Text></Button>
          
          {/* </ScrollView> */}
       </SafeAreaView>
