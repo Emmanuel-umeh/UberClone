@@ -110,7 +110,7 @@ class SetDestination extends Component {
 
   destinationChange = async (destination) => {
     // console.log("longitude ", this.props.route.params.longitude);
-    console.log(this.props.order.region)
+
     if(destination){
       try {
         
@@ -375,7 +375,7 @@ renderItem={({ item }) =>
        name : item.structured_formatting.main_text
      };
 
-     console.log({destination})
+   
 
 
    const  distance =   getLatLonDiffInMeters(
@@ -384,7 +384,7 @@ renderItem={({ item }) =>
        json.result.geometry.location.lat,
        json.result.geometry.location.lng
      );
-     console.log("distance",  distance);
+
 
      if(distance > 200000){
        this.setState({
