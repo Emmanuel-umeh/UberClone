@@ -245,8 +245,13 @@ class SetLogistics extends PureComponent {
           }}
           renderItem={({item}) => {
             return (
-              <Animatable.View animation = "bounceIn" >
-                <TouchableOpacity style={styles.card} onPress={() => {this.clickEventListener(item)}}>
+              <Animatable.View animation = "bounceIn"  >
+                <TouchableOpacity onPress={console.log} style={[styles.card, {
+
+                      
+    borderWidth : 1,
+    borderColor : "#C68E17",
+                }]} onPress={() => {this.clickEventListener(item)}}>
 
                   {/* <Icon name = "tick"></Icon> */}
                   <Image resizeMode = "contain" style={styles.cardImage} source={item.image}/>
@@ -300,8 +305,8 @@ const styles = StyleSheet.create({
     // shadowOpacity: 0.37,
     // shadowRadius: 7.49,
 
-    // // elevation: 12,
-    borderColor : "#C68E17",
+    // // elevation: 12
+
     marginVertical: hp(2),
     marginHorizontal: wp(
       1
