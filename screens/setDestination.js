@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Image,
   Text,
+  KeyboardAvoidingView
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -344,7 +345,7 @@ animation="fade"
             <FlatList
               keyboardShouldPersistTaps={'handled'}
 data={this.state.predictions}
-initialNumToRender={4}
+initialNumToRender={7}
 keyExtractor={(item, index) => index.toString()}
 renderItem={({ item }) => 
 <TouchableOpacity
@@ -461,7 +462,7 @@ keyExtractor={item => item.id}
 <FlatList
 keyboardShouldPersistTaps={'handled'}
 data={this.state.fromPredictions}
-initialNumToRender={4}
+initialNumToRender={7}
 
 keyExtractor={(item, index) => index.toString()}
 renderItem={({ item }) => 
