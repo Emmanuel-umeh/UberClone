@@ -14,6 +14,7 @@ import {
   Linking,
   YellowBox,
   Image,
+  BackHandler,
   Modal,
   Platform,
 } from "react-native";
@@ -47,7 +48,7 @@ import MapViewDirections from "react-native-maps-directions";
 import BottomSheet from "reanimated-bottom-sheet";
 import { Button, Content, Header, Icon, Item, Input } from "native-base";
 import * as Animatable from "react-native-animatable";
-import { BackHandler } from "react-native";
+
 // import { TouchableOpacity } from "react-native-gesture-handler";
 import DriverDetailsPopUp from "./components/DriverDetailsPopUp";
 import _ from "lodash";
@@ -199,6 +200,37 @@ class Map extends PureComponent {
     payment_method : "Cash"
     };
   }
+
+
+  backAction = () => {
+
+    if(this.props.order.destinationRequested){
+      // Alert.alert('Hold on!', 'Are you sure you want to cancel?', [
+      //   {
+      //     text: 'Cancel',
+      //     onPress: () => null,
+      //     style: 'cancel',
+      //   },
+      //   { text: 'YES', onPress: () => BackHandler.exitApp() },
+      // ]);
+
+      this.cancelOrder()
+      return true;
+    }else{
+      // Alert.alert('Hold on!', 'Are you sure you want to close White Axis?', [
+      //   {
+      //     text: 'Cancel',
+      //     onPress: () => null,
+      //     style: 'cancel',
+      //   },
+      //   { text: 'YES', onPress: () => BackHandler.exitApp() },
+      // ]);
+      this.props.navigation.pop()
+      return true;
+    }
+   
+  }; 
+
 
   notifications_settings = () => {
     registerForPushNotificationsAsync().then((token) =>
@@ -1169,6 +1201,8 @@ class Map extends PureComponent {
     // store.dispatch({
     //   type : "PURGE"
     // })
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
     store.dispatch({
       type: "PERFORMING_TASK_ENDED",
