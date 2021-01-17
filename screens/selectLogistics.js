@@ -119,6 +119,7 @@ class SetLogistics extends PureComponent {
     }
     let location = await Location.getCurrentPositionAsync({
       enableHighAccuracy: true,
+      accuracy : Location.Accuracy.BestForNavigation
     });
 
    
@@ -217,17 +218,17 @@ class SetLogistics extends PureComponent {
     // );
   }
 
-  _next =(logistic)=>{
+  _next =()=>{
 
 
     store.dispatch({
       type : "LOGISTIC_TYPE",
-      payload : logistic
+      payload : this.state.logistics
     })
 
    
     this.props.navigation.navigate("Map", {
-      logistics : logistic
+      logistics :  this.state.logistics
     })
     // this.props.route.params.selectDestination(this.props.route.params.destination)
   }
@@ -260,10 +261,17 @@ class SetLogistics extends PureComponent {
     borderWidth : item.title == this.state.logistics ? 1 : 0,
     borderColor : item.title == this.state.logistics ? "#C68E17" : "#e2e2e2"
                 }]} onPress={() => {this.clickEventListener(item)}}>
+{
+
+item.title == this.state.logistics && 
 
                   <Icon style={{
-                    color : "#C68E17"
+                    color : "#C68E17",
+                    alignSelf : "flex-end",
+                    paddingRight : wp(1.5),
+                    marginTop : -hp(10)
                   }} name = "checkmark-circle"></Icon>
+                }
                   <Image resizeMode = "contain" style={styles.cardImage} source={item.image}/>
                 </TouchableOpacity>
 
@@ -273,7 +281,7 @@ class SetLogistics extends PureComponent {
           }}/>
       {/* </View> */}
 
-      <Button block style ={{
+      <Button onPress ={this._next} block style ={{
         backgroundColor :"#C68E17",
         borderRadius : 30,
         width : wp(50),

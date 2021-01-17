@@ -319,21 +319,8 @@ animation="fade"
             {/* <ScrollView> */}
 
             {this.state.predictions.length ==0 && 
-            <ScrollView>
-            {
-// unique_orders.length >1000 ? 
-// unique_orders.slice(0,11).map((unique_orders, key)=>(
+          
 
-//   <TouchableOpacity style={styles.button2} key ={key}>
-//             <View style={styles.icon7Row}>
-//               <EntypoIcon name="arrow-long-right" style={styles.icon7}></EntypoIcon>
-//               <Text style={styles.addHome}>{unique_orders.endLocationName}</Text>
-//             </View>
-//           </TouchableOpacity>
-
-//     ))
-
-//     : 
 
     <>
 
@@ -345,15 +332,9 @@ animation="fade"
 
     </Image>
    </>
-            }
           
-          {/* <TouchableOpacity style={styles.button2}>
-            <View style={styles.icon7Row}>
-              <EntypoIcon name="briefcase" style={styles.icon7}></EntypoIcon>
-              <Text style={styles.addHome}>Add Work</Text>
-            </View>
-          </TouchableOpacity> */}
-          </ScrollView>
+          
+       
 
 }
          

@@ -22,6 +22,7 @@
     "android": {
       "package": "com.whiteaxis.whiteaxis",
       "versionCode": 1,
+      
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBLmNEQEe5yUH4Rc41ZwfkJIz5h5Dl8Oc8"
