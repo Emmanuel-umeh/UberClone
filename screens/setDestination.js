@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Image,
   Text,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -25,17 +25,29 @@ import {
 
 import * as Location from "expo-location";
 
- import { connect } from 'react-redux'
- import { Container, Header, Content, Card, CardItem, Icon, Right, Left, Body, Title, Button,Picker, Switch,  } from 'native-base';
-
+import { connect } from "react-redux";
+import {
+  Container,
+  Header,
+  Content,
+  Card,
+  CardItem,
+  Icon,
+  Right,
+  Left,
+  Body,
+  Title,
+  Button,
+  Picker,
+  Switch,
+} from "native-base";
 
 import { Spinner as Loading } from "native-base";
-import Spinner  from 'react-native-loading-spinner-overlay';
+import Spinner from "react-native-loading-spinner-overlay";
 import { Divider } from "react-native-paper";
 import { persistStore } from "redux-persist";
 import { SafeAreaView } from "react-native";
 import { getLatLonDiffInMeters } from "../helpers/helper";
-
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -43,529 +55,471 @@ const ASPECT_RATIO = WIDTH / HEIGHT;
 const latitudeDelta = 0.3358723958820065; //Very high zoom level
 const longitudeDelta = latitudeDelta * ASPECT_RATIO;
 
-const LATITUDE_DELTA = latitudeDelta
-const LONGITUDE_DELTA = longitudeDelta
+const LATITUDE_DELTA = latitudeDelta;
+const LONGITUDE_DELTA = longitudeDelta;
 
-
-
-
- 
 class SetDestination extends Component {
   constructor(props) {
     super(props);
 
-    this.onChangeDestinationDebounced = _.debounce(
-      this.destinationChange,
-      500
-    );
-    this.onChangeFromDebounced = _.debounce(
-      this.fromChange,
-      500
-    );
+    this.onChangeDestinationDebounced = _.debounce(this.destinationChange, 500);
+    this.onChangeFromDebounced = _.debounce(this.fromChange, 500);
   }
   state = {
     // incase user changes pickup location
-    fromName : null,
-    from : null,
-    fromLoading : false,
+    fromName: null,
+    from: null,
+    fromLoading: false,
     destination: null,
     predictions: [],
     // predictions for the from location
-    fromPredictions : [],
-    visible : false,
-    my_address : null,
-    loading : false
+    fromPredictions: [],
+    visible: false,
+    my_address: null,
+    loading: false,
   };
 
- 
+  async componentDidMount() {
+    //   // persistStore(store).purge();
 
- async componentDidMount(){
-   
- 
-//   // persistStore(store).purge();
+    console.log("my_address name ", this.state.my_address);
+    //   try {
+    //     // let location = await  Geocoder.from({
+    //     //   latitude: this.props.order.region.latitude,
+    //     //   longitude:  this.props.order.region.longitude,
+    //     // })
 
+    //    const location = await Location.reverseGeocodeAsync({
 
-console.log("my_address name ", this.state.my_address)
-//   try {
-//     // let location = await  Geocoder.from({
-//     //   latitude: this.props.order.region.latitude,
-//     //   longitude:  this.props.order.region.longitude,
-//     // })
+    //       latitude: this.props.order.region.latitude,
+    //       longitude:  this.props.order.region.longitude,
+    //     })
 
-//    const location = await Location.reverseGeocodeAsync({
-
-//       latitude: this.props.order.region.latitude,
-//       longitude:  this.props.order.region.longitude,
-//     })
-
-
-   
     this.setState({
-      my_address : this.props.order.my_address
-    })
-//     //   .then((json) => {
-//     //     var addressComponent = json.results[0].address_components[0].long_name;
-//   } catch (error) {
-//     console.warn(error)
-//   }
-    
+      my_address: this.props.order.my_address,
+    });
+    //     //   .then((json) => {
+    //     //     var addressComponent = json.results[0].address_components[0].long_name;
+    //   } catch (error) {
+    //     console.warn(error)
+    //   }
   }
 
   destinationChange = async (destination) => {
     // console.log("longitude ", this.props.route.params.longitude);
 
-    if(destination){
+    if (destination) {
       try {
-        
-this.setState({
-  visible : true
-})
-    const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=500`;
-    // const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=${1000}&key=${google_api}`
-        
-
-    console.log("api url!!!!!!!!!!!!!!", api_url)
-    const result = await fetch(api_url);
-    const json = await result.json();
-    
-    this.setState({
-      destination,
-      predictions: json.predictions,
-      visible : false
-    });
-
-
-      } catch (error) {
-console.log(error, "an errror occured")
         this.setState({
-          visible : false
-        })
-        console.warn(error)
+          visible: true,
+        });
+        const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&region=locality&language=en&key=${google_api}&location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=500`;
+        // const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.route.params.latitude},${this.props.route.params.longitude}&radius=${1000}&key=${google_api}`
+
+        console.log("api url!!!!!!!!!!!!!!", api_url);
+        const result = await fetch(api_url);
+        const json = await result.json();
+
+        this.setState({
+          destination,
+          predictions: json.predictions,
+          visible: false,
+        });
+      } catch (error) {
+        console.log(error, "an errror occured");
+        this.setState({
+          visible: false,
+        });
+        console.warn(error);
       }
     }
   };
   fromChange = async (fromName) => {
     // console.log("longitude ", this.props.route.params.longitude);
 
-    if(fromName){
+    if (fromName) {
       try {
         this.setState({
-          fromLoading : true
-        })
-            const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${fromName}&region=locality&language=en&key=${google_api}&location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=500`;
-            const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=${1000}&key=${google_api}`
-                
-            const result = await fetch(api_url);
-            const json = await result.json();
-            
-            this.setState({
-              fromName : fromName,
-              fromPredictions: json.predictions,
-              fromLoading : false
-            });
-        
-        
+          fromLoading: true,
+        });
+        const api_url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${fromName}&region=locality&language=en&key=${google_api}&location=${this.props.order.region.latitude},${this.props.order.region.longitude}&radius=500`;
+        const nearby_url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${
+          this.props.order.region.latitude
+        },${
+          this.props.order.region.longitude
+        }&radius=${1000}&key=${google_api}`;
+
+        const result = await fetch(api_url);
+        const json = await result.json();
+
+        this.setState({
+          fromName: fromName,
+          fromPredictions: json.predictions,
+          fromLoading: false,
+        });
       } catch (error) {
-        console.warn(error)
+        console.warn(error);
       }
     }
-
   };
 
   render() {
-
-    
     return (
-
-
-
       <SafeAreaView style={styles.container}>
+        <Header
+          noShadow={true}
+          style={{
+            backgroundColor: "white",
 
-    
-      <Header 
-noShadow = {true}
-style={{
-                          backgroundColor : "white",
-                         
-
-    shadowOffset: {height: 0, width: 0},
-    shadowOpacity: 0,
-    elevation: 0
-
-                        }} 
-                        androidStatusBarColor = "#000"
-                        iosBarStyle	= "dark-content"
-                        >
-        <Left>
-          {/* <TouchableOpacity onPress={() => {
+            shadowOffset: { height: 0, width: 0 },
+            shadowOpacity: 0,
+            elevation: 0,
+          }}
+          androidStatusBarColor="#000"
+          iosBarStyle="dark-content"
+        >
+          <Left>
+            {/* <TouchableOpacity onPress={() => {
                 this.props.navigation.pop();
               }}>  */}
-          <Button transparent onPress={() => {
+            <Button
+              transparent
+              onPress={() => {
                 this.props.close_set_destination();
-              }}>
-            <Icon
-              name="arrow-back"
-              style ={{
-                color : "black"
-              }}        
-            />
-          </Button>
+              }}
+            >
+              <Icon
+                name="arrow-back"
+                style={{
+                  color: "black",
+                }}
+              />
+            </Button>
 
-          {/* </TouchableOpacity> */}
-         
-        </Left>
-        <Body>
-                    <Title style ={{
-                     fontFamily : "Quicksand-Bold",
-                      color : "black",
-                      marginLeft : wp("2%"),
-                      fontSize: 17
-                    }}>Destination</Title>
-                  </Body>
-                  <Right></Right>   
-      </Header>
-    
-{/* <StatusBar style="dark" hidden = {true} /> */}
+            {/* </TouchableOpacity> */}
+          </Left>
+          <Body>
+            <Title
+              style={{
+                fontFamily: "Quicksand-Bold",
+                color: "black",
+                marginLeft: wp("2%"),
+                fontSize: 17,
+              }}
+            >
+              Destination
+            </Title>
+          </Body>
+          <Right></Right>
+        </Header>
 
-<Spinner
-visible={this.state.loading}
-textContent="Loading..."
-textStyle={{ color: '#fff',fontFamily : "Quicksand-Bold", }}
-animation="fade"
-/>
+        {/* <StatusBar style="dark" hidden = {true} /> */}
 
-
-
+        <Spinner
+          visible={this.state.loading}
+          textContent="Loading..."
+          textStyle={{ color: "#fff", fontFamily: "Quicksand-Bold" }}
+          animation="fade"
+        />
 
         {/* <View style = {styles.container}> */}
-          <Animatable.View animation="bounceIn" style={styles.header}>
-            <View style={styles.icon3StackStackRow}>
-              <View style={styles.icon3StackStack}>
-                <View style={styles.icon3Stack}>
-                  <EntypoIcon
-                    name="dot-single"
-                    style={styles.icon3}
-                  ></EntypoIcon>
-                  <View style={styles.rect2}></View>
-                </View>
-                <EntypoIcon
-                  name="location-pin"
-                  style={styles.icon5}
-                ></EntypoIcon>
-
-
+        <Animatable.View animation="bounceIn" style={styles.header}>
+          <View style={styles.icon3StackStackRow}>
+            <View style={styles.icon3StackStack}>
+              <View style={styles.icon3Stack}>
+                <EntypoIcon name="dot-single" style={styles.icon3}></EntypoIcon>
+                <View style={styles.rect2}></View>
               </View>
-
-       
-
-              <View style={styles.textInputColumn}>
-                <TextInput
-                 editable={true} 
-                 onChangeText={this.onChangeFromDebounced}
-                 returnKeyType="next"
-                 onSubmitEditing={() => { this.destinationInput.focus(); }}
-                  defaultValue={
-                    this.state.my_address
-                      ?     this.state.my_address
-                      : "Unnamed Road"
-                  }
-
-                  blurOnSubmit={false}
-                  style={styles.textInput}
-                ></TextInput>
-
-                
-                <TextInput
-                  placeholder="Add Destination"
-                  ref={(input) => { this.destinationInput = input; }}
-                  onChangeText={this.onChangeDestinationDebounced}
-                  style={styles.textInput1}
-                ></TextInput>
-              </View>
-
-              {this.state.fromLoading &&
-     <Loading
-     visible={this.state.visible}
-     style={styles.icon2}
-    
-     color = "#d1ab21"
-     animation="fade"
-   />
-
-}
-
-{this.state.visible &&
-     <Loading
-     visible={this.state.visible}
-     style={styles.icon}
-    
-     color = "#d1ab21"
-     animation="fade"
-   />
-
-}
-       
-
-  
-    
+              <EntypoIcon name="location-pin" style={styles.icon5}></EntypoIcon>
             </View>
-          </Animatable.View>
 
+            <View style={styles.textInputColumn}>
+              <TextInput
+                editable={true}
+                onChangeText={this.onChangeFromDebounced}
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  this.destinationInput.focus();
+                }}
+                defaultValue={
+                  this.state.my_address ? this.state.my_address : "Unnamed Road"
+                }
+                blurOnSubmit={false}
+                style={styles.textInput}
+              ></TextInput>
 
-          
+              <TextInput
+                placeholder="Add Destination"
+                ref={(input) => {
+                  this.destinationInput = input;
+                }}
+                onChangeText={this.onChangeDestinationDebounced}
+                style={styles.textInput1}
+              ></TextInput>
+            </View>
 
-          <Animatable.View animation="fadeInDownBig" style={styles.footer}>
-            
+            {this.state.fromLoading && (
+              <Loading
+                visible={this.state.visible}
+                style={styles.icon2}
+                color="#d1ab21"
+                animation="fade"
+              />
+            )}
 
-            {/* <ScrollView> */}
-            {/* <ScrollView> */}
+            {this.state.visible && (
+              <Loading
+                visible={this.state.visible}
+                style={styles.icon}
+                color="#d1ab21"
+                animation="fade"
+              />
+            )}
+          </View>
+        </Animatable.View>
 
-            {this.state.predictions.length ==0 && this.state.fromPredictions.length ==0 && 
-          
+        <Animatable.View animation="fadeInDownBig" style={styles.footer}>
+          {/* <ScrollView> */}
+          {/* <ScrollView> */}
 
+          {this.state.predictions.length == 0 &&
+            this.state.fromPredictions.length == 0 && (
+              <>
+                <Image
+                  source={require("../assets/images/search.jpg")}
+                  style={{
+                    width: wp(80),
+                    height: hp(50),
+                    opacity: 0.3,
+                  }}
+                  resizeMode="contain"
+                ></Image>
+              </>
+            )}
 
-    <>
+          <Card
+            style={{ width: wp("100%"), elevation: 0, borderColor: "white" }}
+          >
+            {this.state.destination && (
+              <FlatList
+                keyboardShouldPersistTaps={"handled"}
+                data={this.state.predictions}
+                initialNumToRender={7}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    // key={item.place_id}
 
-    <Image source ={require("../assets/images/search.jpg")} style={{
-      width : wp(80),
-      height : hp(50),
-      opacity :0.3
-    }} resizeMode = "contain">
+                    onPress={async () => {
+                      this.setState({
+                        loading: true,
+                      });
+                      // console.log("id , ",prediction.place_id)
 
-    </Image>
-   </>
-          
-          
-       
+                      const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
+                      const result = await fetch(place_url);
+                      const json = await result.json();
 
-}
-         
-            <Card style ={{width : wp("100%"), elevation : 0, borderColor : "white"}}> 
+                      // the name of the destination to display on callout
+                      // using this to return formatted street name
+                      //   const going_address_name =  await  Location.reverseGeocodeAsync({
+                      //     latitude: json.result.geometry.location.lat,
+                      //  longitude:   json.result.geometry.location.lng
+                      //   })
 
-            {this.state.destination &&
-            <FlatList
-              keyboardShouldPersistTaps={'handled'}
-data={this.state.predictions}
-initialNumToRender={7}
-keyExtractor={(item, index) => index.toString()}
-renderItem={({ item }) => 
-<TouchableOpacity
-// key={item.place_id}
+                      // going address passed to map
+                      const destination = {
+                        latitude: json.result.geometry.location.lat,
+                        longitude: json.result.geometry.location.lng,
+                        name: item.structured_formatting.main_text,
+                      };
 
-   onPress={async () => {
+                      const distance = getLatLonDiffInMeters(
+                        this.props.order.region.latitude,
+                        this.props.order.region.longitude,
+                        json.result.geometry.location.lat,
+                        json.result.geometry.location.lng
+                      );
 
-     this.setState({
-       loading : true
-     })
-     // console.log("id , ",prediction.place_id)
+                      if (distance > 200000) {
+                        this.setState({
+                          loading: false,
+                        });
+                        return alert(
+                          "Distance is too great. Please select another location"
+                        );
+                      }
 
-     const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
-    const result = await fetch(place_url);
-     const json = await result.json();
+                      const going = destination;
 
-    // the name of the destination to display on callout
-    // using this to return formatted street name
-  //   const going_address_name =  await  Location.reverseGeocodeAsync({
-  //     latitude: json.result.geometry.location.lat,
-  //  longitude:   json.result.geometry.location.lng
-  //   })
-
-// going address passed to map
-     const destination = {
-       latitude: json.result.geometry.location.lat,
-       longitude: json.result.geometry.location.lng,
-       name : item.structured_formatting.main_text
-     };
-
-   
-
-
-   const  distance =   getLatLonDiffInMeters(
-       this.props.order.region.latitude,
-       this.props.order.region.longitude,
-       json.result.geometry.location.lat,
-       json.result.geometry.location.lng
-     );
-
-
-     if(distance > 200000){
-       this.setState({
-         loading : false
-       })
-       return alert("Distance is too great. Please select another location")
-     }
-   
-  
-      const going = destination
-
-
-     this.props.selectDestination(going, this.state.from)
-     this.setState({
-       loading : false
-     })
-     // returns
-     // Object {
-     //   "lat": 8.969173699999999,
-     //   "lng": 7.440240199999998,
-     // }
-   }}
-   // style={styles.button2}
- >
-   {/* <View style={styles.icon7Row}>
+                      this.props.selectDestination(going, this.state.from);
+                      this.setState({
+                        loading: false,
+                      });
+                      // returns
+                      // Object {
+                      //   "lat": 8.969173699999999,
+                      //   "lng": 7.440240199999998,
+                      // }
+                    }}
+                    // style={styles.button2}
+                  >
+                    {/* <View style={styles.icon7Row}>
      <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
      <Text style={styles.addHome}>{prediction.description}</Text>
      
    </View> */}
 
+                    <CardItem style={{ top: 10 }}>
+                      <EntypoIcon
+                        name="location"
+                        style={styles.icon7}
+                      ></EntypoIcon>
 
-      
+                      <Body
+                        style={{
+                          left: wp("10%"),
+                          width: "70%",
+                        }}
+                      >
+                        <Text
+                          style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                        >
+                          {item.structured_formatting.main_text}
+                        </Text>
+                        <Text
+                          style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                        >
+                          {item.structured_formatting.secondary_text}
+                        </Text>
+                      </Body>
 
-      
-       <CardItem style ={{top : 10}} >
-       <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
+                      <Right
+                        style={{
+                          right: wp("10%"),
+                        }}
+                      >
+                        <Icon
+                          name="arrow-forward"
+                          style={{
+                            color: "black",
+                          }}
+                        />
+                      </Right>
+                    </CardItem>
+                    <Divider
+                      style={{
+                        marginTop: 20,
+                        height: 1,
+                      }}
+                    />
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id}
+              />
+            )}
 
-         <Body style ={{
-           left : wp("10%"),
-           width : "70%"
-         }}>
-         <Text style ={{fontFamily : "Quicksand-Bold", fontSize : 15}}>{item.structured_formatting.main_text}</Text>
-         <Text style ={{fontFamily : "Quicksand-Bold", fontSize : 15}}>{item.structured_formatting.secondary_text}</Text>
-         </Body>
-  
-         <Right style={{
-             right : wp("10%")
-         }}>
-           <Icon name="arrow-forward"  style ={{
-             color : "black"
-           }}/>
-         </Right>
-        </CardItem>
-       <Divider
-       
-       
-       
-       style={{
+            {this.state.fromName && (
+              <FlatList
+                keyboardShouldPersistTaps={"handled"}
+                data={this.state.fromPredictions}
+                initialNumToRender={7}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    // key={item.place_id}
+                    onPress={async () => {
+                      const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
+                      const result = await fetch(place_url);
+                      const json = await result.json();
 
-         marginTop: 20,
-         height : 1
-       }}/>
-       
-        </TouchableOpacity>
+                      const from = {
+                        latitude: json.result.geometry.location.lat,
+                        longitude: json.result.geometry.location.lng,
+                        fromName: item.structured_formatting.main_text,
+                      };
+                      this.setState({
+                        from,
 
-}
-keyExtractor={item => item.id}
-/>
+                        my_address: item.structured_formatting.main_text,
+                        fromPredictions: [],
+                      });
 
-}
+                      this.destinationInput.focus();
 
-{this.state.fromName && 
-
-<FlatList
-keyboardShouldPersistTaps={'handled'}
-data={this.state.fromPredictions}
-initialNumToRender={7}
-
-keyExtractor={(item, index) => index.toString()}
-renderItem={({ item }) => 
-<TouchableOpacity
-// key={item.place_id}
-onPress={async () => {
-
-
-const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
-const result = await fetch(place_url);
-const json = await result.json();
-
-
-
-const from = {
-latitude: json.result.geometry.location.lat,
-longitude: json.result.geometry.location.lng,
-fromName : item.structured_formatting.main_text,
-};
-this.setState({
-from,
-
-my_address : item.structured_formatting.main_text,
-fromPredictions :[],
-
-})
-
-this.destinationInput.focus(); 
-
-
-
-// this.setState({
-// loading : false
-// })
-// returns
-// Object {
-//   "lat": 8.969173699999999,
-//   "lng": 7.440240199999998,
-// }
-}}
-// style={styles.button2}
->
-{/* <View style={styles.icon7Row}>
+                      // this.setState({
+                      // loading : false
+                      // })
+                      // returns
+                      // Object {
+                      //   "lat": 8.969173699999999,
+                      //   "lng": 7.440240199999998,
+                      // }
+                    }}
+                    // style={styles.button2}
+                  >
+                    {/* <View style={styles.icon7Row}>
 <EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
 <Text style={styles.addHome}>{prediction.description}</Text>
 
 </View> */}
 
+                    <CardItem style={{ top: 10 }}>
+                      <EntypoIcon
+                        name="location"
+                        style={styles.icon7}
+                      ></EntypoIcon>
 
+                      <Body
+                        style={{
+                          left: wp("10%"),
+                          width: "70%",
+                        }}
+                      >
+                        <Text
+                          style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                        >
+                          {item.structured_formatting.main_text}
+                        </Text>
+                        <Text
+                          style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                        >
+                          {item.structured_formatting.secondary_text}
+                        </Text>
+                      </Body>
 
+                      <Right
+                        style={{
+                          right: wp("10%"),
+                        }}
+                      >
+                        <Icon
+                          name="arrow-forward"
+                          style={{
+                            color: "black",
+                          }}
+                        />
+                      </Right>
+                    </CardItem>
+                    <Divider
+                      style={{
+                        marginTop: 20,
+                        height: 1,
+                      }}
+                    />
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id}
+              />
+            )}
+          </Card>
 
-
-<CardItem style ={{top : 10}} >
-<EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
-
-<Body style ={{
-left : wp("10%"),
-width : "70%"
-}}>
-<Text style ={{fontFamily : "Quicksand-Bold", fontSize : 15}}>{item.structured_formatting.main_text}</Text>
-<Text style ={{fontFamily : "Quicksand-Bold", fontSize : 15}}>{item.structured_formatting.secondary_text}</Text>
-</Body>
-
-<Right style={{
-right : wp("10%")
-}}>
-<Icon name="arrow-forward"  style ={{
-color : "black"
-}}/>
-</Right>
-</CardItem>
-<Divider
-
-
-
-style={{
-
-marginTop: 20,
-height : 1
-}}/>
-
-</TouchableOpacity>
-
-}
-keyExtractor={item => item.id}
-/>}
-
-      
-</Card>
-
-
-
-
-
-            {/* </ScrollView> */}
-          </Animatable.View>
-
+          {/* </ScrollView> */}
+        </Animatable.View>
 
         {/* </View> */}
-     
       </SafeAreaView>
-);
+    );
   }
 }
 
@@ -637,24 +591,24 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   textInput: {
-          fontFamily : "Quicksand-Bold",
+    fontFamily: "Quicksand-Bold",
     color: "black",
     height: hp("6.5%"),
     width: wp("70%"),
     fontSize: 15,
-    fontWeight : "600",
+    fontWeight: "600",
     opacity: 0.94,
     paddingLeft: 10,
     backgroundColor: "whitesmoke",
   },
   textInput1: {
-          fontFamily : "Quicksand-Bold",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     height: hp("6.5%"),
     width: wp("70%"),
     fontSize: 15,
     opacity: 0.94,
-    fontWeight : "600",
+    fontWeight: "600",
     backgroundColor: "whitesmoke",
     paddingLeft: 10,
     marginTop: 12,
@@ -668,7 +622,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     height: 44,
     width: 5,
-    left : 0,
+    left: 0,
     marginTop: hp("8%"),
   },
   icon2: {
@@ -676,7 +630,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     height: 44,
     width: 5,
-    left : 0,
+    left: 0,
     marginTop: hp("0.5%"),
   },
   icon3StackStackRow: {
@@ -703,14 +657,14 @@ const styles = StyleSheet.create({
     width: 27,
   },
   chooseOnMap: {
-          fontFamily : "Quicksand-Bold",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     fontSize: 20,
     opacity: 0.92,
     marginLeft: 4,
     marginTop: 5,
   },
- 
+
   button2: {
     // top: 181,
     left: 0,
@@ -730,11 +684,11 @@ const styles = StyleSheet.create({
     width: 27,
   },
   addHome: {
-          fontFamily : "Quicksand-Bold",
+    fontFamily: "Quicksand-Bold",
     color: "#121212",
     fontSize: 15,
     marginLeft: 32,
-    fontWeight : "600",
+    fontWeight: "600",
     marginTop: 3,
   },
   icon7Row: {
@@ -747,7 +701,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 16,
   },
- 
 
   header: {
     flex: 1,
@@ -772,7 +725,6 @@ const styles = StyleSheet.create({
     // paddingVertical: 30,
   },
 });
-
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
