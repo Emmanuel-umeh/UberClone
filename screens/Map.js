@@ -662,6 +662,8 @@ class Map extends PureComponent {
           }
         );
 
+
+        await schedulePushNotification("Order Accepted", "Your driver is on his way to your pickup location", null);
       // this.map.animateToRegion(
       //   {
       //     latitudeDelta: LATITUDE_DELTA,
@@ -686,6 +688,8 @@ class Map extends PureComponent {
           type: "HAS_RIDDEN",
           // payload: data,
         });
+
+        await schedulePushNotification("Driver Has Arrived", "Your driver is around your pickup location.", null);
         // this.setState({
         //   has_ridden: true,
         // });
@@ -695,6 +699,8 @@ class Map extends PureComponent {
       if (data.type == "ride_started") {
         console.log("ride started by driver triggered ", data.order);
 
+
+        await schedulePushNotification("Ride Started", "Your driver has started the ride", null);
         this.loadSounds();
         await store.dispatch({
           type: "RIDE_UPDATED",
@@ -705,6 +711,7 @@ class Map extends PureComponent {
       }
       if (data.type == "ride_ended") {
         console.log("ride ended by driver triggered ", data.order);
+        await schedulePushNotification("Ride Ended", "Your driver has ended the ride", null);
 
         this.loadSounds();
         await store.dispatch({

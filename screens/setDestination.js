@@ -82,7 +82,6 @@ class SetDestination extends Component {
   async componentDidMount() {
     //   // persistStore(store).purge();
 
-    console.log("my_address name ", this.state.my_address);
     //   try {
     //     // let location = await  Geocoder.from({
     //     //   latitude: this.props.order.region.latitude,
@@ -95,9 +94,12 @@ class SetDestination extends Component {
     //       longitude:  this.props.order.region.longitude,
     //     })
 
-    this.setState({
+    await this.setState({
       my_address: this.props.order.my_address,
     });
+
+    
+    console.log("my_address name ", this.state.my_address);
     //     //   .then((json) => {
     //     //     var addressComponent = json.results[0].address_components[0].long_name;
     //   } catch (error) {
