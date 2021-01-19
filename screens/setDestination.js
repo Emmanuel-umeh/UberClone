@@ -93,13 +93,17 @@ class SetDestination extends Component {
     //       latitude: this.props.order.region.latitude,
     //       longitude:  this.props.order.region.longitude,
     //     })
+try {
+  await this.setState({
+    my_address: this.props.order.my_address,
+  });
 
-    await this.setState({
-      my_address: this.props.order.my_address,
-    });
-
-    
-    console.log("my_address name ", this.state.my_address);
+  
+  console.log("my_address name ", this.state.my_address);
+} catch (error) {
+  console.warn(error)
+}
+  
     //     //   .then((json) => {
     //     //     var addressComponent = json.results[0].address_components[0].long_name;
     //   } catch (error) {
