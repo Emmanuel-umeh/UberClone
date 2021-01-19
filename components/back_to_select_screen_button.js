@@ -18,7 +18,6 @@ const bottom = props.bottom ? props.bottom : 80
 const cb = props.cb ? props.cb : ()=> console.log("callback function not passed")
 const order = props.order ? props.order : false
 const destination = props.destination ? props.destination : false
-console.log("back to select screen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     return(
 
         <TouchableOpacity onPress ={ ()=>{

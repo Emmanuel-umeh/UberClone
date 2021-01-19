@@ -141,6 +141,10 @@ coordinate: new AnimatedRegion({
 
 driver_location: null,
 distance: null,
+// difference in time
+time_distance: null,
+
+
 
 fromChanged : false,
 
@@ -448,6 +452,7 @@ export default function (state = initialState, action) {
        coordinate: action.payload.coordinate,
        driver_location : action.payload.driver_location,
        distance : action.payload.distance,
+       time_distance : time_distance,
     
         type: action.type,
       };
@@ -500,6 +505,7 @@ export default function (state = initialState, action) {
       my_location: null,
      
       distance: null,
+      time_distance : null,
       
       fromChanged : false,
           

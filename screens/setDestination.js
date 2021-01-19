@@ -49,14 +49,6 @@ import { persistStore } from "redux-persist";
 import { SafeAreaView } from "react-native";
 import { getLatLonDiffInMeters } from "../helpers/helper";
 
-const WIDTH = Dimensions.get("window").width;
-const HEIGHT = Dimensions.get("window").height;
-const ASPECT_RATIO = WIDTH / HEIGHT;
-const latitudeDelta = 0.3358723958820065; //Very high zoom level
-const longitudeDelta = latitudeDelta * ASPECT_RATIO;
-
-const LATITUDE_DELTA = latitudeDelta;
-const LONGITUDE_DELTA = longitudeDelta;
 
 class SetDestination extends Component {
   constructor(props) {
@@ -221,6 +213,8 @@ try {
 
         {/* <StatusBar style="dark" hidden = {true} /> */}
 
+
+
         <Spinner
           visible={this.state.loading}
           textContent="Loading..."
@@ -228,6 +222,8 @@ try {
           animation="fade"
         />
 
+
+<ScrollView>
         {/* <View style = {styles.container}> */}
         <Animatable.View animation="bounceIn" style={styles.header}>
           <View style={styles.icon3StackStackRow}>
@@ -523,6 +519,8 @@ try {
           {/* </ScrollView> */}
         </Animatable.View>
 
+
+        </ScrollView>
         {/* </View> */}
       </SafeAreaView>
     );
@@ -532,6 +530,7 @@ try {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height : hp(100)
   },
 
   rect: {

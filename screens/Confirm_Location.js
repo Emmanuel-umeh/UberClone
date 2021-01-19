@@ -49,6 +49,8 @@ class Confirm_Location extends Component {
   
     onRegionChange =async (region) => {
 
+      console.log({region})
+
       try {
         this.setState({
           loading:true,
@@ -60,14 +62,19 @@ class Confirm_Location extends Component {
       longitude  :  region.longitude
         })
   
-        console.log({location})
+        console.log("location from reverse geocoding ", location)
   
         this.setState({
           loading :false,
           address_name : location[0].street ?  location[0].street :  location[0].name
         })
       } catch (error) {
-        console.warn(error)
+
+        this.setState({
+          loading :false,
+          // address_name : location[0].street ?  location[0].street :  location[0].name
+        })
+        console.log(error)
       }
    
     }
@@ -309,11 +316,11 @@ var {latitude, longitude} = this.props.order.region
   marginLeft : wp(20),
   marginTop : -hp(4)
 }}>
-<Spinner color='red' />
+<Spinner color='#000' />
 </View>
 
 :
- <Text style ={{
+ <Text numberOfLines = {1} ellipsizeMode = "tail" style ={{
                  fontFamily : "Quicksand-Bold",
                  fontSize : 18
               }}>{this.state.address_name == "Nigeria" || this.state.address_name == "Abuja" ? "Unnamed Road" : this.state.address_name  }</Text> 
@@ -350,6 +357,7 @@ var {latitude, longitude} = this.props.order.region
               borderRadius : 25,
               backgroundColor : "#C68E17",
               width : wp(80),
+              alignSelf : "center"
             }}>
             <Text style = {styles.buttonText}>Confirm Location</Text>
         </Button>

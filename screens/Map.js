@@ -320,7 +320,7 @@ class Map extends PureComponent {
           this.cancelOrder();
           // destinationRequested: false,
           // });
-          this.centerCamera();
+          // this.centerCamera();
         }}
       >
         <View>
@@ -445,8 +445,9 @@ class Map extends PureComponent {
   client_driver_location = async (data) => {
     try {
       if (data) {
-        const { longitude, latitude, accuracy, heading } = data;
+        const { longitude, latitude, accuracy, heading, time_distance } = data;
 
+        // time distance is the time between user and driver, will be passed via the driver app
         const { state } = this.props.order.order;
         console.log(
           "client driver location updated!! ? ",
@@ -470,7 +471,7 @@ class Map extends PureComponent {
           driver: {
             latitude: latitude,
             longitude: longitude,
-            heading: heading ? heading : 0,
+            heading: heading ? heading : 0
           },
         };
 
@@ -522,6 +523,7 @@ class Map extends PureComponent {
             latitude: driverLocation.latitude,
           },
           distance: diff_in_meter_pickup,
+          time_distance : time_distance
         };
 
         // this.setState({
@@ -918,6 +920,7 @@ class Map extends PureComponent {
             strokeWidth={5}
            strokeColor = "#C68E17"
             showsCompass={false}
+     
             onError={() => {
               alert("Could not find a path to your destination");
             }}
@@ -1744,7 +1747,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
                   show_user_location : true
                 })
                 this.close_modal()
-                await this._getLocationAsync();
+                 this._getLocationAsync();
                 await this.centerCamera();
              
              
@@ -1770,7 +1773,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         });
 
         this.close_modal()
-    await  this._getLocationAsync();
+      this._getLocationAsync();
         this.centerCamera();
     
  
@@ -1939,6 +1942,7 @@ open_modal = ()=>{
     if (this.props.order.order) {
       show_user_location = this.props.order.order.state !== "Started";
     }
+    console.log({show_user_location})
 
     return (
       <View style={styles.container}>
@@ -2044,7 +2048,7 @@ open_modal = ()=>{
           
         {/* {this.back_to_select_vehicle_button()} */}
 
-        
+        {/* back button at bottom left */}
         {!this.props.order.destinationRequested && 
         <Back_to_select_screen_button
     cb={() => {
