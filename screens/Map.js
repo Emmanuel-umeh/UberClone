@@ -35,6 +35,7 @@ import * as Location from "expo-location";
 import DestinationButton from "../components/destinationButton";
 
 import CurrentLocationButton from "../components/currentLocationButton";
+import Back_to_select_screen_button from "../components/back_to_select_screen_button";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -897,6 +898,8 @@ class Map extends PureComponent {
     );
   };
 
+
+
   destination_marker = () => {
     if (this.isDay) {
       return (
@@ -1734,8 +1737,9 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
                   show_user_location : true
                 })
                 this.close_modal()
-                await this.centerCamera();
                 await this._getLocationAsync();
+                await this.centerCamera();
+             
              
                 store.dispatch({
                   type: "PERFORMING_TASK_ENDED",
@@ -1759,8 +1763,9 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         });
 
         this.close_modal()
+    await  this._getLocationAsync();
         this.centerCamera();
-        this._getLocationAsync();
+    
  
         this.setState({
           show_user_location : true
@@ -1803,7 +1808,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         location.coords.accuracy
       );
 
-      console.log("my location!!!!!!!!!!!!!!!!!!!!", my_location);
+      // console.log("my location!!!!!!!!!!!!!!!!!!!!", my_location);
       this.setState({
         my_location: my_location,
       });
@@ -1954,6 +1959,7 @@ open_modal = ()=>{
           : this.back_button()}
 
         {this.current_location_button()}
+ 
 
         <>
 
@@ -2028,6 +2034,21 @@ open_modal = ()=>{
             
           </MapView>
 
+          
+        {/* {this.back_to_select_vehicle_button()} */}
+
+        
+        {!this.props.order.destinationRequested && 
+        <Back_to_select_screen_button
+    cb={() => {
+      this.backAction();
+    }}
+    order={this.props.order.driver}
+    destination={this.props.order.destinationRequested}
+   
+  />}
+       
+
 
           {this.props.order.destinationRequested &&
         !this.props.order.driver &&
@@ -2055,7 +2076,7 @@ open_modal = ()=>{
         ) : null}
           {/* over lay image */}
         </>
-       
+
 
 
 {/* set destination modal */}

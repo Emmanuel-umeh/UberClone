@@ -65,7 +65,7 @@ class SetDestination extends Component {
   }
   state = {
     // incase user changes pickup location
-    // fromName : null,
+    fromName : null,
     from : null,
     fromLoading : false,
     destination: null,
@@ -84,6 +84,8 @@ class SetDestination extends Component {
  
 //   // persistStore(store).purge();
 
+
+console.log("my_address name ", this.state.my_address)
 //   try {
 //     // let location = await  Geocoder.from({
 //     //   latitude: this.props.order.region.latitude,
@@ -98,9 +100,9 @@ class SetDestination extends Component {
 
 
    
-//     this.setState({
-//       my_address : location[0].street
-//     })
+    this.setState({
+      my_address : this.props.order.my_address
+    })
 //     //   .then((json) => {
 //     //     var addressComponent = json.results[0].address_components[0].long_name;
 //   } catch (error) {
@@ -263,8 +265,8 @@ animation="fade"
                  returnKeyType="next"
                  onSubmitEditing={() => { this.destinationInput.focus(); }}
                   defaultValue={
-                    this.props.order.my_address
-                      ?     this.props.order.my_address
+                    this.state.my_address
+                      ?     this.state.my_address
                       : "Unnamed Road"
                   }
 
@@ -318,7 +320,7 @@ animation="fade"
             {/* <ScrollView> */}
             {/* <ScrollView> */}
 
-            {this.state.predictions.length ==0 && 
+            {this.state.predictions.length ==0 && this.state.fromPredictions.length ==0 && 
           
 
 

@@ -37,10 +37,10 @@ import { connect } from 'react-redux'
 
 import { persistStore } from "redux-persist";
 
-const select_car = require("../assets/logistics/select_car.png")
-const select_bike = require("../assets/logistics/select_bike.png")
-const select_truck = require("../assets/logistics/select_truck.png")
-const select_tanker = require("../assets/logistics/select_tanker.png")
+const select_car = require("../assets/logistics/car_icon.png")
+const select_bike = require("../assets/logistics/bikee.png")
+const select_truck = require("../assets/logistics/truck.png")
+const select_tanker = require("../assets/logistics/tanker.png")
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
