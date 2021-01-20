@@ -18,6 +18,7 @@ import {
   Left,
   Body,
   Title,
+  Right,
   Button,
 
 } from "native-base";
@@ -110,6 +111,7 @@ class PhoneNumber extends Component {
    
     return (
       
+      
       <Animatable.View animation="slideInUp" style={styles.container}>
 
 <StatusBar style="dark" hidden = {true} />
@@ -138,9 +140,11 @@ class PhoneNumber extends Component {
                     <Title style ={{
                       fontWeight : "bold",
                       color : "black",
-                      marginLeft : wp("4%")
+                      // marginLeft : wp("4%")
                     }}>Phone Number</Title>
                   </Body>
+
+                  <Right></Right>
                 
       </Header>
 
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "rgba(0,0,0,1)",
     fontWeight : "bold",
-    marginTop: 62,
+    marginTop: hp(10),
     marginLeft: wp("35%"),
   },
   loremIpsum2: {
@@ -250,14 +254,17 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 22,
     opacity: 0.6,
-    marginLeft: 13,
+    width : wp(60),
+    marginLeft: wp(10),
+    marginTop : -wp(1),
+    paddingLeft : wp(1)
   },
   loremIpsum2Row: {
     height: hp("5%"),
     flexDirection: "row",
     marginTop: -hp("5%"),
-    marginLeft: 61,
-    marginRight: 113,
+    marginLeft: wp(15),
+    // marginRight: wp(40),
   },
   icon: {
     color: "rgba(0,0,0,1)",
@@ -271,19 +278,13 @@ const styles = StyleSheet.create({
     marginLeft: 13,
     marginTop: hp("5%"),
   },
-  iconRow: {
-    height: 44,
-    flexDirection: "row",
-    marginTop: 10,
-    marginLeft: 9,
-    marginRight: wp("80%"),
-  },
+
   group: {
-    width: wp("80%"),
+    width: wp(100),
     height: 44,
     flexDirection: "row",
     marginTop: hp("20%"),
-    marginLeft: 24,
+    marginLeft: wp(5),
   },
   loremIpsum4: {
   fontFamily : "Quicksand-Bold",
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
   icon3: {
     color: "rgba(1,1,1,1)",
     fontSize: 50,
-    marginLeft: wp("2%"),
+    marginLeft: wp(10)
   },
   loremIpsum5Row: {
     height: hp("20%"),

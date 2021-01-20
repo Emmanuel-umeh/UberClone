@@ -52,7 +52,7 @@ function getStarted({navigation}) {
       {/* </View> */}
 
 
-      <Text style={styles.moveSafely}>Move Safely</Text>
+      <Text style={styles.moveSafely}>The Better Way</Text>
 
       
       <TouchableOpacity  onPress ={()=>{
