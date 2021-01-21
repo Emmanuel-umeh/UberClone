@@ -36,11 +36,12 @@ import google_api from "../keys/google_map";
 import { connect } from 'react-redux'
 
 import { persistStore } from "redux-persist";
+import colors from "./colors/colors"
 
-const select_car = require("../assets/logistics/car_icon.png")
+const select_car = require("../assets/logistics/newcar.png")
 const select_bike = require("../assets/logistics/bikee.png")
 const select_truck = require("../assets/logistics/truck.png")
-const select_tanker = require("../assets/logistics/tanker.png")
+const select_tanker = require("../assets/logistics/newtruck.png")
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -259,17 +260,17 @@ class SetLogistics extends PureComponent {
 
                       
     borderWidth : item.title == this.state.logistics ? 1 : 0,
-    borderColor : item.title == this.state.logistics ? "#C68E17" : "#e2e2e2"
+    borderColor : item.title == this.state.logistics ? colors.safron : "#e2e2e2"
                 }]} onPress={() => {this.clickEventListener(item)}}>
 {
 
 item.title == this.state.logistics && 
 
                   <Icon style={{
-                    color : "#C68E17",
+                    color : colors.safron,
                     alignSelf : "flex-end",
                     paddingRight : wp(1.5),
-                    marginTop : -hp(10)
+                    marginTop : -hp(8)
                   }} name = "checkmark-circle"></Icon>
                 }
                   <Image resizeMode = "contain" style={styles.cardImage} source={item.image}/>
@@ -282,7 +283,7 @@ item.title == this.state.logistics &&
       {/* </View> */}
 
       <Button onPress ={this._next} block style ={{
-        backgroundColor :"#C68E17",
+        backgroundColor :colors.safron,
         borderRadius : 30,
         width : wp(80),
         alignSelf : 'center',
@@ -363,8 +364,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 1,
   },
   cardImage:{
-    height: wp(36),
-    width: hp(21),
+    height: wp(40),
+    width: hp(30),
     alignSelf:'center'
   },
   title:{

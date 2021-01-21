@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
+  AppState,
   Dimensions,
   Alert,
   Vibration,
@@ -198,7 +199,10 @@ class Map extends PureComponent {
 
     set_destination_modal : false,
 
-    payment_method : "Cash"
+    payment_method : "Cash",
+    
+          // if the app is in the foreground or background
+          appstate  :AppState.currentState,
     };
   }
 
@@ -665,7 +669,7 @@ class Map extends PureComponent {
         );
 
 
-        await schedulePushNotification("Order Accepted", "Your driver is on his way to your pickup location", null);
+           schedulePushNotification("Order Accepted", "Your driver is on his way to your pickup location", null);
       // this.map.animateToRegion(
       //   {
       //     latitudeDelta: LATITUDE_DELTA,
@@ -691,7 +695,7 @@ class Map extends PureComponent {
           // payload: data,
         });
 
-        await schedulePushNotification("Driver Has Arrived", "Your driver is around your pickup location.", null);
+          schedulePushNotification("Driver Has Arrived", "Your driver is around your pickup location.", null);
         // this.setState({
         //   has_ridden: true,
         // });
@@ -702,7 +706,7 @@ class Map extends PureComponent {
         console.log("ride started by driver triggered ", data.order);
 
 
-        await schedulePushNotification("Ride Started", "Your driver has started the ride", null);
+
         this.loadSounds();
         await store.dispatch({
           type: "RIDE_UPDATED",
@@ -710,10 +714,12 @@ class Map extends PureComponent {
         });
 
         this.centerCamera();
+
+          schedulePushNotification("Ride Started", "Your driver has started the ride", null);
       }
       if (data.type == "ride_ended") {
         console.log("ride ended by driver triggered ", data.order);
-        await schedulePushNotification("Ride Ended", "Your driver has ended the ride", null);
+
 
         this.loadSounds();
         await store.dispatch({
@@ -722,6 +728,8 @@ class Map extends PureComponent {
         });
 
         this.centerCamera();
+
+          schedulePushNotification("Ride Ended", "Your driver has ended the ride", null);
       }
       if (data.type == "ride_completed") {
         console.log("ride completed by driver triggered ", data.order);
@@ -756,7 +764,7 @@ class Map extends PureComponent {
         { cancelable: false }
       );
 
-      await schedulePushNotification(data.title, data.msg, null);
+      schedulePushNotification(data.title, data.msg, null);
       // this.setState({
       //   pusher : this.pusher,
       //   available_drivers_channel : this.available_drivers_channel,
@@ -1208,6 +1216,14 @@ class Map extends PureComponent {
       user_ride_channel: this.user_ride_channel,
     });
   };
+
+
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    // logErrorToMyService(error, errorInfo);
+
+    console.log("error from component did catch ", error);
+  }
   async componentDidMount() {
     // persistStore(store).purge();
     // persistStore(store).purge();
@@ -1808,9 +1824,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
           { cancelable: false }
         );
       }
-      let location = await Location.getCurrentPositionAsync({
-        accuracy: Accuracy.BestForNavigation,
-      });
+      let location = await  Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
       var my_location = regionFrom(
         location.coords.latitude,
