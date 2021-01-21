@@ -114,7 +114,7 @@ class PhoneNumber extends Component {
       
       <Animatable.View animation="slideInUp" style={styles.container}>
 
-<StatusBar style="dark" hidden = {true} />
+<StatusBar style="dark" hidden = {false} />
 
        
 <Header

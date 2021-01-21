@@ -56,7 +56,7 @@ class  Settings extends Component{
             <SafeAreaView style={styles.container}> 
  
 
- <StatusBar style="dark" hidden = {true} />
+ <StatusBar style="dark" hidden = {false} />
 <Header style={{
                           backgroundColor : "black",
                           // top : hp("2%")

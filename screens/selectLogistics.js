@@ -40,8 +40,8 @@ import colors from "./colors/colors"
 
 const select_car = require("../assets/logistics/newcar.png")
 const select_bike = require("../assets/logistics/bikee.png")
-const select_truck = require("../assets/logistics/truck.png")
-const select_tanker = require("../assets/logistics/newtruck.png")
+const select_truck = require("../assets/logistics/new_truck.png")
+const select_tanker = require("../assets/logistics/new_tanker.png")
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -258,7 +258,10 @@ class SetLogistics extends PureComponent {
               <Animatable.View animation = "bounceIn"  >
                 <TouchableOpacity style={[styles.card, {
 
-                      
+
+
+// width:wp(46),
+// height:hp(36),
     borderWidth : item.title == this.state.logistics ? 1 : 0,
     borderColor : item.title == this.state.logistics ? colors.safron : "#e2e2e2"
                 }]} onPress={() => {this.clickEventListener(item)}}>
@@ -270,10 +273,13 @@ item.title == this.state.logistics &&
                     color : colors.safron,
                     alignSelf : "flex-end",
                     paddingRight : wp(1.5),
-                    marginTop : -hp(8)
+                    marginTop :item.title == "truck" ? 10 : -hp(11)
                   }} name = "checkmark-circle"></Icon>
                 }
-                  <Image resizeMode = "contain" style={styles.cardImage} source={item.image}/>
+                  <Image resizeMode = "contain" style={[styles.cardImage, {
+                    width : item.title == "truck" ? wp(70) :wp(46),
+                    height : item.title == "truck" ? wp(60) :wp(36),
+                  }]} source={item.image}/>
                 </TouchableOpacity>
 
             
