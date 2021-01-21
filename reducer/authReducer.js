@@ -115,7 +115,7 @@ export default function (state = initialState, action) {
         ...state,
         isAuthenticated: true,
         isLoading: false,
-        user: action.payload.user? action.oayload.user : action.payload,
+        user: action.payload.user? action.payload.user : action.payload,
         token :action.payload.token? action.payload.token : state.token,
         type: action.type,
       };

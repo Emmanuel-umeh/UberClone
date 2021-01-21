@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, View, TextInput, Platform } from "react-native";
 import * as Animatable from "react-native-animatable";
 import {connect} from "react-redux"
 import {textMessageAuth, setLoading} from "../action/authAction"
@@ -114,7 +114,7 @@ class PhoneNumber extends Component {
       
       <Animatable.View animation="slideInUp" style={styles.container}>
 
-<StatusBar style="dark" hidden = {false} />
+<StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
 
        
 <Header
@@ -140,6 +140,7 @@ class PhoneNumber extends Component {
                     <Title style ={{
                       fontWeight : "bold",
                       color : "black",
+                      fontFamily : "Quicksand-Bold"
                       // marginLeft : wp("4%")
                     }}>Phone Number</Title>
                   </Body>
@@ -197,7 +198,7 @@ class PhoneNumber extends Component {
         <View  style = {styles.icon3}>
         <AnimateLoadingButton
           ref={c => (this.loadingButton = c)}
-          width={80}
+          width={70}
           height={50}
           title="Verify"
          
@@ -311,7 +312,8 @@ const styles = StyleSheet.create({
   icon3: {
     color: "rgba(1,1,1,1)",
     fontSize: 50,
-    marginLeft: wp(10)
+    marginLeft: wp(4),
+    marginTop : 10
   },
   loremIpsum5Row: {
     height: hp("20%"),

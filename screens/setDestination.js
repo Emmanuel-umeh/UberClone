@@ -223,7 +223,7 @@ try {
         />
 
 
-<ScrollView>
+<ScrollView keyboardShouldPersistTaps= "handled">
         {/* <View style = {styles.container}> */}
         <Animatable.View animation="bounceIn" style={styles.header}>
           <View style={styles.icon3StackStackRow}>

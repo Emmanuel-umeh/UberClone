@@ -81,6 +81,8 @@ export const loadUser = (token) =>   async(dispatch, getState) => {
            
           }else{
 
+
+            console.log("response from load user ", response.data)
  dispatch({
   type: USER_LOADED,
   payload: response.data,
@@ -100,7 +102,7 @@ export const loadUser = (token) =>   async(dispatch, getState) => {
       dispatch({
             type: AUTH_ERROR,
           });
-          console.warn("error occured ", err);
+          console.log("error occured, couldnt authenticate user ", error);
      
   }
  

@@ -66,7 +66,7 @@ class Confirm_Location extends Component {
   
         this.setState({
           loading :false,
-          address_name : location[0].street ?  location[0].street :  location[0].name
+          address_name :location[0] ?  location[0].street ?  location[0].street :  location[0].name : "Unnamed road"
         })
       } catch (error) {
 

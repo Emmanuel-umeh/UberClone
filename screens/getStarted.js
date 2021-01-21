@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text,Image, } from "react-native";
+import { StyleSheet, View, Text,Image, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Animatable from "react-native-animatable";
 import { loadUser } from "../action/authAction";
@@ -8,6 +8,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 
 import LottieView from 'lottie-react-native';
 import { TouchableOpacity } from "react-native";
+// import {  } from "react-native-gesture-handler";
 
 function getStarted({navigation}) {
   return (
@@ -15,6 +16,10 @@ function getStarted({navigation}) {
     animation = "bounceIn"
     style={styles.container}>
 
+      <ScrollView>
+
+
+  
 {/* 
 <Image
           style={{width: 50, height: 50}}
@@ -75,7 +80,9 @@ function getStarted({navigation}) {
 
                  
       </TouchableOpacity>
-    </Animatable.View>
+       
+      </ScrollView>
+   </Animatable.View>
   );
 }
 

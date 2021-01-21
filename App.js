@@ -7,11 +7,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { NotifierWrapper } from "react-native-notifier";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import AnimatedSplash from "react-native-animated-splash-screen";
+import store from "./store"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import _ from "lodash";
+
+import * as Location from "expo-location"
 
 import DrawerContent from "./screens/DrawerContent";
 import RootStackScreen from "./screens/RootStackScreen";
@@ -31,7 +34,7 @@ import NetInfo from '@react-native-community/netinfo';
 import * as SplashScreen from 'expo-splash-screen';
 
 import NoInternetScreen from "./screens/NoInternet"
-
+import { regionFrom, getLatLonDiffInMeters } from "./helpers/helper";
 import Config from "react-native-config";
 
 
@@ -86,11 +89,13 @@ this.loadApp()
   prepareResources = async()=>{
 try {
 
+
   const {token} = this.props.auth
   
     
     // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYTg1NzI1MGM4NjNjM2E3Y2ZiMWI1NiIsImlhdCI6MTYwNDg3MDI0MywiZXhwIjoxMDAwMDAxNjA0ODcwMjQyfQ.1yMf5nhSj3U4rrOHGyw8yEJ138sFp7c60zp2qOBEBPI")
 // await AsyncStorage.removeItem("token")
+
 await Font.loadAsync({
   "charm-bold": require("./assets/fonts/Charm-Bold.ttf"),
   //   // 'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
@@ -118,17 +123,23 @@ await Font.loadAsync({
 }); await Permissions.askAsync(Permissions.LOCATION);
 
 // await this.getToken();
+
+
 await this.props.loadUser(token);
 
   
+console.log("preparing resources!!!!!!!!!!!!!,... ", )
 this.unsubscribe = NetInfo.addEventListener(state => {
 
   this.connectivity = state.isConnected
 });
 
+
+await this._getLocationAsync()
+
 // console.log("Redux props ", this.props)
 } catch (error) {
-  console.warn(error)
+  console.log({error})
 }finally{
 
     setTimeout(async() => {
@@ -141,8 +152,124 @@ this.unsubscribe = NetInfo.addEventListener(state => {
 }
   }
 
+  _getLocationAsync = async () => {
+    console.log("getting location!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ")
+    // Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      console.log("Permission to access denied!!!.");
+      return Alert.alert(
+        "Access Denied",
+        "You need to grant access to location to continue using White Axis",
+        [
+          {
+            text: "Open Settings",
+            onPress: () => Linking.openSettings(),
+            style: "cancel",
+          },
+          { text: "ignore", onPress: () => navigation.goback() },
+          // { text: 'OK', onPress: () => console.log('OK Pressed') }
+        ],
+        { cancelable: false }
+      );
+    }
+
+    let location_on =await Location.getProviderStatusAsync()
+
+    // let is_background_available = await Location.isBackgroundLocationAvailableAsync()
+    // console.log({is_background_available})
+
+    if (!location_on.locationServicesEnabled || !location_on.backgroundModeEnabled){
+      await Location.enableNetworkProviderAsync()
+    }
+    let location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.BestForNavigation,
+      maximumAge: 20000,
+      enableHighAccuracy: true,
+      timeInterval: 8000,
+      distanceInterval: 10,
+      timeout: 20000,
+
+    });
+
+    
+
+    console.log({location})
+
+   
+    var my_location = regionFrom(
+      location.coords.latitude,
+      location.coords.longitude,
+      location.coords.accuracy
+    );
+
+
+    console.log("my location!!!!!!!!!!!!", my_location)
+    this.setState({
+      my_location : my_location
+    });
+
+    const address =  await Location.reverseGeocodeAsync({
+      latitude :location.coords.latitude , longitude:  location.coords.longitude 
+    })
+    console.log({address})
+
+    let region = {
+      latitude: my_location.latitude,
+      longitude: my_location.longitude,
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.06,
+    };
+
+    // console.log("region ", region);
+
+    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
+    // this.setState({
+
+    // });
+    
+
+    // Geocoder.from({
+    //   latitude: location.coords.latitude,
+    //   longitude: location.coords.longitude,
+    // })
+    //   .then((json) => {
+    //     var addressComponent = json.results[0].address_components[0].long_name;
+    //     // console.log(json.results[0].formatted_address);
+
+    //     // this.setState({
+
+       var data = {
+          region: region,
+          my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
+          // addressShortName: addressComponent,
+        };
+
+        // console.log("dataaaaa!!! ", data)
+      await  store.dispatch({
+          type: "GET_LOCATION",
+          payload: data,
+        });
+
+        this.watchId = location;
+
+    
+
+        // });
+        // y address  Object {
+        //   "long_name": "9",
+        //   "short_name": "9",
+        //   "types": Array [
+        //     "street_number",
+        //   ],
+        // }
+      // })
+      // .catch((error) => console.warn(error));
+   
+  };
+
   componentWillUnmount(){
-    this.unsubscribe()
+    this.unsubscribe && this.unsubscribe()
 
   }
   // _renderNextButton = () => {
@@ -244,6 +371,7 @@ return(
                   swipeEnabled : false
                 }}
                 initialRouteName="Home"
+
               >
                 <Drawer.Screen
                   name="HomeDrawer"

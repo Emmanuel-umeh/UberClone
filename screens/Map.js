@@ -1231,6 +1231,7 @@ class Map extends PureComponent {
     //   type : "PURGE"
     // })
 
+    console.log("region!!! ", this.props.order.region)
     const backHandler = BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
     store.dispatch({
@@ -1802,92 +1803,121 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
     }
   };
 
+
+
+  
   _getLocationAsync = async () => {
-    try {
-      console.log("getting location ");
-
-      let { status } = await Permissions.askAsync(Permissions.LOCATION);
-      if (status !== "granted") {
-        console.log("Permission to access denied!!!.");
-        return Alert.alert(
-          "Access Denied",
-          "You need to grant access to location to continue using White Axis",
-          [
-            {
-              text: "Open Settings",
-              onPress: () => Linking.openSettings(),
-              style: "cancel",
-            },
-            { text: "ignore", onPress: () => navigation.goback() },
-            // { text: 'OK', onPress: () => console.log('OK Pressed') }
-          ],
-          { cancelable: false }
-        );
-      }
-      let location = await  Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-
-      var my_location = regionFrom(
-        location.coords.latitude,
-        location.coords.longitude,
-        location.coords.accuracy
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      console.log("Permission to access denied!!!.");
+      return Alert.alert(
+        "Access Denied",
+        "You need to grant access to location to continue using White Axis",
+        [
+          {
+            text: "Open Settings",
+            onPress: () => Linking.openSettings(),
+            style: "cancel",
+          },
+          { text: "ignore", onPress: () => navigation.goback() },
+          // { text: 'OK', onPress: () => console.log('OK Pressed') }
+        ],
+        { cancelable: false }
       );
+    }
 
-      // console.log("my location!!!!!!!!!!!!!!!!!!!!", my_location);
-      this.setState({
-        my_location: my_location,
-      });
+        let location_on =await Location.getProviderStatusAsync()
 
-      let region = {
-        latitude: my_location.latitude,
-        longitude: my_location.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      };
+    // let is_background_available = await Location.isBackgroundLocationAvailableAsync()
+    // console.log({is_background_available})
 
-      // console.log("region ", region);
+    if (!location_on.locationServicesEnabled || !location_on.backgroundModeEnabled){
+      await Location.enableNetworkProviderAsync()
+    }
+    let location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.BestForNavigation,
+      maximumAge: 20000,
+      enableHighAccuracy: true,
+      timeInterval: 8000,
+      distanceInterval: 10,
+      timeout: 20000,
 
-      // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-      // this.setState({
+    });
 
-      // });
+    console.log({location})
 
-      // Geocoder.from({
-      //   latitude: location.coords.latitude,
-      //   longitude: location.coords.longitude,
-      // })
-      //   .then((json) => {
-      //     var addressComponent = json.results[0].address_components[0].long_name;
-      //     // console.log(json.results[0].formatted_address);
+   
+    var my_location = regionFrom(
+      location.coords.latitude,
+      location.coords.longitude,
+      location.coords.accuracy
+    );
 
-      //     // this.setState({
 
-      var data = {
-        region: region,
-        // address: json.results[0].formatted_address,
-        // addressShortName: addressComponent,
-      };
-      await store.dispatch({
-        type: "GET_LOCATION",
-        payload: data,
-      });
+    console.log("my location!!!!!!!!!!!!", my_location)
+    this.setState({
+      my_location : my_location
+    });
 
-      this.watchId = location;
+    const address =  await Location.reverseGeocodeAsync({
+      latitude :location.coords.latitude , longitude:  location.coords.longitude 
+    })
+    console.log({address})
 
-      // });
-      // y address  Object {
-      //   "long_name": "9",
-      //   "short_name": "9",
-      //   "types": Array [
-      //     "street_number",
-      //   ],
-      // }
+    let region = {
+      latitude: my_location.latitude,
+      longitude: my_location.longitude,
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.06,
+    };
+
+    // console.log("region ", region);
+
+    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
+    // this.setState({
+
+    // });
+    
+
+    // Geocoder.from({
+    //   latitude: location.coords.latitude,
+    //   longitude: location.coords.longitude,
+    // })
+    //   .then((json) => {
+    //     var addressComponent = json.results[0].address_components[0].long_name;
+    //     // console.log(json.results[0].formatted_address);
+
+    //     // this.setState({
+
+       var data = {
+          region: region,
+          my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
+          // addressShortName: addressComponent,
+        };
+
+        // console.log("dataaaaa!!! ", data)
+      await  store.dispatch({
+          type: "GET_LOCATION",
+          payload: data,
+        });
+
+        this.watchId = location;
+
+    
+
+        // });
+        // y address  Object {
+        //   "long_name": "9",
+        //   "short_name": "9",
+        //   "types": Array [
+        //     "street_number",
+        //   ],
+        // }
       // })
       // .catch((error) => console.warn(error));
-    } catch (error) {
-      console.warn(error);
-    }
+   
   };
-
+ 
   componentWillUnmount() {
     console.log("Unmounting COmponents!!!!!!!");
     // this.persist_state_data();
@@ -2010,7 +2040,7 @@ open_modal = ()=>{
             showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
-            cacheEnabled
+            // cacheEnabled
             // pitchEnabled = {true}
             showsAnnotationCallouts={true}
             onMapReady={() => {

@@ -100,14 +100,14 @@ class SetLogistics extends PureComponent {
 
     if(this.props.order.has_ride){
       // if(!this.props.order.fromChanged){
-        this._getLocationAsync()
+        // this._getLocationAsync()
       // }
     
       return this.props.navigation.replace("Map")
       
     }
     
-    this._getLocationAsync()
+    // this._getLocationAsync()
   }
   
 
@@ -173,7 +173,7 @@ class SetLogistics extends PureComponent {
         };
 
         // console.log("dataaaaa!!! ", data)
-        store.dispatch({
+      await  store.dispatch({
           type: "GET_LOCATION",
           payload: data,
         });
