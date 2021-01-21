@@ -2010,6 +2010,7 @@ open_modal = ()=>{
             showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
+            cacheEnabled
             // pitchEnabled = {true}
             showsAnnotationCallouts={true}
             onMapReady={() => {
