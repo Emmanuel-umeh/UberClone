@@ -2115,6 +2115,8 @@ open_modal = ()=>{
           {this.props.order.destinationRequested &&
         !this.props.order.driver &&
         !this.props.order.is_searching ? (
+
+          <>
           <Animatable.View
             animation="slideInUp"
             delay={1000}
@@ -2135,6 +2137,8 @@ open_modal = ()=>{
               cancelOrder={this.cancelOrder}
             ></Request_ride>
           </Animatable.View>
+
+          </>
         ) : null}
           {/* over lay image */}
         </>
@@ -2211,7 +2215,7 @@ const styles = StyleSheet.create({
   },
   rect: {
     height: hp(30),
-    top: hp(70),
+    marginTop: hp(70),
     // backgroundColor: 'transparent'
 
     // backgroundColor: "transparent",

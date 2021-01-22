@@ -96,7 +96,7 @@ class Request_ride extends Component {
 
    
   <View style= {{ top : -wp(2), alignItems : "flex-end"}}> 
-
+{/* 
   <View
         style={{
           width: wp("10%"),
@@ -109,7 +109,7 @@ class Request_ride extends Component {
           borderRadius: 50,
 
         }}
-      ></View>
+      ></View> */}
 
 {/* <Text>Total : </Text> */}
 <Text style = {styles.bold}> Confirm Payment Method</Text>

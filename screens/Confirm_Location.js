@@ -17,6 +17,7 @@ import { Platform } from 'react-native';
 import CurrentLocationButton from '../components/currentLocationButton'
 import store from '../store'
 
+import colors from './colors/colors'
 // let TouchableHighlight,TouchableOpacity;
 // if (Platform.OS === 'ios') {
 //     ({ TouchableHighlight,TouchableOpacity } = require('react-native-gesture-handler'));
@@ -193,7 +194,7 @@ var {latitude, longitude} = this.props.order.region
           position: "absolute",
           // display: inline-block;
 
-          top: 40,
+          marginTop: 40,
           left: 30,
           zIndex: 999,
           alignItems: "center",
@@ -218,9 +219,12 @@ var {latitude, longitude} = this.props.order.region
           <MapView
             style={styles.map}
             customMapStyle = {day_styles}
+            tintColor = {colors.safron}
             ref={(map) => {
                 this.map = map;
               }}
+
+              
 
               onMapReady ={this.centerCamera}
             initialRegion={this.props.order.region}
@@ -242,7 +246,7 @@ var {latitude, longitude} = this.props.order.region
           padding: 3,
           // left  : wp("40%"),
           alignSelf: "center",
-          top: 8,
+          marginTop: 8,
           // height : 2,
           borderRadius: 50,
 
@@ -291,7 +295,7 @@ var {latitude, longitude} = this.props.order.region
 
             <Divider style ={{
               height :1,
-              top : 5
+              marginTop : 5
             }} />     
 
 
@@ -379,7 +383,7 @@ var {latitude, longitude} = this.props.order.region
       marginLeft: -24,
       marginTop: -48,
       position: 'absolute',
-      top: hp(30)
+      marginTop: hp(30)
     },
     marker: {
       height: 60,
