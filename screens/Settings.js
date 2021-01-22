@@ -14,6 +14,7 @@ import LottieLoader from "react-native-lottie-loader";
 import {notifications_allowed} from "../action/authAction"
 import AsyncStorage from "@react-native-community/async-storage";
 import { StatusBar } from 'expo-status-bar';
+import colors from "./colors/colors";
 // import { nanoid } from 'nanoid'
 class  Settings extends Component{
 
@@ -55,8 +56,9 @@ class  Settings extends Component{
         return (
             <SafeAreaView style={styles.container}> 
  
+<StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
 
- <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
+      
 <Header style={{
                           backgroundColor : "black",
                           // top : hp("2%")
@@ -71,7 +73,9 @@ class  Settings extends Component{
                       }} transparent > 
                     <Icon
                       name="arrow-back"
-                   
+                   style ={{
+                     color : colors.white
+                   }}
                     />
                   </Button>
         

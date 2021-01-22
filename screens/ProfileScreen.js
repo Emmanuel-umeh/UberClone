@@ -12,6 +12,7 @@ import {connect} from "react-redux"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Divider } from "react-native-paper";
 import { StatusBar } from 'expo-status-bar';
+import colors from "./colors/colors"
 class ProfileScreen extends Component{
 
     render(){
@@ -21,7 +22,7 @@ class ProfileScreen extends Component{
             <SafeAreaView  style={styles.container}>
              
 
-             <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
+             <StatusBar style="dark" hidden = {Platform.OS === "ios" ? true : false} />
 <Header style={{
                           backgroundColor : "black",
                           // top : hp("2%")
@@ -34,9 +35,11 @@ class ProfileScreen extends Component{
                         this.props.navigation.pop();
                       }}> 
                   <Button transparent > 
-                    <Icon
+                  <Icon
                       name="arrow-back"
-                   
+                   style ={{
+                     color : colors.white
+                   }}
                     />
                   </Button>
         
