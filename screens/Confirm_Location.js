@@ -220,6 +220,7 @@ var {latitude, longitude} = this.props.order.region
             style={styles.map}
             customMapStyle = {day_styles}
             tintColor = {colors.safron}
+            provider = "google"
             ref={(map) => {
                 this.map = map;
               }}

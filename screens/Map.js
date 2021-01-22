@@ -132,7 +132,7 @@ async function registerForPushNotificationsAsync() {
     return;
   }
   token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log(token);
+
   // } else {
   //   alert('Must use physical device for Push Notifications');
   // }
@@ -247,7 +247,7 @@ class Map extends PureComponent {
 
     this.notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log({ notification });
+        // console.log({ notification });
         this.setState({
           notification: notification,
         });
@@ -256,7 +256,7 @@ class Map extends PureComponent {
 
     this.responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log(response);
+        // console.log(response);
       }
     );
   };
@@ -363,7 +363,7 @@ class Map extends PureComponent {
   show_driver_marker = () => {
     const { driver, coordinate, logistic_type } = this.props.order;
 
-    console.log("driver heading!!!!!!!!!!!!!!!!!!!!!!", driver);
+    // console.log("driver heading!!!!!!!!!!!!!!!!!!!!!!", driver);
     return (
       <Marker.Animated
         coordinate={{
@@ -1589,30 +1589,70 @@ class Map extends PureComponent {
 
       //  this._getLocationAsync
 
-      this.map
-       && this.map.fitToCoordinates(
-            [
-              {
-                latitude,
-                longitude,
-              },
 
-              {
-                latitude: this.props.order.region.latitude,
-                longitude: this.props.order.region.longitude,
-              },
-            ],
-            {
-              edgePadding: {
-                bottom: hp("70%"),
-                right: wp("40%"),
-                top: hp("40%"),
-                left: wp("10%"),
-              },
-              animated: true,
-            }
-          )
+      if(Platform.OS =="ios"){
+
+        this.map
+        && this.map.fitToCoordinates(
+             [
+               {
+                 latitude,
+                 longitude,
+               },
+ 
+               {
+                 latitude: this.props.order.region.latitude,
+                 longitude: this.props.order.region.longitude,
+               },
+             ],
+             {
+               edgePadding: {
+                 // bottom: hp("70%"),
+                 // right: wp("40%"),
+                 // top: hp("40%"),
+                 // left: wp("10%"),
+ 
+                 bottom: hp("40%"),
+                 right: wp("40%"),
+                 top: hp("10%"),
+                 left: wp("10%"),
+               },
+               animated: true,
+             }
+           )
+       
+
+      }else{
+        
+      this.map
+      && this.map.fitToCoordinates(
+           [
+             {
+               latitude,
+               longitude,
+             },
+
+             {
+               latitude: this.props.order.region.latitude,
+               longitude: this.props.order.region.longitude,
+             },
+           ],
+           {
+             edgePadding: {
+               bottom: hp("70%"),
+               right: wp("40%"),
+               top: hp("40%"),
+               left: wp("10%"),
+
+             
+             },
+             animated: true,
+           }
+         )
+     
+      }
       
+
 
       setTimeout(() => {
         try {
@@ -1689,7 +1729,6 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         endLongitude: this.props.order.going.longitude,
         price: Math.ceil(this.props.order.price / 100) * 100,
 
-        // trigger: trigger,
 
         // pusher actions variables
 
@@ -1845,17 +1884,13 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
 
     });
 
-    console.log({location})
 
-   
     var my_location = regionFrom(
       location.coords.latitude,
       location.coords.longitude,
       location.coords.accuracy
     );
 
-
-    console.log("my location!!!!!!!!!!!!", my_location)
     this.setState({
       my_location : my_location
     });
@@ -1863,7 +1898,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
     const address =  await Location.reverseGeocodeAsync({
       latitude :location.coords.latitude , longitude:  location.coords.longitude 
     })
-    console.log({address})
+
 
     let region = {
       latitude: my_location.latitude,
@@ -1872,31 +1907,12 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
       longitudeDelta: 0.06,
     };
 
-    // console.log("region ", region);
-
-    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-    // this.setState({
-
-    // });
-    
-
-    // Geocoder.from({
-    //   latitude: location.coords.latitude,
-    //   longitude: location.coords.longitude,
-    // })
-    //   .then((json) => {
-    //     var addressComponent = json.results[0].address_components[0].long_name;
-    //     // console.log(json.results[0].formatted_address);
-
-    //     // this.setState({
-
        var data = {
           region: region,
           my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
           // addressShortName: addressComponent,
         };
 
-        // console.log("dataaaaa!!! ", data)
       await  store.dispatch({
           type: "GET_LOCATION",
           payload: data,
@@ -1905,22 +1921,10 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         this.watchId = location;
 
     
-
-        // });
-        // y address  Object {
-        //   "long_name": "9",
-        //   "short_name": "9",
-        //   "types": Array [
-        //     "street_number",
-        //   ],
-        // }
-      // })
-      // .catch((error) => console.warn(error));
    
   };
  
   componentWillUnmount() {
-    console.log("Unmounting COmponents!!!!!!!");
     // this.persist_state_data();
     navigator.geolocation.clearWatch(this.watchId);
 
@@ -1987,7 +1991,7 @@ open_modal = ()=>{
     if (this.props.order.order) {
       show_user_location = this.props.order.order.state !== "Started";
     }
-    console.log({show_user_location})
+   
 
     return (
       <View style={styles.container}>
@@ -2041,6 +2045,7 @@ open_modal = ()=>{
             showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
+            provider = "google"
             tintColor ={colors.safron}
             
             // cacheEnabled
