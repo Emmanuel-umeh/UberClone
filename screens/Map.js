@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { StatusBar } from "expo-status-bar";
-
+import colors from "./colors/colors"
 import {
   StyleSheet,
   Text,
@@ -79,6 +79,7 @@ import Request_ride from "./material/Request_ride";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Confirm_Location from "./Confirm_Location";
 import SetDestination from "./SetDestination";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -1359,7 +1360,7 @@ class Map extends PureComponent {
             },
             pitch: 20,
             heading: 30,
-            altitude: 100,
+            altitude: 1000,
             zoom: 16,
           },
           800
@@ -2040,6 +2041,8 @@ open_modal = ()=>{
             showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
+            tintColor ={colors.safron}
+            
             // cacheEnabled
             // pitchEnabled = {true}
             showsAnnotationCallouts={true}
@@ -2053,6 +2056,9 @@ open_modal = ()=>{
                   this.centerCamera();
                 }
               );
+
+
+
 
               // this._getLocationAsync();
 

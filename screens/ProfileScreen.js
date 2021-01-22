@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, SafeAreaView, ImageBackground } from "react-native";
+import { StyleSheet, View, SafeAreaView,Platform, ImageBackground } from "react-native";
 import CupertinoButtonPurple from "./material/CupertinoButtonPurple";
 
 import * as Animatable from "react-native-animatable"
@@ -21,7 +21,7 @@ class ProfileScreen extends Component{
             <SafeAreaView  style={styles.container}>
              
 
-             <StatusBar style="dark" hidden = {false} />
+             <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
 <Header style={{
                           backgroundColor : "black",
                           // top : hp("2%")
