@@ -81,6 +81,8 @@ import Confirm_Location from "./Confirm_Location";
 import SetDestination from "./SetDestination";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
+
+import * as IntentLauncher from 'expo-intent-launcher';
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
@@ -1232,7 +1234,10 @@ class Map extends PureComponent {
     //   type : "PURGE"
     // })
 
-    console.log("region!!! ", this.props.order.region)
+    // console.log("region!!! ", this.props.order.region)
+
+
+    IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
     const backHandler = BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
     store.dispatch({

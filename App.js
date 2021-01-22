@@ -251,7 +251,10 @@ await this._getLocationAsync()
           payload: data,
         });
 
-        this.watchId = location;
+
+        console.log("region that should be updated to , ", this.props.order.region)
+
+        // this.watchId = location;
 
     
 
@@ -356,7 +359,7 @@ return(
         <AnimatedSplash
         translucent={true}
         isLoaded={!this.state.loading}
-        logoImage={require("./assets/logo.png")}
+        logoImage={require("./assets/images/logo.png")}
         backgroundColor={"#000000"}
         logoHeight={hp(40)}
         logoWidth={wp(80)}
@@ -403,6 +406,7 @@ return(
 const mapStateToProps = (state) => ({
   auth: state.auth,
   error: state.error,
+  order: state.order
 });
 
 // export default ProjectForm
