@@ -380,11 +380,11 @@ var {latitude, longitude} = this.props.order.region
 
     },
     markerFixed: {
-      left: wp(50),
+      left: wp(45),
       marginLeft: -24,
       marginTop: -48,
       position: 'absolute',
-      marginTop: hp(30)
+      marginTop: hp(26)
     },
     marker: {
       height: 60,

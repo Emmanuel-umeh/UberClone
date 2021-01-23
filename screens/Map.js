@@ -369,8 +369,8 @@ class Map extends PureComponent {
     return (
       <Marker.Animated
         coordinate={{
-          latitude: coordinate ? coordinate.latitude : 9.0765,
-          longitude: coordinate ? coordinate.longitude : 7.3986,
+          latitude: driver ? driver.latitude : 9.0765,
+          longitude: driver ? driver.longitude : 7.3986,
         }}
         anchor={{ x: 0.35, y: 0.32 }}
         title="Your Ride Is Here"
@@ -642,7 +642,9 @@ class Map extends PureComponent {
         payload: COORDINATE_DRIVER_LOCATION,
       });
 
-      this.loadSounds();
+      
+
+   
 
       // console.log("Driver accepted and animating to driver location ", data);
       // this.props.order.region;
@@ -651,8 +653,8 @@ class Map extends PureComponent {
         this.map.fitToCoordinates(
           [
             {
-              latitude: data.location.latitude,
-              longitude: data.location.longitude,
+              latitude: driverLocation.latitude,
+              longitude: driverLocation.longitude,
             },
 
             {
@@ -670,6 +672,8 @@ class Map extends PureComponent {
             animated: true,
           }
         );
+
+        this.loadSounds();
 
 
            schedulePushNotification("Order Accepted", "Your driver is on his way to your pickup location", null);
@@ -817,7 +821,7 @@ class Map extends PureComponent {
       return (
         <>
           <MapViewDirections
-            origin={this.props.order.driver_location}
+            origin={this.props.order.driver}
             destination={this.props.order.going}
             apikey={google_api}
             strokeWidth={5}
@@ -1237,7 +1241,7 @@ class Map extends PureComponent {
     // console.log("region!!! ", this.props.order.region)
 
 
-    IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
+    // IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
     const backHandler = BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
     store.dispatch({
@@ -1257,7 +1261,7 @@ class Map extends PureComponent {
   centerCamera = () => {
     if (this.props.order.order) {
       if (this.props.order.order.state == "Started") {
-        var { latitude, longitude } = this.props.order.driver_location;
+        var { latitude, longitude } = this.props.order.driver;
         console.log(
           "centering ,map Destination requested with order!!!!!!!!!!!",
           this.props.order.order
@@ -1289,34 +1293,41 @@ class Map extends PureComponent {
             }
           );
       } else {
-        var { latitude, longitude } = this.props.order.driver_location;
-        console.log("centering ,driver locatin and user location");
-        // const latitude = this.props.order.going.latitude
-        // const longitude = this.props.order.going.longitude
+if(this.props.order.driver){
 
-        this.map &&
-          this.map.fitToCoordinates(
-            [
-              {
-                latitude,
-                longitude,
-              },
+  console.log("centering ,driver locatin and user location", this.props.order.driver );
+  var { latitude, longitude } = this.props.order.driver;
 
-              {
-                latitude: this.props.order.region.latitude,
-                longitude: this.props.order.region.longitude,
-              },
-            ],
-            {
-              edgePadding: {
-                bottom: hp("90%"),
-                right: wp("40%"),
-                top: hp("20%"),
-                left: wp("10%"),
-              },
-              animated: true,
-            }
-          );
+  // const latitude = this.props.order.going.latitude
+  // const longitude = this.props.order.going.longitude
+
+  this.map &&
+    this.map.fitToCoordinates(
+      [
+        {
+          latitude,
+          longitude,
+        },
+
+        {
+          latitude: this.props.order.region.latitude,
+          longitude: this.props.order.region.longitude,
+        },
+      ],
+      {
+        edgePadding: {
+          bottom: hp("90%"),
+          right: wp("40%"),
+          top: hp("20%"),
+          left: wp("10%"),
+        },
+        animated: true,
+      }
+    );
+
+}else{
+  console.log("no orders drivers location was passed....!!!!!!!!!!!!11",  this.props.order.driver)
+}
       }
     } else if (this.props.order.destinationRequested) {
       console.log("centering ,map Destination requested!!!!!!!!!!!");
@@ -1389,7 +1400,7 @@ class Map extends PureComponent {
       "perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ",
       this.props.order.logistic_type
     );
-    this.available_drivers_channel = this.pusher.subscribe(
+    this.available_drivers_channel = await  this.pusher.subscribe(
       `private-available-drivers-${
         this.props.order.logistic_type
           ? this.props.order.logistic_type.toLowerCase()
@@ -1413,14 +1424,12 @@ class Map extends PureComponent {
     //   }
     // );
 
-    this.available_drivers_channel.bind(
+    await this.available_drivers_channel.bind(
       "pusher:subscription_succeeded",
-      (data) => {
+     async (data) => {
         console.log("Subscribed succesfully to available_drivers_cahannel ");
-      }
-    );
 
-    //  }
+        //  }
 
     // available_drivers_channel.bind("Driver_Accepted", function (data) {
     //   alert("New Driver Alerted")
@@ -1432,12 +1441,12 @@ class Map extends PureComponent {
 
     //   console.log("subscribing ujser ride channel!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-    this.user_ride_channel = this.pusher.subscribe(
+    this.user_ride_channel  = await this.pusher.subscribe(
       "private-ride-" + this.props.auth.user._id
     );
     // this.user_ride_channel = user_ride_channel
 
-    this.user_ride_channel.bind("pusher:subscription_succeeded", (data) => {
+    await this.user_ride_channel.bind("pusher:subscription_succeeded", (data) => {
       console.log("Subscribed succesfully to user_ride_cahnnel ");
 
       this.user_ride_channel.bind("client-driver-available", (data) => {
@@ -1478,6 +1487,10 @@ class Map extends PureComponent {
     // }
 
     // }
+      }
+    );
+
+    
   };
 
   // used to replace screens so user cant go back
@@ -2045,7 +2058,7 @@ open_modal = ()=>{
             followUserLocation={show_user_location}
             initialRegion={this.props.order.region}
             rotateEnabled={false}
-            customMapStyle={this.getMapStyles()}
+            // customMapStyle={this.getMapStyles()}
             showsUserLocation={show_user_location}
             showsBuildings={true}
             zoomEnabled={true}

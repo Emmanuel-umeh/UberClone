@@ -248,7 +248,58 @@ export default function (state = initialState, action) {
     case RIDE_COMPLETED:
       {
         return {
-          initialState
+          ...state,
+          order: null,
+      
+        
+          coming: null,
+          going: null,
+        
+          // name of the destination / going
+          // determines if the user has selected the destination
+          destinationRequested: false,
+          
+          // destination : ""
+          address: null,
+          addressShortName: null,
+          location: null,
+          error: null,
+          has_ride: false,
+          destination: null,
+          driver: null,
+     
+          is_searching: false,
+          has_ridden: false,
+          totalPriceVisible: false,
+          is_fetching : false,
+          // price of ride
+          price: 0,
+        
+          // name of the accepted driver
+          driver_details: null,
+          logistic_type : null,
+          //  auth_msg_details : null
+        
+        
+        // state details
+        my_location: null,
+       
+        distance: null,
+        time_distance : null,
+        
+        fromChanged : false,
+            
+        // my_address : null
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          type: action.type,
         };
       }
 
@@ -395,6 +446,8 @@ export default function (state = initialState, action) {
           ...state,
           destinationRequested: false,
           fromChanged  :false,
+          going : null,
+          price : null,
       
           type: "DESTINATION_CANCELLED",
         };

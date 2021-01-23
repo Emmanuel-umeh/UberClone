@@ -36,6 +36,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import NoInternetScreen from "./screens/NoInternet"
 import { regionFrom, getLatLonDiffInMeters } from "./helpers/helper";
 import Config from "react-native-config";
+import { Platform } from "react-native";
 
 
 const Drawer = createDrawerNavigator();
@@ -374,7 +375,9 @@ return(
                   swipeEnabled : false
                 }}
                 initialRouteName="Home"
-
+                hideStatusBar ={Platform.OS=="ios"? true : false}
+                
+drawerType ="slide"
               >
                 <Drawer.Screen
                   name="HomeDrawer"

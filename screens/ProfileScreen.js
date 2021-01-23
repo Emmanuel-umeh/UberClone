@@ -22,7 +22,7 @@ class ProfileScreen extends Component{
             <SafeAreaView  style={styles.container}>
              
 
-             <StatusBar style="dark" hidden = {Platform.OS === "ios" ? true : false} />
+             <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
 <Header style={{
                           backgroundColor : "black",
                           // top : hp("2%")
