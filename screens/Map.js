@@ -83,6 +83,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 
 
 import * as IntentLauncher from 'expo-intent-launcher';
+import DestinationSearch from "./set_destination/set_destination";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
@@ -2180,8 +2181,9 @@ open_modal = ()=>{
         presentationStyle ="fullScreen"
         >
 
+<DestinationSearch />
           {/* <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  /> */}
-          <SetDestination   selectDestination = {this.selectDestination}  show_set_destination = {  this.show_set_destination}  close_set_destination = {this.close_set_destination} />
+          {/* <SetDestination   selectDestination = {this.selectDestination}  show_set_destination = {  this.show_set_destination}  close_set_destination = {this.close_set_destination} /> */}
      </Modal>
 
     </View>

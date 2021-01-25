@@ -10,6 +10,7 @@ import {
     Text,
     Switch
 } from 'react-native-paper';
+import {Button} from "native-base"
 import {
     DrawerContentScrollView,
     DrawerItem
@@ -18,12 +19,18 @@ import { Divider, TouchableRipple } from "react-native-paper";
 
 import {connect} from "react-redux"
 import { StackActions, NavigationActions } from 'react-navigation';
+import colors from "./colors/colors"
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from "react-native-animatable"
 import {logout, setLoading} from "../action/authAction"
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Linking } from 'react-native';
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+  } from "react-native-responsive-screen";
+
 // import{ AuthContext } from '../components/context';
 
  class  DrawerContent extends Component {
@@ -34,7 +41,7 @@ import { Linking } from 'react-native';
         // console.log("drawer,", user)
 
           return(
-            <View style={{flex:1}}>
+            <View style={{flex:1, backgroundColor : colors.black}}>
                 <DrawerContentScrollView {...this.props}>
                     <View style={styles.drawerContent}>
                         <View style={styles.userInfoSection}>
@@ -90,12 +97,13 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="home-outline" 
-                                   color="black"
-                                     size={40}
+                                 color = {colors.white}
+                                   color = {colors.white}
+                                     size={30}
                                     />
                                 )}
                                 labelStyle ={{
-                                    color : "black",
+                                  color: colors.white,
                                     fontWeight : "300",
                           fontSize : 17
                                     ,
@@ -109,12 +117,12 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="account-outline" 
-                                   color="black"
-                                     size={40}
+                                 color = {colors.white}
+                                     size={30}
                                     />
                                 )}
                                 labelStyle ={{
-                                    color : "black",
+                                  color: colors.white,
                                     fontWeight : "300",
                           fontSize : 17
                                     ,
@@ -130,12 +138,13 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="car" 
-                                   color="black"
-                                     size={40}
+                                 color = {colors.white}
+                                     size={30}
                                     />
                                 )}
                                 labelStyle ={{
-                                    color : "black",
+                                  color: colors.white,
+                             
                                     fontWeight : "300",
                           fontSize : 17,
                                     fontFamily : "Quicksand-Bold"
@@ -151,12 +160,12 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="cash" 
-                                   color="black"
-                                     size={40}
+                                 color = {colors.white}
+                                     size={30}
                                     />
                                 )}
                                 labelStyle ={{
-                                    color : "black",
+                                  color: colors.white,
                                     fontWeight : "300",
                           fontSize : 17,
                                     fontFamily : "Quicksand-Bold"
@@ -171,8 +180,8 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="bookmark-outline" 
-                                   color="black"
-                                     size={40}
+                                 color = {colors.white}
+                                     size={30}
                                     />
                                 )}
                                 label="Bookmarks"
@@ -182,13 +191,14 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="settings-outline" 
-                                    color="black"
-                                    size={40}
+                                  color = {colors.white}
+                                    size={30}
                                     />
                                 )}
                                 labelStyle ={{
-                                    color : "black",
+                                  color: colors.white,
                                     fontWeight : "300",
+                                    color: colors.white,
                           fontSize : 17,
                                     
   fontFamily : "Quicksand-Bold"
@@ -200,15 +210,16 @@ import { Linking } from 'react-native';
                                 icon={({color, size}) => (
                                     <Icon 
                                     name="account-check-outline" 
-                                   color="black"
-                                     size={40}
+                                 color = {colors.white}
+                                     size={30}
                                     />
                                 )}
                                 labelStyle ={{
-                                    color : "black",
+                                  color: colors.white,
                                     fontWeight : "300",
                           fontSize : 17
                                     ,
+                                    color: colors.white,
   fontFamily : "Quicksand-Bold"
                                 }}
                                 label="Support"
@@ -222,43 +233,25 @@ import { Linking } from 'react-native';
                     </View>
                 </DrawerContentScrollView>
                 <Drawer.Section style={styles.bottomDrawerSection}>
-                    <DrawerItem 
-                        icon={({color, size}) => (
-                            <Icon 
-                            name="exit-to-app" 
-                           color="black"
-                             size={40}
-                            />
-                            
-                        )}
-                        labelStyle ={{
-                            color : "black",
-                            fontWeight : "300",
-                  fontSize : 17
-                            ,
-  fontFamily : "Quicksand-Bold"
-                        }}
-                        label="Sign Out"
-                        
-                        onPress={() => {
-                           
-                            this.props.navigation.closeDrawer()
-                            // this.props.setLoading()
-                            this.props.logout()
-
-                            // const resetAction = StackActions.reset({
-                            //     index: 0,
-                            //     actions: [NavigationActions.navigate({ routeName: 'getStarted' })],
-                            //   });
-                            //   this.props.navigation.dispatch(resetAction);
-                        
-                        
-                        }}
-                            
-                    />
+                <Button onPress = {()=>{
+                     Linking.openURL("https://www.whiteaxis.ng")
+                }} block style ={{
+                    backgroundColor : colors.safron,
+                    borderRadius : 30,
+                    height : hp(8),
+                }}><Text style={{
+                    fontFamily : "Quicksand-Bold",
+                    fontSize : 20,
+                    color : colors.white
+                }}>DRIVE & EARN</Text></Button>
                 </Drawer.Section>
+        
+        
             </View>
-        );
+        )
+        
+        
+        ;
 
     }
 
@@ -289,10 +282,12 @@ const styles = StyleSheet.create({
       fontSize: 20,
       marginTop: 3,
       fontWeight: 'bold',
+      color: colors.white,
     },
     caption: {
       fontSize: 14,
       lineHeight: 14,
+      color: colors.white,
     
   fontFamily : "Quicksand-Bold"
     },
@@ -314,9 +309,11 @@ const styles = StyleSheet.create({
       marginTop: 15,
     },
     bottomDrawerSection: {
-        marginBottom: 15,
-        borderTopColor: '#f4f4f4',
-        borderTopWidth: 1
+        marginBottom: hp(20),
+        width : wp(65),
+        alignSelf : "center"
+        // borderTopColor: '#f4f4f4',
+        // borderTopWidth: 1
     },
     preference: {
       flexDirection: 'row',
