@@ -1246,6 +1246,9 @@ class Map extends PureComponent {
 
 
     // IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
+
+  // const distance_in_time = await getTimeDiffInMinutes(9.0733 , 7.4713, 9.0479, 7.5155)
+  console.log({distance_in_time})
     const backHandler = BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
     store.dispatch({
