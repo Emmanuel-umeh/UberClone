@@ -289,7 +289,7 @@ class DriverDetailsPopUp extends Component {
             {(order && order.state == "Accepted") ||
             order.state == "Pending" ? (
               <Text style={styles.meters_away}>
-                {distance ? Math.ceil(distance) : "Calculating"} Meters Away
+                {distance ? distance : "Calculating"} Time Away
               </Text>
             ) : null}
           </View>

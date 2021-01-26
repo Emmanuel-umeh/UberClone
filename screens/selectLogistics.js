@@ -64,11 +64,11 @@ class SetLogistics extends PureComponent {
       isTankerSelected: null,
       logistics : "bike",
       data: [
-        {id:0, title: "bike", image:select_bike},
-        {id:1, title: "car", image:select_car},
+        {id:0, title: "bike", name : "Delivery Bike",  image:select_bike},
+        {id:1, title: "car", name : "Taxi",  image:select_car},
      
-        {id:2, title: "truck", image:select_truck} ,
-        {id:3, title: "tanker", image:select_tanker} ,
+        {id:2, title: "truck", name : "Pickup Truck",  image:select_truck} ,
+        {id:3, title: "tanker", name : "Tankers",   image:select_tanker} ,
         // {id:4, title: "Option 5", image:"https://img.icons8.com/color/70/000000/shutdown.png"} ,
         // {id:5, title: "Option 6", image:"https://img.icons8.com/color/70/000000/traffic-jam.png"} ,
         // {id:6, title: "Option 7", image:"https://img.icons8.com/dusk/70/000000/visual-game-boy.png"} ,
@@ -273,13 +273,20 @@ item.title == this.state.logistics &&
                     color : colors.safron,
                     alignSelf : "flex-end",
                     paddingRight : wp(1.5),
-                    marginTop :item.title == "truck" ? 10 : -hp(11)
+                    marginTop :item.title == "truck" ? 10 : -hp(8)
                   }} name = "checkmark-circle"></Icon>
                 }
                   <Image resizeMode = "contain" style={[styles.cardImage, {
                     width : item.title == "truck" ? wp(70) :wp(46),
                     height : item.title == "truck" ? wp(60) :wp(36),
                   }]} source={item.image}/>
+
+
+                  <View style = {styles.tag}>
+
+                    <Text style = {styles.tag_text}>{item.name}</Text>
+
+                  </View>
                 </TouchableOpacity>
 
             
@@ -380,6 +387,14 @@ const styles = StyleSheet.create({
     alignSelf:'center',
     color:"#696969"
   },
+
+  tag : {
+    justifyContent : "flex-end"
+  },
+  tag_text : {
+    fontFamily : "Quicksand-Bold",
+    fontSize : 20
+  }
 });
 
 const mapStateToProps = (state) => ({

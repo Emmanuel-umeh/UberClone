@@ -43,7 +43,7 @@ import { Ionicons } from "@expo/vector-icons";
 import google_api from "../keys/google_map";
 import { connect } from "react-redux";
 import Pusher from "pusher-js/react-native";
-import { regionFrom, getLatLonDiffInMeters } from "../helpers/helper";
+import { regionFrom, getLatLonDiffInMeters, getTimeDiffInMinutes } from "../helpers/helper";
 import { NavigationContainer, StackActions } from "@react-navigation/native";
 import MapViewDirections from "react-native-maps-directions";
 
@@ -489,7 +489,7 @@ class Map extends PureComponent {
           payload: data,
         });
 
-        var diff_in_meter_pickup = getLatLonDiffInMeters(
+        var diff_in_meter_pickup = getTimeDiffInMinutes(
           this.props.order.region.latitude,
           this.props.order.region.longitude,
           latitude,
@@ -607,7 +607,7 @@ class Map extends PureComponent {
       // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
 
       console.log("getting lat long meters");
-      var diff_in_meter_pickup = await getLatLonDiffInMeters(
+      var diff_in_meter_pickup = await getTimeDiffInMinutes(
         this.props.order.region.latitude,
         this.props.order.region.longitude,
         data.location.latitude,
@@ -673,10 +673,14 @@ class Map extends PureComponent {
           }
         );
 
+        
+
         this.loadSounds();
 
 
            schedulePushNotification("Order Accepted", "Your driver is on his way to your pickup location", null);
+
+           this.centerCamera()
       // this.map.animateToRegion(
       //   {
       //     latitudeDelta: LATITUDE_DELTA,

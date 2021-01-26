@@ -62,7 +62,6 @@ class Confirm_Location extends Component {
        latitude:   region.latitude, 
       longitude  :  region.longitude
         })
-  
         console.log("location from reverse geocoding ", location)
   
         this.setState({
@@ -71,11 +70,12 @@ class Confirm_Location extends Component {
         })
       } catch (error) {
 
+        
         this.setState({
           loading :false,
           // address_name : location[0].street ?  location[0].street :  location[0].name
         })
-        console.log(error)
+        console.log("error from getching confirm location " ,error)
       }
    
     }
@@ -170,10 +170,10 @@ var {latitude, longitude} = this.props.order.region
               latitude,
               longitude,
             },
-            pitch: 20,
-            heading: 30,
-            altitude: 100,
-            zoom: 16,
+            pitch: 0,
+            heading: 0,
+            altitude: 300,
+            zoom: 18,
           },
           800
         );
@@ -182,6 +182,8 @@ var {latitude, longitude} = this.props.order.region
     render() {
       const { region } = this.state
   
+
+      // console.log({region})
       return (
         <View style={styles.map}>
 
@@ -377,19 +379,20 @@ var {latitude, longitude} = this.props.order.region
   const styles = StyleSheet.create({
     map: {
       flex: 2.98,
+      height : hp(70)
 
     },
     markerFixed: {
-      left: wp(45),
+      left: wp(50),
       marginLeft: -24,
-      marginTop: -48,
+      // marginTop: -hp(9),
       position: 'absolute',
-      marginTop: hp(26)
+      marginTop: hp(35)
     },
     marker: {
       height: 60,
       width: 60,
-    
+      marginTop : -hp(5)
     },
     footer: {
       backgroundColor: "white",

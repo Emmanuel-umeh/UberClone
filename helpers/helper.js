@@ -30,3 +30,22 @@ export function regionFrom(lat, lon, accuracy) {
   function deg2rad(deg) {
     return deg * (Math.PI/180)
   }
+
+  
+
+  export function getTimeDiffInMinutes(lat1,lon1, lat2,lon2){
+    try {
+      
+      var distance = getLatLonDiffInMeters(lat1,lon1,lat2,lon2)
+      var time = Math.round(distance/60)
+  
+      var time_in_minuites = Math.round(time/60)
+  
+  
+      return time_in_minuites
+    } catch (error) {
+      console.log("error fetching difference in minutes!!!!!!!! ", error)
+      return 5
+    }
+ 
+  }
