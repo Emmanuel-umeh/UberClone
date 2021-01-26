@@ -139,12 +139,16 @@ class ProfileScreen extends Component{
               height : hp("8%")
             }}>
               
-              <Icon active name="md-home" />
+              <Icon active name="md-home" style ={{
+                color : colors.safron
+              }} />
               <Text style ={{   fontFamily : "Quicksand-Bold"}}>Add Home Location</Text>
               <Right style={{
                   left : -5
               }}>
-                <Icon name="arrow-forward" style ={{color : "black"}} />
+                <Icon  style ={{
+                color : colors.safron
+              }} name="arrow-forward" style ={{color : "black"}} />
               </Right>
              </CardItem>
 
@@ -156,13 +160,17 @@ class ProfileScreen extends Component{
             <CardItem  style={{
               height : hp("8%")
             }}>
-              <Icon active name="ios-briefcase" />
+              <Icon active name="ios-briefcase"  style ={{
+                color : colors.safron
+              }} />
               <Text  style ={{   fontFamily : "Quicksand-Bold",}} >Add Work Location</Text>
               <Right
               style={{
                   left : -6
               }}>
-                <Icon name="arrow-forward"  style ={{color : "black"}}  />
+                <Icon  style ={{
+                color : colors.safron
+              }} name="arrow-forward"  style ={{color : "black"}}  />
               </Right>
             
              </CardItem>
@@ -190,12 +198,16 @@ class ProfileScreen extends Component{
   <CardItem  style={{
               height : hp("8%")
             }}>
-              <Icon active name="md-flag" />
+              <Icon  style ={{
+                color : colors.safron
+              }} active name="md-flag" />
               <Text  style ={{   fontFamily : "Quicksand-Bold",}}>English - US</Text>
               <Right style={{
                   left : 1
               }}>
-                <Icon name="arrow-down"  style ={{color : "black"}}  />
+                <Icon  style ={{
+                color : colors.safron
+              }} name="arrow-down"  style ={{color : "black"}}  />
               </Right>
               
              </CardItem>
@@ -204,7 +216,9 @@ class ProfileScreen extends Component{
   <CardItem  style={{
               height : hp("8%")
             }}>
-              <Icon active name="md-flag" />
+              <Icon active  style ={{
+                color : colors.safron
+              }} name="md-flag" />
               <Text  style ={{   fontFamily : "Quicksand-Bold",}}>Communication Preference</Text>
               <Right style={{
                   left : -21

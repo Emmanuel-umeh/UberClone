@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
+import colors from "../colors/colors"
 function CupertinoButtonPurple(props) {
   return (
     <TouchableOpacity style={[styles.container, props.style]}>
@@ -13,7 +13,7 @@ function CupertinoButtonPurple(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "black",
+    backgroundColor: colors.safron,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",

@@ -11,6 +11,7 @@ import {
 import SearchInput from "../components/SearchInput"
 import {Ionicons} from '@expo/vector-icons'
 // gets width of window
+import colors from "../screens/colors/colors"
 const WIDTH = Dimensions.get('window').width
 export default class DestinantionButton extends Component{
 
@@ -48,18 +49,18 @@ export default class DestinantionButton extends Component{
     
     
     <View style = {styles.leftCol}>
-            <Text  style ={{fontSize :8, color : "#C68E17"}}>{'\u25A0'}</Text>
+            <Text  style ={{fontSize :8, color : colors.safron}}>{'\u25A0'}</Text>
     </View>
     
     <View style = {styles.centerCol}>
-    <Text  style ={{ fontSize : 21, color : '#545454',
+    <Text  style ={{ fontSize : 21, color : colors.black,
   fontFamily : "Quicksand-Bold" }}>Where To? </Text>
     </View>
     
     <View style = {styles.rightCol}>
 
-        {this.props.logistics == "bike" &&   <Ionicons name = 'md-bicycle' color = "black" size ={24} style ={{alignSelf:'center'}} /> }
-        {this.props.logistics != "bike" &&   <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} /> }
+        {this.props.logistics == "bike" &&   <Ionicons name = 'md-bicycle' color = {colors.black} size ={24} style ={{alignSelf:'center'}} /> }
+        {this.props.logistics != "bike" &&   <Ionicons name = 'md-car' color = {colors.black} size ={24} style ={{alignSelf:'center'}} /> }
           {/* <Ionicons name = 'md-car' color = "black" size ={24} style ={{alignSelf:'center'}} /> */}
           
     </View>
@@ -87,7 +88,7 @@ container : {
     top : 110,
     left:20,
     borderRadius  :2,
-    backgroundColor : 'white',
+    backgroundColor : colors.white,
     alignItems : 'center',
     shadowColor : "#000000",
     elevation : 7,
@@ -109,7 +110,7 @@ rightCol : {
 
     flex : 1,
     borderLeftWidth : 1,
-    borderColor : '#ededed'
+    borderColor : colors.white
 },
 
 centerCol : {
