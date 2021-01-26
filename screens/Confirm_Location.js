@@ -10,6 +10,7 @@ import {
   } from "react-native-responsive-screen";
   import * as Location from "expo-location";
   import marker from '../assets/markers/marker5.png'
+  import icon_marker from '../assets/markers/icon_marker'
 import { Divider } from 'react-native-paper'
 import { CardItem, Icon, Right, Button,Spinner } from 'native-base';
 
@@ -338,9 +339,10 @@ var {latitude, longitude} = this.props.order.region
               <Right style={{
                   left : 0
               }}>
-                <Icon name="arrow-forward" style ={{
+                {/* <Icon name="arrow-forward" style ={{
                   color : "black"
-                }} />
+                }} /> */}
+                <Image source = {icon_marker}></Image>
               </Right>
              </CardItem>
 
@@ -362,7 +364,7 @@ var {latitude, longitude} = this.props.order.region
               this.book_ride()
             }}  full  style ={{
               borderRadius : 25,
-              backgroundColor : "#C68E17",
+              backgroundColor : colors.safron,
               width : wp(80),
               alignSelf : "center"
             }}>
