@@ -39,7 +39,7 @@ import { persistStore } from "redux-persist";
 import colors from "./colors/colors"
 
 const select_car = require("../assets/logistics/newcar.png")
-const select_bike = require("../assets/logistics/bikee.png")
+const select_bike = require("../assets/logistics/bike.png")
 const select_truck = require("../assets/logistics/new_truck.png")
 const select_tanker = require("../assets/logistics/new_tanker.png")
 
@@ -274,12 +274,12 @@ item.title == this.state.logistics &&
                     color : colors.safron,
                     alignSelf : "flex-end",
                     paddingRight : wp(1.5),
-                    marginTop :item.title == "truck" ? 10 : -hp(1)
+                    marginTop :-hp(1)
                   }} name = "checkmark-circle"></Icon>
                 }
                   <Image resizeMode = "contain" style={[styles.cardImage, {
-                    width : item.title == "truck" ? wp(70) :wp(48),
-                    height : item.title == "truck" ? wp(60) :wp(47),
+                    width : wp(48),
+                    height : wp(47),
                   }]} source={item.image}/>
 
 
@@ -304,7 +304,8 @@ item.title == this.state.logistics &&
         top : -hp(3)
       }}><Text style={{
         fontSize: 20,
-        fontFamily : "Quicksand-Bold"
+        fontFamily : "Quicksand-Bold",
+        marginTop : -3
       }}>Select {this.state.logistics}</Text></Button>
          
          {/* </ScrollView> */}
