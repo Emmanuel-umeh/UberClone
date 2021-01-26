@@ -262,6 +262,7 @@ class SetLogistics extends PureComponent {
 
 // width:wp(46),
 // height:hp(36),
+marginTop : item.title == this.state.logistics ? -hp(0.5) : null,
     borderWidth : item.title == this.state.logistics ? 1 : 0,
     borderColor : item.title == this.state.logistics ? colors.safron : "#e2e2e2"
                 }]} onPress={() => {this.clickEventListener(item)}}>
@@ -273,11 +274,11 @@ item.title == this.state.logistics &&
                     color : colors.safron,
                     alignSelf : "flex-end",
                     paddingRight : wp(1.5),
-                    marginTop :item.title == "truck" ? 10 : -hp(8)
+                    marginTop :item.title == "truck" ? 10 : -hp(1)
                   }} name = "checkmark-circle"></Icon>
                 }
                   <Image resizeMode = "contain" style={[styles.cardImage, {
-                    width : item.title == "truck" ? wp(70) :wp(80),
+                    width : item.title == "truck" ? wp(70) :wp(48),
                     height : item.title == "truck" ? wp(60) :wp(47),
                   }]} source={item.image}/>
 

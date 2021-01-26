@@ -649,29 +649,29 @@ class Map extends PureComponent {
       // console.log("Driver accepted and animating to driver location ", data);
       // this.props.order.region;
 
-      this.map &&
-        this.map.fitToCoordinates(
-          [
-            {
-              latitude: driverLocation.latitude,
-              longitude: driverLocation.longitude,
-            },
+      // this.map &&
+      //   this.map.fitToCoordinates(
+      //     [
+      //       {
+      //         latitude: driverLocation.latitude,
+      //         longitude: driverLocation.longitude,
+      //       },
 
-            {
-              latitude: this.props.order.region.latitude,
-              longitude: this.props.order.region.longitude,
-            },
-          ],
-          {
-            edgePadding: {
-              bottom: hp("90%"),
-              right: wp("40%"),
-              top: hp("20%"),
-              left: wp("10%"),
-            },
-            animated: true,
-          }
-        );
+      //       {
+      //         latitude: this.props.order.region.latitude,
+      //         longitude: this.props.order.region.longitude,
+      //       },
+      //     ],
+      //     {
+      //       edgePadding: {
+      //         bottom: hp("90%"),
+      //         right: wp("40%"),
+      //         top: hp("20%"),
+      //         left: wp("10%"),
+      //       },
+      //       animated: true,
+      //     }
+      //   );
 
         
 
