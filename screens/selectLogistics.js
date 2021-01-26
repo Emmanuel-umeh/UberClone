@@ -68,7 +68,7 @@ class SetLogistics extends PureComponent {
         {id:1, title: "car", name : "Taxi",  image:select_car},
      
         {id:2, title: "truck", name : "Pickup Truck",  image:select_truck} ,
-        {id:3, title: "tanker", name : "Tankers",   image:select_tanker} ,
+        {id:3, title: "tanker", name : "Trailer",   image:select_tanker} ,
         // {id:4, title: "Option 5", image:"https://img.icons8.com/color/70/000000/shutdown.png"} ,
         // {id:5, title: "Option 6", image:"https://img.icons8.com/color/70/000000/traffic-jam.png"} ,
         // {id:6, title: "Option 7", image:"https://img.icons8.com/dusk/70/000000/visual-game-boy.png"} ,
@@ -277,8 +277,8 @@ item.title == this.state.logistics &&
                   }} name = "checkmark-circle"></Icon>
                 }
                   <Image resizeMode = "contain" style={[styles.cardImage, {
-                    width : item.title == "truck" ? wp(70) :wp(46),
-                    height : item.title == "truck" ? wp(60) :wp(36),
+                    width : item.title == "truck" ? wp(70) :wp(80),
+                    height : item.title == "truck" ? wp(60) :wp(47),
                   }]} source={item.image}/>
 
 
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   cardImage:{
     height: wp(40),
-    width: hp(30),
+    width: hp(60),
     alignSelf:'center'
   },
   title:{
