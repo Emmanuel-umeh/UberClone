@@ -305,7 +305,8 @@ item.title == this.state.logistics &&
       }}><Text style={{
         fontSize: 20,
         fontFamily : "Quicksand-Bold",
-        marginTop : -3
+        marginTop : -3,
+        color : colors.white
       }}>Select {this.state.logistics}</Text></Button>
          
          {/* </ScrollView> */}

@@ -53,13 +53,13 @@ import {
                             }>
                             <View style={{flexDirection:'row',marginTop: 15}}>
                                 <Avatar.Image 
-                                    source={{
-                                        uri :"https://lh3.googleusercontent.com/proxy/eFWuCq_eyuJWBx4VS5vzdqUy7VQTjQBkMdJUGbzpJVJLsqB-npD1baX2s3jhiFe7YJRSvij9LObYm5eP4opV5Yfu2vTDtDZpVTzqUwEFYgL4dQxUGsu3ako"   
-                                    }}
+                                    source={require("../assets/avatar.png")}
                                     style ={{
-                                        backgroundColor : "white"
+                                        backgroundColor : colors.black,
+                                        
                                     }}
-                                    size={50}
+                                    
+                                    size={60}
                                 />
                                 <View style={{marginLeft:15, flexDirection:'column'}}>
                                     <Title style={styles.title}>{user ? user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) : "John"} </Title>
