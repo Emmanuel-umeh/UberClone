@@ -35,14 +35,21 @@ export function regionFrom(lat, lon, accuracy) {
 
   export function getTimeDiffInMinutes(lat1,lon1, lat2,lon2){
     try {
+
+      console.log("coordinates received in gettimediffinminutes", lat1, lon1, lat2, lon2 )
       
       var distance = getLatLonDiffInMeters(lat1,lon1,lat2,lon2)
-      var time = Math.round(distance/60)
+
+      console.log("difference in meters!!!!!!!!!!!!!!!!!!!!!!!!! ", distance)
+
+      
+      var time = Math.round(distance/833)
   
-      var time_in_minuites = Math.round(time/60)
+      // var time_in_minuites = Math.round(time/60)
   
   
-      return time_in_minuites
+      console.log("difference in minutes!!!!!!!!!!!!!!!!!!!!!!!!! ", time)
+      return Number(time)
     } catch (error) {
       console.log("error fetching difference in minutes!!!!!!!! ", error)
       return 5

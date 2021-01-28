@@ -239,7 +239,7 @@ class SetLogistics extends PureComponent {
     return (
       <SafeAreaView style={styles.container}>
 
-<Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Vehicle</Text>
+<Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Service</Text>
         {/* <View style={styles.container}> */}
 
         {/* <ScrollView> */}

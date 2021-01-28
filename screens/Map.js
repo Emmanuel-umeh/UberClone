@@ -365,39 +365,28 @@ class Map extends PureComponent {
   show_driver_marker = () => {
     const { driver, coordinate, logistic_type } = this.props.order;
 
-    // console.log("driver heading!!!!!!!!!!!!!!!!!!!!!!", driver);
+    console.log("driver logistics!!!!!!!!!!!!!!!!!!!!!!", logistic_type);
+
+    
     return (
       <Marker.Animated
-        coordinate={{
-          latitude: driver ? driver.latitude : 9.0765,
-          longitude: driver ? driver.longitude : 7.3986,
-        }}
-        anchor={{ x: 0.35, y: 0.32 }}
+        // coordinate={{
+        //   latitude: driver ? driver.latitude : 9.0765,
+        //   longitude: driver ? driver.longitude : 7.3986,
+        // }}
+        coordinate = {this.props.order.coordinate}
+        anchor={{x: 0.5, y: 0.5}}
+        centerOffset={{x: 0.5, y: 0.5}}
         title="Your Ride Is Here"
         ref={(marker) => {
           this.driver_marker = marker;
         }}
         style={{ width: 50, height: 50 }}
       >
-        {logistic_type == "Bike" ? (
+        {logistic_type == "bike" ? (
           <Image
             source={require("../assets/images/bike.png")}
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "40deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : logistic_type == "Car" ? (
-          <Image
-            source={require("../assets/images/car.png")}
+            resizeMode = "contain"
             style={{
               width: 40,
               height: 40,
@@ -411,9 +400,27 @@ class Map extends PureComponent {
               ],
             }}
           />
-        ) : logistic_type == "Truck" ? (
+        ) : logistic_type == "car" ? (
+          <Image
+            source={require("../assets/images/car.png")}
+            resizeMode = "contain"
+            style={{
+              width: 40,
+              height: 40,
+              transform: [
+                {
+                  rotate:
+                    driver.heading === undefined
+                      ? "0deg"
+                      : `${driver.heading}deg`,
+                },
+              ],
+            }}
+          />
+        ) : logistic_type == "truck" ? (
           <Image
             source={require("../assets/images/truck.png")}
+            resizeMode = "contain"
             style={{
               width: 40,
               height: 40,
@@ -431,6 +438,7 @@ class Map extends PureComponent {
           <Image
             source={require("../assets/images/tanker.png")}
             resizeMode="contain"
+            
             style={{
               width: 50,
               height: 50,
@@ -438,7 +446,7 @@ class Map extends PureComponent {
                 {
                   rotate:
                     driver.heading === undefined
-                      ? "40deg"
+                      ? "0deg"
                       : `${driver.heading}deg`,
                 },
               ],
@@ -452,10 +460,8 @@ class Map extends PureComponent {
   client_driver_location = async (data) => {
     try {
       if (data) {
-        const { longitude, latitude, accuracy, heading, time_distance } = data;
+        const { longitude, latitude, accuracy, heading } = data;
 
-        // time distance is the time between user and driver, will be passed via the driver app
-        const { state } = this.props.order.order;
         console.log(
           "client driver location updated!! ? ",
           latitude,
@@ -463,14 +469,19 @@ class Map extends PureComponent {
           accuracy,
           heading
         );
-
-        const newCoordinate = {
+        
+        var diff_in_meter_pickup = getTimeDiffInMinutes(
+          this.props.order.region.latitude,
+          this.props.order.region.longitude,
           latitude,
-          longitude,
-        };
+          longitude
+        );
 
+        
         // driver location received
         let driverLocation = regionFrom(latitude, longitude, accuracy);
+
+
         console.log("the drivers new location ", driverLocation);
 
         var data = {
@@ -482,22 +493,42 @@ class Map extends PureComponent {
           },
         };
 
-        console.log({ data });
+        console.log({ diff_in_meter_pickup });
 
+        var COORDINATE_DRIVER_LOCATION = {
+          coordinate:  new AnimatedRegion({
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          }),
+          driver_location: {
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+            longitude: driverLocation.longitude,
+            latitude: driverLocation.latitude,
+          },
+          distance: diff_in_meter_pickup,
+          time_distance : diff_in_meter_pickup
+        };
+
+        // this.setState({
+        //   distance: diff_in_meter_pickup,
+        // });
+
+        await store.dispatch({
+          type: "COORDINATE_DRIVER_LOCATION",
+          payload: COORDINATE_DRIVER_LOCATION,
+        });
+
+
+    
         await store.dispatch({
           type: "DRIVER_LOCATION",
           payload: data,
         });
 
-        var diff_in_meter_pickup = getTimeDiffInMinutes(
-          this.props.order.region.latitude,
-          this.props.order.region.longitude,
-          latitude,
-          longitude
-        );
-
-        console.log({ diff_in_meter_pickup });
-
+     
         // this.setState({
         //   distance: diff_in_meter_pickup,
         // });
@@ -516,31 +547,7 @@ class Map extends PureComponent {
         //   },
         // });
 
-        var COORDINATE_DRIVER_LOCATION = {
-          coordinate: {
-            latitudeDelta: 0.3,
-            longitudeDelta: 0.3,
-            longitude: driverLocation.longitude,
-            latitude: driverLocation.latitude,
-          },
-          driver_location: {
-            latitudeDelta: 0.3,
-            longitudeDelta: 0.3,
-            longitude: driverLocation.longitude,
-            latitude: driverLocation.latitude,
-          },
-          distance: diff_in_meter_pickup,
-          time_distance : time_distance
-        };
-
-        // this.setState({
-        //   distance: diff_in_meter_pickup,
-        // });
-
-        await store.dispatch({
-          type: "COORDINATE_DRIVER_LOCATION",
-          payload: COORDINATE_DRIVER_LOCATION,
-        });
+      
 
         // console.log("maops", this.map)
         console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!");
@@ -575,12 +582,50 @@ class Map extends PureComponent {
     // Vibration.vibrate({pattern:500});
 
     try {
-      // console.log("Found driver!!!!!!!!!!!!!!!!!!", data)
+      console.log("Found driver!!!!!!!!!!!!!!!!!!", data)
       let driverLocation = await regionFrom(
         data.location.latitude,
         data.location.longitude,
         data.location.accuracy
       );
+
+
+      console.log("getting lat long meters");
+      var diff_in_meter_pickup = await getTimeDiffInMinutes(
+        this.props.order.region.latitude,
+        this.props.order.region.longitude,
+        data.location.latitude,
+        data.location.longitude
+      );
+
+      console.log({ diff_in_meter_pickup });
+      var COORDINATE_DRIVER_LOCATION = {
+        coordinate: new AnimatedRegion({
+          latitudeDelta: 0.3,
+          longitudeDelta: 0.3,
+          longitude: driverLocation.longitude,
+          latitude: driverLocation.latitude,
+        }),
+        driver_location: {
+          latitudeDelta: 0.3,
+          longitudeDelta: 0.3,
+          longitude: driverLocation.longitude,
+          latitude: driverLocation.latitude,
+        },
+        distance: diff_in_meter_pickup,
+      };
+
+      console.log({ COORDINATE_DRIVER_LOCATION });
+
+      // this.setState({
+      //   distance: diff_in_meter_pickup,
+      // });
+
+      await store.dispatch({
+        type: "COORDINATE_DRIVER_LOCATION",
+        payload: COORDINATE_DRIVER_LOCATION,
+      });
+
 
       // update coordinate and drivers location in redux
 
@@ -606,42 +651,7 @@ class Map extends PureComponent {
 
       // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
 
-      console.log("getting lat long meters");
-      var diff_in_meter_pickup = await getTimeDiffInMinutes(
-        this.props.order.region.latitude,
-        this.props.order.region.longitude,
-        data.location.latitude,
-        data.location.longitude
-      );
-
-      console.log({ diff_in_meter_pickup });
-      var COORDINATE_DRIVER_LOCATION = {
-        coordinate: {
-          latitudeDelta: 0.3,
-          longitudeDelta: 0.3,
-          longitude: driverLocation.longitude,
-          latitude: driverLocation.latitude,
-        },
-        driver_location: {
-          latitudeDelta: 0.3,
-          longitudeDelta: 0.3,
-          longitude: driverLocation.longitude,
-          latitude: driverLocation.latitude,
-        },
-        distance: diff_in_meter_pickup,
-      };
-
-      console.log({ COORDINATE_DRIVER_LOCATION });
-
-      // this.setState({
-      //   distance: diff_in_meter_pickup,
-      // });
-
-      await store.dispatch({
-        type: "COORDINATE_DRIVER_LOCATION",
-        payload: COORDINATE_DRIVER_LOCATION,
-      });
-
+     
       
 
    
@@ -692,7 +702,7 @@ class Map extends PureComponent {
       // );
       // this.driver_marker && this.driver_marker.showCallout();
     } catch (error) {
-      console.warn(error);
+      console.log("error on found driver functionality!!!!!!!!!!!!!!!!!!!!1 ", error );
     }
   };
 
@@ -782,7 +792,7 @@ class Map extends PureComponent {
       //   user_ride_channel : this.user_ride_channel
       // })
     } catch (error) {
-      console.warn(error);
+      console.log("error in line 791!!!!!! ", error);
     }
   };
 
@@ -1247,8 +1257,6 @@ class Map extends PureComponent {
 
     // IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
 
-  // const distance_in_time = await getTimeDiffInMinutes(9.0733 , 7.4713, 9.0479, 7.5155)
-  console.log({distance_in_time})
     const backHandler = BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
     store.dispatch({
@@ -1291,7 +1299,7 @@ class Map extends PureComponent {
             ],
             {
               edgePadding: {
-                bottom: hp("90%"),
+                bottom: hp("60%"),
                 right: wp("40%"),
                 top: hp("20%"),
                 left: wp("10%"),
@@ -1323,7 +1331,7 @@ if(this.props.order.driver){
       ],
       {
         edgePadding: {
-          bottom: hp("90%"),
+          bottom: hp("60%"),
           right: wp("40%"),
           top: hp("20%"),
           left: wp("10%"),
@@ -1383,7 +1391,7 @@ if(this.props.order.driver){
             },
             pitch: 20,
             heading: 30,
-            altitude: 1000,
+            altitude: 100,
             zoom: 16,
           },
           800
@@ -1516,18 +1524,18 @@ if(this.props.order.driver){
         longitude: parseFloat(longitude),
       });
 
-      if (Platform.OS === "android") {
-        if (this.driver_marker && newCoordinate) {
-          console.log("ANIMATING TO NEW POSITION ", newCoordinate);
-          this.driver_marker._component &&
-            this.driver_marker._component.animateMarkerToCoordinate(
-              newCoordinate,
-              1500
-            ); // 500 is the duration to animate the marker
-        }
-      } else {
+      // if (Platform.OS === "android") {
+      //   if (this.driver_marker && newCoordinate) {
+      //     console.log("ANIMATING TO NEW POSITION ", newCoordinate);
+      //     this.driver_marker._component &&
+      //       this.driver_marker._component.animateMarkerToCoordinate(
+      //         newCoordinate,
+      //         1500
+      //       ); // 500 is the duration to animate the marker
+      //   }
+      // } else {
         this.props.order.coordinate.timing(newCoordinate).start();
-      }
+      // }
     } catch (error) {
       console.warn(error);
     }
@@ -2018,6 +2026,11 @@ open_modal = ()=>{
     }
    
 
+    var { driver, coordinate, logistic_type } = this.props.order;
+
+
+
+
     return (
       <View style={styles.container}>
         {/* Loading Animation */}
@@ -2072,6 +2085,10 @@ open_modal = ()=>{
             showsCompass={false}
             provider = "google"
             tintColor ={colors.safron}
+
+            // onUserLocationChange = {(e)=>{
+            //   console.log("user location changed !!!!!!!!!!!!!!!!!!!!!!", e.nativeEvent.coordinate)
+            // }}
             
             // cacheEnabled
             // pitchEnabled = {true}
@@ -2119,6 +2136,90 @@ open_modal = ()=>{
                   this.map_view_directions()}
 
                 {this.show_driver_marker()}
+
+
+                {/* <Marker.Animated
+        // coordinate={{
+        //   latitude: driver ? driver.latitude : 9.0765,
+        //   longitude: driver ? driver.longitude : 7.3986,
+        // }}
+        coordinate = {this.props.order.coordinate}
+        anchor={{x: 0.5, y: 0.5}}
+        centerOffset={{x: 0.5, y: 0.5}}
+        title="Your Ride Is Here"
+        ref={(marker) => {
+          this.driver_marker = marker;
+        }}
+        style={{ width: 50, height: 50 }}
+      >
+        {logistic_type.toLowerCase() == "bike" ? (
+          <Image
+            source={require("../assets/images/bike.png")}
+            style={{
+              width: 40,
+              height: 40,
+              transform: [
+                {
+                  rotate:
+                    driver.heading === undefined
+                      ? "0deg"
+                      : `${driver.heading}deg`,
+                },
+              ],
+            }}
+          />
+        ) : logistic_type.toLowerCase() == "car" ? (
+          <Image
+            source={require("../assets/images/car.png")}
+            style={{
+              width: 40,
+              height: 40,
+              transform: [
+                {
+                  rotate:
+                    driver.heading === undefined
+                      ? "0deg"
+                      : `${driver.heading}deg`,
+                },
+              ],
+            }}
+          />
+        ) : logistic_type.toLowerCase() == "truck" ? (
+          <Image
+            source={require("../assets/images/truck.png")}
+            style={{
+              width: 40,
+              height: 40,
+              transform: [
+                {
+                  rotate:
+                    driver.heading === undefined
+                      ? "0deg"
+                      : `${driver.heading}deg`,
+                },
+              ],
+            }}
+          />
+        ) : (
+          <Image
+            source={require("../assets/images/tanker.png")}
+            resizeMode="contain"
+            style={{
+              width: 50,
+              height: 50,
+              transform: [
+                {
+                  rotate:
+                    driver.heading === undefined
+                      ? "0deg"
+                      : `${driver.heading}deg`,
+                },
+              ],
+            }}
+          />
+        )}
+      </Marker.Animated>
+   */}
               </>
               // this.driverLocation()
             )}

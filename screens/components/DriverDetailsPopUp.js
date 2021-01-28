@@ -289,7 +289,7 @@ class DriverDetailsPopUp extends Component {
             {(order && order.state == "Accepted") ||
             order.state == "Pending" ? (
               <Text style={styles.meters_away}>
-                {distance ? distance : "Calculating"} Time Away
+                {distance>0 ? `${distance} minutes away` : "Driver is around you "} 
               </Text>
             ) : null}
           </View>
@@ -434,7 +434,7 @@ class DriverDetailsPopUp extends Component {
     const { order } = this.props.order;
     const { user } = this.props.auth;
 
-    // console.log("props recieved to driver details popup ", order)
+    console.log("distance recieved to driver details popup ", distance)
     return (
       <BottomSheet
         ref={this.sheetRef}

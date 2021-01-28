@@ -500,12 +500,14 @@ export default function (state = initialState, action) {
       };
     }
     case COORDINATE_DRIVER_LOCATION:{
+
+      console.log("driver location updated, is it animated ???? ", action.payload.coordinate)
       return {
         ...state,
        coordinate: action.payload.coordinate,
        driver_location : action.payload.driver_location,
        distance : action.payload.distance,
-       time_distance : time_distance,
+       time_distance : action.payload.time_distance,
     
         type: action.type,
       };
@@ -550,7 +552,7 @@ export default function (state = initialState, action) {
       
         // name of the accepted driver
         driver_details: null,
-        logistic_type : null,
+        // logistic_type : null,
         //  auth_msg_details : null
       
       
