@@ -206,6 +206,17 @@ class Map extends PureComponent {
     
           // if the app is in the foreground or background
           appstate  :AppState.currentState,
+
+          // driver marker coordinates 
+
+   
+          coordinate : new AnimatedRegion({
+            latitude : 8.7,
+            longitude : 9.7,
+            longitudeDelta : 0.3,
+            latitudeDelta : 0.3
+          })
+    
     };
   }
 
@@ -374,7 +385,7 @@ class Map extends PureComponent {
         //   latitude: driver ? driver.latitude : 9.0765,
         //   longitude: driver ? driver.longitude : 7.3986,
         // }}
-        coordinate = {this.props.order.coordinate}
+        coordinate = {this.state.coordinate}
         anchor={{x: 0.5, y: 0.5}}
         centerOffset={{x: 0.5, y: 0.5}}
         title="Your Ride Is Here"
@@ -533,7 +544,7 @@ class Map extends PureComponent {
         //   distance: diff_in_meter_pickup,
         // });
 
-        this.animate(latitude, longitude);
+    await    this.animate(latitude, longitude);
         // this.setState({
         //   coordinate: {
         //     ...this.state.coordinate,
@@ -597,6 +608,14 @@ class Map extends PureComponent {
         data.location.latitude,
         data.location.longitude
       );
+
+      
+  await  this.state.coordinate.setValue({
+    latitude:   data.location.latitude,
+    longitude:       data.location.longitude,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+});
 
       console.log({ diff_in_meter_pickup });
       var COORDINATE_DRIVER_LOCATION = {
@@ -1516,28 +1535,31 @@ if(this.props.order.driver){
     );
   };
 
-  animate = (latitude, longitude) => {
+  animate = async (latitude, longitude) => {
     try {
-      console.log("supposed to be animating by now!!!");
-      const newCoordinate = new AnimatedRegion({
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
-      });
 
-      // if (Platform.OS === "android") {
-      //   if (this.driver_marker && newCoordinate) {
-      //     console.log("ANIMATING TO NEW POSITION ", newCoordinate);
-      //     this.driver_marker._component &&
-      //       this.driver_marker._component.animateMarkerToCoordinate(
-      //         newCoordinate,
-      //         1500
-      //       ); // 500 is the duration to animate the marker
-      //   }
-      // } else {
-        this.props.order.coordinate.timing(newCoordinate).start();
-      // }
+      const {latitude, longitude} = this.props.order.region
+  
+
+      var new_coordinates = {
+        latitude: latitude, longitude : longitude,
+        latitudeDelta: LATITUDE_DELTA,
+longitudeDelta: LONGITUDE_DELTA,
+      }
+  
+   await   this.state.coordinate.timing(new_coordinates,1000).start();
+
+  await  this.state.coordinate.setValue({
+    latitude: latitude,
+    longitude: longitude,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+});
+
+      return true;
     } catch (error) {
-      console.warn(error);
+      console.log({error});
+      return false;
     }
   };
 
@@ -1872,6 +1894,7 @@ console.log("payment method!!!!!!!!!!!!!! ", payment_method)
         })
       }
     } catch (error) {
+      this.centerCamera()
       console.warn(error);
     }
   };
@@ -2086,8 +2109,53 @@ open_modal = ()=>{
             provider = "google"
             tintColor ={colors.safron}
 
+            minZoomLevel={  5 }  // default => 0
+            maxZoomLevel={ 20} // default => 20
+
             // onUserLocationChange = {(e)=>{
-            //   console.log("user location changed !!!!!!!!!!!!!!!!!!!!!!", e.nativeEvent.coordinate)
+            //   // console.log("user location changed !!!!!!!!!!!!!!!!!!!!!!", e.nativeEvent.coordinate)
+
+
+            //   var {latitude, longitude} = this.props.order.region
+            //   var latitude_changed = e.nativeEvent.coordinate.latitude
+            //   var longitude_changed = e.nativeEvent.coordinate.longitude
+            //   var distance = getLatLonDiffInMeters(latitude,longitude,latitude_changed,longitude_changed)
+
+            //   if(!this.props.order.destinationRequested || !this.props.order.driver || !this.props.order.order){
+
+             
+            //     if(distance > 300){
+
+            //       console.log("no order or driver, safe to update state")
+
+            //     var address = Location.reverseGeocodeAsync({
+            //       latitude : latitude_changed,
+            //       longitude : longitude_changed
+            //     })
+
+            //     var region = {
+            //       latitude : latitude_changed,
+            //       longitude : longitude_changed,
+            //       latitudeDelta : LATITUDE_DELTA,
+            //       longitudeDelta : LONGITUDE_DELTA
+            //     }
+
+            //     var data = {
+            //       region: region,
+            //       my_address:address[0]?  address[0].street ? address[0].street : address[0].name : this.props.order.my_address,
+            //       // addressShortName: addressComponent,
+            //     };
+            //       store.dispatch({
+            //         type : "GET_LOCATION",
+            //         payload : data
+            //       })
+
+            //       console.log("region updated due to user location hanged", data)
+            //     }
+
+    
+            //   }
+
             // }}
             
             // cacheEnabled
@@ -2137,89 +2205,6 @@ open_modal = ()=>{
 
                 {this.show_driver_marker()}
 
-
-                {/* <Marker.Animated
-        // coordinate={{
-        //   latitude: driver ? driver.latitude : 9.0765,
-        //   longitude: driver ? driver.longitude : 7.3986,
-        // }}
-        coordinate = {this.props.order.coordinate}
-        anchor={{x: 0.5, y: 0.5}}
-        centerOffset={{x: 0.5, y: 0.5}}
-        title="Your Ride Is Here"
-        ref={(marker) => {
-          this.driver_marker = marker;
-        }}
-        style={{ width: 50, height: 50 }}
-      >
-        {logistic_type.toLowerCase() == "bike" ? (
-          <Image
-            source={require("../assets/images/bike.png")}
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : logistic_type.toLowerCase() == "car" ? (
-          <Image
-            source={require("../assets/images/car.png")}
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : logistic_type.toLowerCase() == "truck" ? (
-          <Image
-            source={require("../assets/images/truck.png")}
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : (
-          <Image
-            source={require("../assets/images/tanker.png")}
-            resizeMode="contain"
-            style={{
-              width: 50,
-              height: 50,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        )}
-      </Marker.Animated>
-   */}
               </>
               // this.driverLocation()
             )}

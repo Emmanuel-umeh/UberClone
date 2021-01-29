@@ -141,9 +141,12 @@ this.submit()
                     <Title style ={{
                       fontWeight : "bold",
                       color : "black",
-                      marginLeft : wp("3%")
+                      fontFamily  : "Quicksand-Bold"
+                      // marginLeft : wp("3%")
                     }}>Personal Details</Title>
                   </Body>
+
+                  <Right></Right>
                 
       </Header>
       {/* <Header /> */}

@@ -440,7 +440,7 @@ class DriverDetailsPopUp extends Component {
         ref={this.sheetRef}
         enabledContentTapInteraction={false}
         enabledBottomInitialAnimation={true}
-        snapPoints={[hp("60%"), hp("30%")]}
+        snapPoints={[hp("60%"), hp("20%")]}
         borderRadius={50}
         renderContent={() =>
           this.renderContent(
