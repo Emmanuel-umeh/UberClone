@@ -354,7 +354,7 @@ export const cashless_payment = (tokens,orderID,user_ride_channel) => (dispatch)
 };
 
 // rate an order  
-export const rate_driver = (rating,review_message,passenger_id, driver,tokens, reset_navigation) => (dispatch) => {
+export const rate_driver = (question , rating,review_message,passenger_id, driver,tokens, reset_navigation) => (dispatch) => {
   
   const config = {
     headers: {
@@ -364,7 +364,7 @@ export const rate_driver = (rating,review_message,passenger_id, driver,tokens, r
     },
   };
 
-  const body = JSON.stringify({rating,review_message,passenger_id})
+  const body = JSON.stringify({question,rating,review_message,passenger_id})
 
   dispatch({
     type : "SET_FETCHING"

@@ -58,7 +58,7 @@ question : randomItem.question
 
         const {user} = this.props.auth
 
-      
+          const question = this.state.question
           const  rating = this.state.rating
           const  review_message = this.state.review_message
           const passenger_id = user? user._id : null
@@ -66,7 +66,7 @@ question : randomItem.question
           const tokens = this.props.auth.token
           const      reset_navigation = this.reset_navigation
       
-        this.props.rate_driver(rating,review_message,passenger_id,driver,tokens, this.reset_navigation)
+        this.props.rate_driver(question,rating,review_message,passenger_id,driver,tokens, this.reset_navigation)
     }
     render(){
  
@@ -186,8 +186,8 @@ const styles = StyleSheet.create({
       color:"#696969",
     },
     star:{
-      width:40,
-      height:40,
+      width:wp(8),
+      height:wp(8),
     },
     btnColor: {
       height:30,
@@ -195,19 +195,7 @@ const styles = StyleSheet.create({
       borderRadius:30,
       marginHorizontal:3
     },
-    btnSize: {
-      height:40,
-      width:40,
-      borderRadius:40,
-      borderColor:'#778899',
-      borderWidth:1,
-      marginHorizontal:3,
-      backgroundColor:'white',
   
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
     starContainer:{
       justifyContent:'center', 
       marginHorizontal:30, 

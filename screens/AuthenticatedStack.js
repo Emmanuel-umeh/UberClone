@@ -27,10 +27,8 @@ const AuthenticatedStack = ({ navigation }) => (
     mode= "modal"
   >
 
-
-
-
 <AuthStack.Screen name="driver_rating" component={Driver_Rating} />
+
     <AuthStack.Screen name="setLogisticsScreen" component={SetLogistics} />
 
     <AuthStack.Screen  name="Map" component={Map} />
@@ -51,6 +49,8 @@ const AuthenticatedStack = ({ navigation }) => (
     {/* rating your ride */}
 
   
+
+
     {/* 
         <AuthStack.Screen name="setDestination" component={setDestination}/>
 
