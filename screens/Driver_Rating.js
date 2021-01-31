@@ -7,6 +7,21 @@ import { Rating, AirbnbRating } from 'react-native-ratings';
 import { Textarea } from 'native-base';
 import {rate_driver} from "../action/orderActions"
 import { NavigationContainer, StackActions } from '@react-navigation/native';
+
+
+
+
+
+    const questions = [
+      {id : 0, question : "Kindly rate your drivers attidude"},
+      {id : 0, question : "Kindly rate your drivers dressing"},
+      {id : 0, question : "Kindly rate your drivers tone"},
+      {id : 0, question : "Kindly rate your drivers neatness"},
+      {id : 0, question : "Kindly rate your drivers driving ability"},
+      {id : 0, question : "Kindly rate your ride experience"},
+      {id : 0, question : "Kindly rate your drivers car neatness"},
+      {id : 0, question : "Kindly rate your comfortability"}
+    ]
 class Driver_Rating extends Component{
 
     state = {
@@ -15,6 +30,7 @@ class Driver_Rating extends Component{
         review_message : ""
 
     }
+
 
 
     reset_navigation =()=>{

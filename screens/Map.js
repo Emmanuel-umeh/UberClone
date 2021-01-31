@@ -1292,6 +1292,72 @@ class Map extends PureComponent {
     return this.props.navigation.navigate(name);
   };
 
+  fit_markers_to_map =(latitude, longitude)=>{
+
+    
+    if(Platform.OS =="ios"){
+
+      this.map
+      && this.map.fitToCoordinates(
+           [
+             {
+               latitude,
+               longitude,
+             },
+
+             {
+               latitude: this.props.order.region.latitude,
+               longitude: this.props.order.region.longitude,
+             },
+           ],
+           {
+             edgePadding: {
+               // bottom: hp("70%"),
+               // right: wp("40%"),
+               // top: hp("40%"),
+               // left: wp("10%"),
+
+               bottom: hp("40%"),
+               right: wp("40%"),
+               top: hp("10%"),
+               left: wp("10%"),
+             },
+             animated: true,
+           }
+         )
+     
+
+    }else{
+      
+    this.map
+    && this.map.fitToCoordinates(
+         [
+           {
+             latitude,
+             longitude,
+           },
+
+           {
+             latitude: this.props.order.region.latitude,
+             longitude: this.props.order.region.longitude,
+           },
+         ],
+         {
+           edgePadding: {
+             bottom: hp("70%"),
+             right: wp("40%"),
+             top: hp("40%"),
+             left: wp("10%"),
+
+           
+           },
+           animated: true,
+         }
+       )
+   
+    }
+  }
+
   centerCamera = () => {
     if (this.props.order.order) {
       if (this.props.order.order.state == "Started") {
@@ -1368,29 +1434,10 @@ if(this.props.order.driver){
       const latitude = this.props.order.going.latitude;
       const longitude = this.props.order.going.longitude;
 
-      this.map &&
-        this.map.fitToCoordinates(
-          [
-            {
-              latitude,
-              longitude,
-            },
 
-            {
-              latitude: this.props.order.region.latitude,
-              longitude: this.props.order.region.longitude,
-            },
-          ],
-          {
-            edgePadding: {
-              bottom: hp("90%"),
-              right: wp("40%"),
-              top: hp("40%"),
-              left: wp("10%"),
-            },
-            animated: true,
-          }
-        );
+
+
+    this.fit_markers_to_map(latitude, longitude)
 
       try {
         this.destinationMarker.showCallout();
@@ -1645,68 +1692,8 @@ longitudeDelta: LONGITUDE_DELTA,
       //  this._getLocationAsync
 
 
-      if(Platform.OS =="ios"){
+      this.fit_markers_to_map(latitude, longitude)
 
-        this.map
-        && this.map.fitToCoordinates(
-             [
-               {
-                 latitude,
-                 longitude,
-               },
- 
-               {
-                 latitude: this.props.order.region.latitude,
-                 longitude: this.props.order.region.longitude,
-               },
-             ],
-             {
-               edgePadding: {
-                 // bottom: hp("70%"),
-                 // right: wp("40%"),
-                 // top: hp("40%"),
-                 // left: wp("10%"),
- 
-                 bottom: hp("40%"),
-                 right: wp("40%"),
-                 top: hp("10%"),
-                 left: wp("10%"),
-               },
-               animated: true,
-             }
-           )
-       
-
-      }else{
-        
-      this.map
-      && this.map.fitToCoordinates(
-           [
-             {
-               latitude,
-               longitude,
-             },
-
-             {
-               latitude: this.props.order.region.latitude,
-               longitude: this.props.order.region.longitude,
-             },
-           ],
-           {
-             edgePadding: {
-               bottom: hp("70%"),
-               right: wp("40%"),
-               top: hp("40%"),
-               left: wp("10%"),
-
-             
-             },
-             animated: true,
-           }
-         )
-     
-      }
-      
 
 
       setTimeout(() => {
@@ -2109,7 +2096,7 @@ open_modal = ()=>{
             provider = "google"
             tintColor ={colors.safron}
 
-            minZoomLevel={  5 }  // default => 0
+            minZoomLevel={  5 }  // default => 0l
             maxZoomLevel={ 20} // default => 20
 
             // onUserLocationChange = {(e)=>{
@@ -2161,6 +2148,7 @@ open_modal = ()=>{
             // cacheEnabled
             // pitchEnabled = {true}
             showsAnnotationCallouts={true}
+            paddingAdjustmentBehavior = "automatic"
             onMapReady={() => {
               // setTimeout(() => {
               this.setState(

@@ -329,17 +329,22 @@ export const registerDetails = (firstName, lastName, email, id,tokens) => (
     .then(
       (res) => {
         console.log("data from u[pdation gdetails", res.data);
+
+        var payload  =  {
+          user : res.data,
+          token : tokens
+        }
     // endLoading()
 
     // dispatch({
     //   type : END_LOADING
     // })
-    RootNavigation.navigate("TermsAndCondition", { token: res.data.token });
+    RootNavigation.navigate("TermsAndCondition", { token: tokens });
 
 
     dispatch({
       type: USER_LOADED,
-      payload: res.data,
+      payload: payload,
     });
 
         // return 
