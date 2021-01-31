@@ -111,8 +111,7 @@ class  Settings extends Component{
                   <View style={styles.rect}>
                         
                 <Image
-                           source={{
-                               uri :"https://lh3.googleusercontent.com/proxy/eFWuCq_eyuJWBx4VS5vzdqUy7VQTjQBkMdJUGbzpJVJLsqB-npD1baX2s3jhiFe7YJRSvij9LObYm5eP4opV5Yfu2vTDtDZpVTzqUwEFYgL4dQxUGsu3ako"    }}
+                          source={require("../assets/avatar.png")}
                       resizeMode="contain"
                       style={styles.image}
                     ></Image>

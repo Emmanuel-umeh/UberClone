@@ -30,6 +30,7 @@ const AuthenticatedStack = ({ navigation }) => (
 
 
 
+<AuthStack.Screen name="driver_rating" component={Driver_Rating} />
     <AuthStack.Screen name="setLogisticsScreen" component={SetLogistics} />
 
     <AuthStack.Screen  name="Map" component={Map} />
@@ -47,7 +48,6 @@ const AuthenticatedStack = ({ navigation }) => (
   
     <AuthStack.Screen name="ride_history" component={Ride_History} />
 
-    <AuthStack.Screen name="driver_rating" component={Driver_Rating} />
     {/* rating your ride */}
 
   
