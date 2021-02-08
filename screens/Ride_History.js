@@ -25,7 +25,7 @@ import {
 import { TouchableOpacity } from "react-native-gesture-handler";
   import moment from "moment"
 import { ImageBackground } from "react-native";
-
+import colors from "./colors/colors"
 function Item({ order }) {
   return (
     <>
@@ -63,7 +63,7 @@ function Ride_History(props) {
     <SafeAreaView style={styles.container}>
         <Header style={{
                           backgroundColor : "black",
-                          top : hp("2%")
+                          // top : hp("2%")
                         }} 
                         androidStatusBarColor = "black"
                         iosBarStyle	= "dark-content"
@@ -75,6 +75,9 @@ function Ride_History(props) {
           <Button transparent>
             <Icon
               name="arrow-back"
+              style ={{
+                color : colors.white
+              }}
         
             />
           </Button>

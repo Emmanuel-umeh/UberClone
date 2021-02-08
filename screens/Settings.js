@@ -153,7 +153,9 @@ class  Settings extends Component{
                   left : 20
               }}>
                 {/* <Icon name="arrow-forward" /> */}
-                <Switch  value={this.state.notification ? true : false} onValueChange ={async()=>{
+                <Switch style = {{
+                  color : "red"
+                }}  value={this.state.notification ? true : false} onValueChange ={async()=>{
                   // const {token} = this.props.auth
                   if(this.state.notification){
                     await AsyncStorage.removeItem("notification")
@@ -223,7 +225,25 @@ this.setState({
               <Icon active name="ios-briefcase" />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
-              }}>Terms & Privacy</Text>
+              }}>Terms & Agreement</Text>
+              <Right
+              style={{
+                  left : -6
+              }}>
+                <Icon name="arrow-forward"  style ={{
+                  color : "black"
+                }}/>
+              </Right>
+             </CardItem>
+             </TouchableOpacity>
+             <TouchableOpacity onPress ={()=>{
+               alert("Coming Soon!!")
+             }}>
+            <CardItem>
+              <Icon active name="ios-briefcase" />
+              <Text style ={{
+                 fontFamily : "Quicksand-Bold",
+              }}>Privacy Policy</Text>
               <Right
               style={{
                   left : -6
@@ -375,11 +395,13 @@ const styles = StyleSheet.create({
     marginRight: 0
   },
   cupertinoButtonWarning6: {
-    height: 53,
-    width: wp("40%"),
+    height: hp(7),
+    width: wp(80),
     borderRadius: 100,
     marginTop: hp("10%"),
-    marginLeft: wp("30%")
+    alignSelf : "center",
+    backgroundColor : colors.safron
+    // marginLeft: wp("30%")
   }
 });
 

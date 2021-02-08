@@ -27,7 +27,7 @@ const AuthenticatedStack = ({ navigation }) => (
     mode= "modal"
   >
 
-<AuthStack.Screen name="driver_rating" component={Driver_Rating} />
+
 
     <AuthStack.Screen name="setLogisticsScreen" component={SetLogistics} />
 
@@ -48,7 +48,7 @@ const AuthenticatedStack = ({ navigation }) => (
 
     {/* rating your ride */}
 
-  
+    <AuthStack.Screen name="driver_rating" component={Driver_Rating} />
 
 
     {/* 

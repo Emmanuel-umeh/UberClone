@@ -283,9 +283,9 @@ const styles = StyleSheet.create({
     marginRight: 21
   },
   cupertinoButtonPurple: {
-    height: 44,
+    height: hp(7),
     width: wp("80%"),
-    borderRadius: 11,
+    borderRadius: 100,
     marginTop: hp("2%"),
     
     alignSelf: "center"

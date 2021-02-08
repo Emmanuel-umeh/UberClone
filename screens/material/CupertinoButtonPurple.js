@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import colors from "../colors/colors"
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 function CupertinoButtonPurple(props) {
   return (
     <TouchableOpacity style={[styles.container, props.style]}>
@@ -17,7 +21,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    borderRadius: 5,
+    borderRadius: 50,
     paddingLeft: 0,
     paddingRight: 16
   },
@@ -28,8 +32,8 @@ const styles = StyleSheet.create({
 fontFamily : "Quicksand-Bold",
   },
   icon: {
-    top: 10,
-    left: 29,
+    top: hp(2),
+    left: wp(8),
     position: "absolute",
     color: "rgba(255,255,255,1)",
     fontSize: 21

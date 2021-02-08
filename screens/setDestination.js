@@ -313,56 +313,62 @@ try {
                     // key={item.place_id}
 
                     onPress={async () => {
-                      this.setState({
-                        loading: true,
-                      });
-                      // console.log("id , ",prediction.place_id)
 
-                      const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
-                      const result = await fetch(place_url);
-                      const json = await result.json();
-
-                      // the name of the destination to display on callout
-                      // using this to return formatted street name
-                      //   const going_address_name =  await  Location.reverseGeocodeAsync({
-                      //     latitude: json.result.geometry.location.lat,
-                      //  longitude:   json.result.geometry.location.lng
-                      //   })
-
-                      // going address passed to map
-                      const destination = {
-                        latitude: json.result.geometry.location.lat,
-                        longitude: json.result.geometry.location.lng,
-                        name: item.structured_formatting.main_text,
-                      };
-
-                      const distance = getLatLonDiffInMeters(
-                        this.props.order.region.latitude,
-                        this.props.order.region.longitude,
-                        json.result.geometry.location.lat,
-                        json.result.geometry.location.lng
-                      );
-
-                      if (distance > 200000) {
+                      try {
+                        this.setState({
+                          loading: true,
+                        });
+                        // console.log("id , ",prediction.place_id)
+  
+                        const place_url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&key=${google_api}`;
+                        const result = await fetch(place_url);
+                        const json = await result.json();
+  
+                        // the name of the destination to display on callout
+                        // using this to return formatted street name
+                        //   const going_address_name =  await  Location.reverseGeocodeAsync({
+                        //     latitude: json.result.geometry.location.lat,
+                        //  longitude:   json.result.geometry.location.lng
+                        //   })
+  
+                        // going address passed to map
+                        const destination = {
+                          latitude: json.result.geometry.location.lat,
+                          longitude: json.result.geometry.location.lng,
+                          name: item.structured_formatting.main_text,
+                        };
+  
+                        const distance = await getLatLonDiffInMeters(
+                          this.props.order.region.latitude,
+                          this.props.order.region.longitude,
+                          json.result.geometry.location.lat,
+                          json.result.geometry.location.lng
+                        );
+  
+                        if (distance > 200000) {
+                          this.setState({
+                            loading: false,
+                          });
+                          return alert(
+                            "Distance is too great. Please select another location"
+                          );
+                        }
+  
+                        const going = destination;
+  
+                       await this.props.selectDestination(going, this.state.from);
                         this.setState({
                           loading: false,
                         });
-                        return alert(
-                          "Distance is too great. Please select another location"
-                        );
+                        // returns
+                        // Object {
+                        //   "lat": 8.969173699999999,
+                        //   "lng": 7.440240199999998,
+                        // }
+                      } catch (error) {
+                        alert("Something went wrong. Please choose a different location and try again")
                       }
-
-                      const going = destination;
-
-                      this.props.selectDestination(going, this.state.from);
-                      this.setState({
-                        loading: false,
-                      });
-                      // returns
-                      // Object {
-                      //   "lat": 8.969173699999999,
-                      //   "lng": 7.440240199999998,
-                      // }
+                    
                     }}
                     // style={styles.button2}
                   >
