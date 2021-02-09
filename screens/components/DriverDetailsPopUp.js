@@ -123,7 +123,7 @@ class DriverDetailsPopUp extends Component {
         <>
           <Text style={[styles.on_the_way, {color : "coral"}]}>
             Total Price : ₦
-            {this.props.order
+            {order.price
               ? Math.round(order.price / 100) * 100
               : "Calculating..."}
           </Text>
