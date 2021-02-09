@@ -584,7 +584,61 @@ case PURGE:
 
   
   return {
-    initialState
+    token: token,
+    order: null,
+    type: "",
+  
+    region: state.region,
+  
+    coming: null,
+    going: null,
+  
+    // name of the destination / going
+    // determines if the user has selected the destination
+    destinationRequested: false,
+    
+    // destination : ""
+    address: null,
+    addressShortName: null,
+    location: null,
+    error: null,
+    has_ride: false,
+    destination: null,
+    driver: null,
+    origin: null,
+    // loader when the user is searching for a ride
+    is_searching: false,
+    has_ridden: false,
+    totalPriceVisible: false,
+    is_fetching : false,
+    // price of ride
+    price: 0,
+  
+    // name of the accepted driver
+    driver_details: null,
+    logistic_type : null,
+    //  auth_msg_details : null
+  
+  
+  // state details
+  my_location: null,
+  coordinate: state.coordinate,
+  
+  driver_location: null,
+  distance: null,
+  // difference in time
+  time_distance: null,
+  
+  
+  
+  fromChanged : false,
+  
+  
+  my_address : state.my_address
+  
+  
+  
+  
   };
 
 

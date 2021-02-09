@@ -908,8 +908,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     return (  this.state.available_presence_drivers.map((driver)=>
     <Marker.Animated
     coordinate={{
-      latitude: (driver.info.latitude),
-    longitude:  (driver.info.longitude),
+      latitude:driver.info.latitude,
+    longitude:  driver.info.longitude,
 
     // latitude : 9.8966795,
     // longitude : 8.8993336,
@@ -936,9 +936,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           transform: [
             {
               rotate:
-                // driver.heading === undefined
+                !driver.info.heading ?
                    "0deg"
-                  // : `${driver.heading}deg`,
+                  : `${driver.info.heading}deg`
             },
           ],
         }}
@@ -953,7 +953,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           transform: [
             {
               rotate:
+              !driver.info.heading ?
               "0deg"
+             : `${driver.info.heading}deg`
             },
           ],
         }}
@@ -968,7 +970,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           transform: [
             {
               rotate:
-              "0deg"
+              !driver.info.heading ?
+                   "0deg"
+                  : `${driver.info.heading}deg`
             },
           ],
         }}
@@ -983,7 +987,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           transform: [
             {
               rotate:
+              !driver.info.heading ?
               "0deg"
+             : `${driver.info.heading}deg`
             },
           ],
         }}
@@ -1266,6 +1272,12 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           type: "RIDE_COMPLETED",
         });
       }
+      else if(data.cancelled){
+       
+    await store.dispatch({
+      type: "CANCEL_ORDER",
+    });
+      }
     }
   };
 
@@ -1394,6 +1406,11 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       this.setState({
         available_presence_drivers: drivers_array,
       });
+
+//       presenceChannel.bind("driver-location-updated", (data)=>{
+// console.log("triggered by driver-location-updatred",data)
+// alert("triggered by driver-location-updatred",data)
+//       })
     });
     // });
     store.dispatch({
@@ -1539,6 +1556,48 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             "no orders drivers location was passed....!!!!!!!!!!!!11",
             this.props.order.driver
           );
+
+          
+           store.dispatch({
+            type: "PERFORMING_TASK",
+          });
+
+          const orderID = this.props.order.order
+            ? this.props.order.order._id
+            : null;
+          const tokens = this.props.auth.token;
+
+          if (orderID) {
+            console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
+            this.props.cancelOrder(tokens, orderID);
+          }
+
+          // RBSheet.close()
+
+          this.user_ride_channel &&
+            this.user_ride_channel.trigger("client-driver-cancelled", {});
+
+           store.dispatch({
+            type: "CANCEL_ORDER",
+          });
+           store.dispatch({
+            type: "END_LOADING",
+          });
+
+          // persistStore(store).purge();
+
+          this.setState({
+            show_user_location: true,
+          });
+          this.close_modal();
+          this._getLocationAsync();
+          // await this.centerCamera();
+
+          store.dispatch({
+            type: "PERFORMING_TASK_ENDED",
+          });
+
+          // this.props.pusher&& this.props.pusher.pusher.disconnect()yyyyyy
         }
       }
     } else if (this.props.order.destinationRequested) {
@@ -2189,9 +2248,11 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
   render() {
     var show_user_location = this.state.show_user_location;
 
+
+    console.log(this.props.order)
     if (this.props.order.order) {
       show_user_location = this.props.order.order.state !== "Started";
-      this.chech_ride_state();
+      // this.chech_ride_state();
     }
 
     // console.log(this.props.order)
