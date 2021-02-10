@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { StyleSheet, View, SafeAreaView, ScrollView, FlatList } from "react-native";
+import { StyleSheet, View, SafeAreaView, Platform, FlatList } from "react-native";
 import {connect} from "react-redux"
 
+import { StatusBar } from 'expo-status-bar';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -61,6 +62,9 @@ function Ride_History(props) {
   // console.log({user})
   return (
     <SafeAreaView style={styles.container}>
+
+      
+<StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
         <Header style={{
                           backgroundColor : "black",
                           // top : hp("2%")

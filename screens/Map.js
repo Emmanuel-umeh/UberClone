@@ -2249,7 +2249,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     var show_user_location = this.state.show_user_location;
 
 
-    console.log(this.props.order)
+    // console.log(this.props.order)
     if (this.props.order.order) {
       show_user_location = this.props.order.order.state !== "Started";
       // this.chech_ride_state();

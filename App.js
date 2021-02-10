@@ -55,6 +55,8 @@ class App extends React.Component {
     console.ignoredYellowBox = ['Animated: `useNativeDriver`'];
     this.unsubscribe = null
 
+    // user location constuructor 
+    this.location = null
     this.connectivity = true
   }
   state = {
@@ -183,92 +185,104 @@ await this._getLocationAsync()
     if (!location_on.locationServicesEnabled || !location_on.backgroundModeEnabled){
       await Location.enableNetworkProviderAsync()
     }
-    let location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.BestForNavigation,
-      maximumAge: 20000,
-      enableHighAccuracy: true,
-      timeInterval: 8000,
-      distanceInterval: 10,
-      timeout: 20000,
 
-    });
+    var location_accuracy = 1000
+//     let location = await Location.getCurrentPositionAsync({
+//       accuracy: Location.Accuracy.BestForNavigation,
+//       maximumAge: 20000,
+//       enableHighAccuracy: true,
+//       timeInterval: 8000,
+//       distanceInterval: 10,
+//       timeout: 20000
+//     });
 
     
 
-    console.log({location})
+//     console.log({location})
 
    
-    var my_location = regionFrom(
-      location.coords.latitude,
-      location.coords.longitude,
-      location.coords.accuracy
-    );
+//     var my_location = regionFrom(
+//       location.coords.latitude,
+//       location.coords.longitude,
+//       location.coords.accuracy
+//     );
 
+//     location_accuracy =  location.coords.accuracy
 
-    console.log("my location!!!!!!!!!!!!", my_location)
-    this.setState({
-      my_location : my_location
-    });
+// console.log("locatioin accuraccy!!!!!!!!!!!!! ", location_accuracy)
+//     while (location_accuracy > 10) {
 
-    const address =  await Location.reverseGeocodeAsync({
-      latitude :location.coords.latitude , longitude:  location.coords.longitude 
-    })
-    console.log({address})
+//       console.log("inside while loop")
+      this.location = await Location.watchPositionAsync({
+        accuracy: Location.Accuracy.BestForNavigation,
+        maximumAge: 20000,
+        enableHighAccuracy: true,
+        timeInterval: 8000,
+        distanceInterval: 10,
+        timeout: 20000,
+  
+      }, async (location) =>{
+        
 
-    let region = {
-      latitude: my_location.latitude,
-      longitude: my_location.longitude,
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.06,
-    };
-
-    // console.log("region ", region);
-
-    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-    // this.setState({
-
-    // });
+        console.log("watch position location !!! ", location)
+  
+     
+        var my_location = regionFrom(
+          location.coords.latitude,
+          location.coords.longitude,
+          location.coords.accuracy
+        );
     
+        location_accuracy = location.coords.accuracy
 
-    // Geocoder.from({
-    //   latitude: location.coords.latitude,
-    //   longitude: location.coords.longitude,
-    // })
-    //   .then((json) => {
-    //     var addressComponent = json.results[0].address_components[0].long_name;
-    //     // console.log(json.results[0].formatted_address);
-
-    //     // this.setState({
-
-       var data = {
-          region: region,
-          my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
-          // addressShortName: addressComponent,
-        };
-
-        // console.log("dataaaaa!!! ", data)
-      await  store.dispatch({
-          type: "GET_LOCATION",
-          payload: data,
+  
+        console.log("my location!!!!!!!!!!!!", my_location)
+        this.setState({
+          my_location : my_location
         });
-
-
-        console.log("region that should be updated to , ", this.props.order.region)
-
-        // this.watchId = location;
-
     
+        const address =  await Location.reverseGeocodeAsync({
+          latitude :location.coords.latitude , longitude:  location.coords.longitude 
+        })
+        console.log({address})
+    
+        let region = {
+          latitude: my_location.latitude,
+          longitude: my_location.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.06,
+        };
+    
+  
+           var data = {
+              region: region,
+              my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
+              // addressShortName: addressComponent,
+            };
+    
+            // console.log("dataaaaa!!! ", data)
+          await  store.dispatch({
+              type: "GET_LOCATION",
+              payload: data,
+            });
 
-        // });
-        // y address  Object {
-        //   "long_name": "9",
-        //   "short_name": "9",
-        //   "types": Array [
-        //     "street_number",
-        //   ],
-        // }
-      // })
-      // .catch((error) => console.warn(error));
+            if(location_accuracy < 10){
+
+              console.log("location accuracy is less than 10!!!!!!!!!!!!!!!")
+              return this.location.remove()
+            } 
+     
+    
+  
+    
+  
+      });
+  
+     
+  
+      // }
+
+   
    
   };
 
