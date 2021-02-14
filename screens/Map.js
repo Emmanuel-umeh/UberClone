@@ -1383,6 +1383,14 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
     // IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
 
+    return this.props.navigation.navigate("MapRoute", {
+      from_location : this.props.order.region,
+      destination_location : {
+        latitude: 9.9165,
+        longitude : 8.8903
+      }
+    })
+
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       this.backAction
@@ -1854,7 +1862,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
       console.log({ diff_in_meter_pickup });
 
-      var price = diff_in_meter_pickup * 0.15;
+      var price = diff_in_meter_pickup * 0.065;
 
       console.log("price of transportation ", price);
 
@@ -2306,7 +2314,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
-            provider="google"
+            // provider="google"
             tintColor={colors.safron}
             minZoomLevel={5} // default => 0l
             maxZoomLevel={20} // default => 20
@@ -2362,6 +2370,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
               latitudeDelta: 0.3,
               longitudeDelta: 0.5
             }}
+
+            provider = "google"
             showsAnnotationCallouts={true}
             paddingAdjustmentBehavior="automatic"
             onMapReady={() => {

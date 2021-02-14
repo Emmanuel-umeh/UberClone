@@ -156,131 +156,138 @@ await this._getLocationAsync()
   }
 
   _getLocationAsync = async () => {
-    console.log("getting location!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ")
-    // Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      console.log("Permission to access denied!!!.");
-      return Alert.alert(
-        "Access Denied",
-        "You need to grant access to location to continue using White Axis",
-        [
-          {
-            text: "Open Settings",
-            onPress: () => Linking.openSettings(),
-            style: "cancel",
-          },
-          { text: "ignore", onPress: () => navigation.goback() },
-          // { text: 'OK', onPress: () => console.log('OK Pressed') }
-        ],
-        { cancelable: false }
-      );
-    }
 
-    let location_on =await Location.getProviderStatusAsync()
-
-    // let is_background_available = await Location.isBackgroundLocationAvailableAsync()
-    // console.log({is_background_available})
-
-    if (!location_on.locationServicesEnabled || !location_on.backgroundModeEnabled){
-      await Location.enableNetworkProviderAsync()
-    }
-
-    var location_accuracy = 1000
-//     let location = await Location.getCurrentPositionAsync({
-//       accuracy: Location.Accuracy.BestForNavigation,
-//       maximumAge: 20000,
-//       enableHighAccuracy: true,
-//       timeInterval: 8000,
-//       distanceInterval: 10,
-//       timeout: 20000
-//     });
-
-    
-
-//     console.log({location})
-
-   
-//     var my_location = regionFrom(
-//       location.coords.latitude,
-//       location.coords.longitude,
-//       location.coords.accuracy
-//     );
-
-//     location_accuracy =  location.coords.accuracy
-
-// console.log("locatioin accuraccy!!!!!!!!!!!!! ", location_accuracy)
-//     while (location_accuracy > 10) {
-
-//       console.log("inside while loop")
-      this.location = await Location.watchPositionAsync({
-        accuracy: Location.Accuracy.BestForNavigation,
-        maximumAge: 20000,
-        enableHighAccuracy: true,
-        timeInterval: 8000,
-        distanceInterval: 10,
-        timeout: 20000,
+    try {
+      Location.setApiKey("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM")
+      console.log("getting location!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ")
+      // Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if (status !== "granted") {
+        console.log("Permission to access denied!!!.");
+        return Alert.alert(
+          "Access Denied",
+          "You need to grant access to location to continue using White Axis",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+              style: "cancel",
+            },
+            { text: "ignore", onPress: () => navigation.goback() },
+            // { text: 'OK', onPress: () => console.log('OK Pressed') }
+          ],
+          { cancelable: false }
+        );
+      }
   
-      }, async (location) =>{
-        
-
-        console.log("watch position location !!! ", location)
+      let location_on =await Location.getProviderStatusAsync()
+  
+      // let is_background_available = await Location.isBackgroundLocationAvailableAsync()
+      // console.log({is_background_available})
+  
+      if (!location_on.locationServicesEnabled || !location_on.backgroundModeEnabled){
+        await Location.enableNetworkProviderAsync()
+      }
+  
+      var location_accuracy = 1000
+  //     let location = await Location.getCurrentPositionAsync({
+  //       accuracy: Location.Accuracy.BestForNavigation,
+  //       maximumAge: 20000,
+  //       enableHighAccuracy: true,
+  //       timeInterval: 8000,
+  //       distanceInterval: 10,
+  //       timeout: 20000
+  //     });
+  
+      
+  
+  //     console.log({location})
   
      
-        var my_location = regionFrom(
-          location.coords.latitude,
-          location.coords.longitude,
-          location.coords.accuracy
-        );
-    
-        location_accuracy = location.coords.accuracy
-
+  //     var my_location = regionFrom(
+  //       location.coords.latitude,
+  //       location.coords.longitude,
+  //       location.coords.accuracy
+  //     );
   
-        console.log("my location!!!!!!!!!!!!", my_location)
-        this.setState({
-          my_location : my_location
+  //     location_accuracy =  location.coords.accuracy
+  
+  // console.log("locatioin accuraccy!!!!!!!!!!!!! ", location_accuracy)
+  //     while (location_accuracy > 10) {
+  
+  //       console.log("inside while loop")
+        this.location = await Location.watchPositionAsync({
+          accuracy: Location.Accuracy.BestForNavigation,
+          maximumAge: 20000,
+          enableHighAccuracy: true,
+          timeInterval: 800,
+          distanceInterval: 1,
+          timeout: 20000,
+    
+        }, async (location) =>{
+          
+  
+          console.log("watch position location !!! ", location)
+    
+       
+          var my_location = regionFrom(
+            location.coords.latitude,
+            location.coords.longitude,
+            location.coords.accuracy
+          );
+      
+          location_accuracy = location.coords.accuracy
+  
+    
+          console.log("my location!!!!!!!!!!!!", my_location)
+          this.setState({
+            my_location : my_location
+          });
+      
+          const address =  await Location.reverseGeocodeAsync({
+            latitude :location.coords.latitude , longitude:  location.coords.longitude 
+          })
+          console.log({address})
+      
+          let region = {
+            latitude: my_location.latitude,
+            longitude: my_location.longitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.06,
+          };
+      
+    
+             var data = {
+                region: region,
+                my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
+                // addressShortName: addressComponent,
+              };
+      
+              // console.log("dataaaaa!!! ", data)
+            await  store.dispatch({
+                type: "GET_LOCATION",
+                payload: data,
+              });
+  
+              if(location_accuracy < 10){
+  
+                console.log("location accuracy is less than 10!!!!!!!!!!!!!!!")
+                return this.location.remove()
+              } 
+       
+      
+    
+      
+    
         });
     
-        const address =  await Location.reverseGeocodeAsync({
-          latitude :location.coords.latitude , longitude:  location.coords.longitude 
-        })
-        console.log({address})
+       
     
-        let region = {
-          latitude: my_location.latitude,
-          longitude: my_location.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.06,
-        };
-    
-  
-           var data = {
-              region: region,
-              my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
-              // addressShortName: addressComponent,
-            };
-    
-            // console.log("dataaaaa!!! ", data)
-          await  store.dispatch({
-              type: "GET_LOCATION",
-              payload: data,
-            });
-
-            if(location_accuracy < 10){
-
-              console.log("location accuracy is less than 10!!!!!!!!!!!!!!!")
-              return this.location.remove()
-            } 
-     
-    
-  
-    
-  
-      });
-  
-     
-  
-      // }
+        // }
+    } catch (error) {
+      console.log("!!!!!!!!!!!error in getlocationasyc", error)
+    }
+ 
 
    
    

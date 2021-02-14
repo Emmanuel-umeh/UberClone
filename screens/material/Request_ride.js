@@ -129,7 +129,7 @@ class Request_ride extends Component {
   fontFamily : "Quicksand-Bold",
   marginRight : wp(10),
   top : hp(3)
-}}> ₦{Math.round((order ? order.price: 2000) / 100) * 100}</Text>
+}}> ₦{Math.round((this.props.price) / 100) * 100}</Text>
           </View>
         <View>
 
