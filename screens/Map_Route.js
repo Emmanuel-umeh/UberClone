@@ -618,6 +618,7 @@ const { width, height } = Dimensions.get('window');
               close_modal={this.close_modal}
               price = {this.state.price}
               book_ride={this.book_ride}
+              region = {this.state.from_location}
             />
           </Modal>
         </View>

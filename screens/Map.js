@@ -85,6 +85,10 @@ import SetDestination from "./SetDestination";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
 import * as IntentLauncher from "expo-intent-launcher";
+
+import Geocoder from 'react-native-geocoding';
+// Initialize the module (needs to be done only once)
+Geocoder.init(google_api); // use a valid API key
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 const ASPECT_RATIO = WIDTH / HEIGHT;
@@ -95,6 +99,8 @@ const LATITUDE_DELTA = latitudeDelta;
 const LONGITUDE_DELTA = longitudeDelta;
 YellowBox.ignoreWarnings(["Setting a timer"]);
 const _console = _.clone(console);
+
+
 // console.warn = (message) => {
 //   if (message.indexOf("Setting a timer") <= -1) {
 //     _console.warn(message);
@@ -1906,7 +1912,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       })
       const { token } = this.props.auth;
 
-      console.log("payment method!!!!!!!!!!!!!! ", payment_method, from_location, destination_location);
+      // console.log("payment method!!!!!!!!!!!!!! ", payment_method, from_location, destination_location);
       // connect to pushe rwhen booking ride
       await this.pusher_actions();
       console.log("booking ride after pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
@@ -1929,13 +1935,18 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       //   : from_address_full[0].name;
       // going_address = going_address_full.street
 
-     var from_address_geocode = await  Location.reverseGeocodeAsync({
-            latitude: from_location.latitude,
-         longitude:  from_location.longitude
-          })
+    //  var from_address_geocode = await  Location.reverseGeocodeAsync({
+    //         latitude: from_location.latitude,
+    //      longitude:  from_location.longitude
+    //       })
   
-from_address = from_address_geocode[0] ?  from_address_geocode[0].street ?  from_address_geocode[0].street :  from_address_geocode[0].name : this.props.order.my_address
-      console.log("from address!!!!!!!!!!!", from_address);
+
+          
+    Geocoder.from(from_location.latitude, from_location.longitude)
+    .then(json => {
+
+     var from_address_geocode = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
+
 
       const { user } = this.props.auth;
       let pickup_data = {
@@ -1945,7 +1956,7 @@ from_address = from_address_geocode[0] ?  from_address_geocode[0].street ?  from
         //   ? from_address_full[0].street
         //   : from_address_full[0].name,
 
-        from_address: from_address,
+        from_address: from_address_geocode,
         longitude: from_location.longitude,
       };
 
@@ -1956,7 +1967,7 @@ from_address = from_address_geocode[0] ?  from_address_geocode[0].street ?  from
         longitude: destination_location.longitude,
       };
 
-      console.log("pickup data !!!!!!!!!!!!!!!!!!!!!!!!!!", pickup_data);
+     
       let userID = this.props.auth.user._id;
 
       const data = {
@@ -1981,8 +1992,15 @@ from_address = from_address_geocode[0] ?  from_address_geocode[0].street ?  from
         show_user_location: true,
       });
 
-      // console.log("sening redux action for book ride", data);
+
       this.props.makeOrder(data, tokens);
+    }).catch(error =>{
+      store.dispatch({
+        type : "END_LOADING"
+      })
+      console.log("error!!!!!!!!!! ", error );
+      alert("Could not request your order. Please try again.")
+    })
     } catch (error) {
 
       store.dispatch({
@@ -2201,34 +2219,43 @@ from_address = from_address_geocode[0] ?  from_address_geocode[0].street ?  from
       my_location: my_location,
     });
 
-    const address = await Location.reverseGeocodeAsync({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
+    // const address = await Location.reverseGeocodeAsync({
+    //   latitude: location.coords.latitude,
+    //   longitude: location.coords.longitude,
+    // });
 
-    let region = {
-      latitude: my_location.latitude,
-      longitude: my_location.longitude,
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.06,
-    };
+    Geocoder.from(location.coords.latitude, location.coords.longitude)
+    .then(json => {
 
-    var data = {
-      region: region,
-      my_address: address[0]
-        ? address[0].street
-          ? address[0].street
-          : address[0].name
-        : null,
-      // addressShortName: addressComponent,
-    };
+     var address = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
+      // console.log( json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name )
+            // var addressComponent = json.results[0].address_components[0];
+      // console.log({addressComponent});
 
-    await store.dispatch({
-      type: "GET_LOCATION",
-      payload: data,
-    });
+      let region = {
+        latitude: my_location.latitude,
+        longitude: my_location.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.06,
+      };
+  
+      var data = {
+        region: region,
+        my_address:address,
+        // addressShortName: addressComponent,
+      };
+  
+       store.dispatch({
+        type: "GET_LOCATION",
+        payload: data,
+      });
+  
+      this.watchId = location;
 
-    this.watchId = location;
+    }).catch(error =>{
+      console.warn(error)
+    })
+    
   };
 
   componentWillUnmount() {

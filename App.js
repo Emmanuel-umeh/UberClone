@@ -12,6 +12,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+
 import _ from "lodash";
 
 import * as Location from "expo-location"
@@ -38,7 +39,11 @@ import { regionFrom, getLatLonDiffInMeters } from "./helpers/helper";
 import Config from "react-native-config";
 import { Platform } from "react-native";
 
+import google_api from "./keys/google_map";
 
+import Geocoder from 'react-native-geocoding';
+// Initialize the module (needs to be done only once)
+Geocoder.init(google_api); // use a valid API key
 const Drawer = createDrawerNavigator();
 
 YellowBox.ignoreWarnings(["Setting a timer"]);
@@ -244,11 +249,21 @@ await this._getLocationAsync()
             my_location : my_location
           });
       
-          const address =  await Location.reverseGeocodeAsync({
-            latitude :location.coords.latitude , longitude:  location.coords.longitude 
-          })
-          console.log({address})
-      
+          // var address 
+          // =  await Location.reverseGeocodeAsync({
+          //   latitude :location.coords.latitude , longitude:  location.coords.longitude 
+          // })
+
+
+         Geocoder.from(location.coords.latitude, location.coords.longitude)
+          .then(json => {
+
+           var address = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
+            // console.log( json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name )
+                  var addressComponent = json.results[0].address_components[0];
+            // console.log({addressComponent});
+
+            
           let region = {
             latitude: my_location.latitude,
             longitude: my_location.longitude,
@@ -259,12 +274,15 @@ await this._getLocationAsync()
     
              var data = {
                 region: region,
-                my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
+                // my_address:address[0]?  address[0].street ? address[0].street : address[0].name : null,
                 // addressShortName: addressComponent,
+                my_address : address
               };
       
               // console.log("dataaaaa!!! ", data)
-            await  store.dispatch({
+
+              console.log("dispatching address!!!!!!!!" , address)
+              store.dispatch({
                 type: "GET_LOCATION",
                 payload: data,
               });
@@ -277,6 +295,12 @@ await this._getLocationAsync()
        
       
     
+      
+          })
+          .catch(error => console.warn(error));
+
+
+          // console.log({address})
       
     
         });

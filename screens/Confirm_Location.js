@@ -19,6 +19,11 @@ import CurrentLocationButton from '../components/currentLocationButton'
 import store from '../store'
 
 import colors from './colors/colors'
+
+
+import Geocoder from 'react-native-geocoding';
+// Initialize the module (needs to be done only once)
+Geocoder.init(google_api); // use a valid API key
 // let TouchableHighlight,TouchableOpacity;
 // if (Platform.OS === 'ios') {
 //     ({ TouchableHighlight,TouchableOpacity } = require('react-native-gesture-handler'));
@@ -39,12 +44,7 @@ class Confirm_Location extends Component {
         this.map = null
     }
     state = {
-      region: {
-        latitudeDelta,
-        longitudeDelta,
-        latitude: 25.1948475,
-        longitude: 55.2682899
-      }
+      region:this.props.region
       , loading : false,
       address_name  : null
     }
@@ -59,16 +59,30 @@ class Confirm_Location extends Component {
           region
         })
   
-       var location = await Location.reverseGeocodeAsync({
-       latitude:   region.latitude, 
-      longitude  :  region.longitude
-        })
+        Geocoder.from(region.latitude, region.longitude)
+        .then(json => {
+    
+          var location = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
+          // console.log( json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name )
+                // var addressComponent = json.results[0].address_components[0];
+          // console.log({addressComponent});
+    
+
+      //  var location = await Location.reverseGeocodeAsync({
+      //  latitude:   region.latitude, 
+      // longitude  :  region.longitude
+      //   })
         console.log("location from reverse geocoding ", location)
   
         this.setState({
           loading :false,
-          address_name :location[0] ?  location[0].street ?  location[0].street :  location[0].name : this.props.order.my_address
+          address_name :location ? location : this.props.order.my_address
         })
+
+
+      }).catch(error =>{
+        console.log({error})
+      })
       } catch (error) {
 
         
@@ -112,9 +126,34 @@ const {state} = this.props
 
       async componentDidMount(){
 
+this.setState({
+  loading : true
+})
+        const {latitude,longitude} = this.props.region
+
+        Geocoder.from(latitude, longitude)
+        .then(json => {
+    
+          var location = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
+       
+
         this.setState({
-          address_name : this.props.order.my_address
+          address_name : location  ? location : this.props.order.my_address
         })
+
+        this.setState({
+          loading : false
+        })
+
+      })
+.catch(error =>{
+  console.warn(error)
+  
+  this.setState({
+    loading : false
+  })
+
+})
 
         // try {
            
@@ -163,7 +202,7 @@ const {state} = this.props
 
 
     centerCamera= ()=>{
-var {latitude, longitude} = this.props.order.region
+var {latitude, longitude} = this.props.region
         this.map &&
         this.map.animateCamera(
           {
@@ -231,7 +270,7 @@ var {latitude, longitude} = this.props.order.region
               
 
               onMapReady ={this.centerCamera}
-            initialRegion={this.props.order.region}
+            initialRegion={this.props.region}
             onRegionChangeComplete={this.onRegionChange}
             showsUserLocation = {true}
             showsCompass = {false}
@@ -396,7 +435,7 @@ var {latitude, longitude} = this.props.order.region
     marker: {
       height: 60,
       width: 60,
-      marginTop : -hp(5)
+      marginTop : -hp(10)
     },
     footer: {
       backgroundColor: "white",

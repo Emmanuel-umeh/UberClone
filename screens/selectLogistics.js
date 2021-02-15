@@ -101,101 +101,14 @@ class SetLogistics extends PureComponent {
         
 
     if(this.props.order.has_ride){
-      // if(!this.props.order.fromChanged){
-        // this._getLocationAsync()
-      // }
+  
     
       return this.props.navigation.replace("Map")
       
     }
-    
-    // this._getLocationAsync()
+
   }
   
-
-  _getLocationAsync = async () => {
-    console.log("getting location ")
-    Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      console.log("Permission to access denied!!!.");
-    }
-    let location = await Location.getCurrentPositionAsync({
-      enableHighAccuracy: true,
-      accuracy : Location.Accuracy.BestForNavigation
-    });
-
-   
-    var my_location = regionFrom(
-      location.coords.latitude,
-      location.coords.longitude,
-      location.coords.accuracy
-    );
-
-
-    console.log("my location!!!!!!!!!!!!", my_location)
-    this.setState({
-      my_location : my_location
-    });
-
-    const address =  await Location.reverseGeocodeAsync({
-      latitude :location.coords.latitude , longitude:  location.coords.longitude 
-    })
-    console.log(address[0])
-
-    let region = {
-      latitude: my_location.latitude,
-      longitude: my_location.longitude,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA,
-    };
-
-    // console.log("region ", region);
-
-    // console.log("latitude,longitude ", location.coords.latitude,location.coords.latitude,)
-    // this.setState({
-
-    // });
-    
-
-    // Geocoder.from({
-    //   latitude: location.coords.latitude,
-    //   longitude: location.coords.longitude,
-    // })
-    //   .then((json) => {
-    //     var addressComponent = json.results[0].address_components[0].long_name;
-    //     // console.log(json.results[0].formatted_address);
-
-    //     // this.setState({
-
-       var data = {
-          region: region,
-          my_address: address[0].street ? address[0].street : address[0].name,
-          // addressShortName: addressComponent,
-        };
-
-        // console.log("dataaaaa!!! ", data)
-      await  store.dispatch({
-          type: "GET_LOCATION",
-          payload: data,
-        });
-
-        this.watchId = location;
-
-    
-
-        // });
-        // y address  Object {
-        //   "long_name": "9",
-        //   "short_name": "9",
-        //   "types": Array [
-        //     "street_number",
-        //   ],
-        // }
-      // })
-      // .catch((error) => console.warn(error));
-   
-  };
 
 
 

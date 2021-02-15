@@ -36,7 +36,7 @@ function Item({ order }) {
   <View>
    
     <Text style={styles.loremIpsum}>{order.endLocationName}</Text>
-    <Text style ={styles.price} >₦{order.price}</Text>
+    <Text style ={styles.price} >₦{Math.round(order.price/100)*100}</Text>
   <Text style={styles.loremIpsum2} numberOfLines ={1} ellipsizeMode = {'tail'} >{moment(order.date_created).format(`dddd, MMMM Do YYYY, h:mm:ss a`)}</Text>
 
   {order.state == "Completed" &&   <Text style={styles.finished}>FINISHED</Text>
