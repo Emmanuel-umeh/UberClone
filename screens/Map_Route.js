@@ -8,7 +8,7 @@ import MapView, {
 import colors from "./colors/colors"
   import google_api from "../keys/google_map";
   import * as Animatable from "react-native-animatable";
-
+import store from "../store"
   import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -35,11 +35,15 @@ import colors from "./colors/colors"
 import MapViewDirections from "react-native-maps-directions";
 import Request_ride from './material/Request_ride';
 import CurrentLocationButton from '../components/currentLocationButton';
+import Confirm_Location from './Confirm_Location';
+
+import { connect } from 'react-redux'
+
 
 
 const { width, height } = Dimensions.get('window');
 
-export default class MapRoute extends Component{
+ class MapRoute extends Component{
 
 
     constructor(props){
@@ -47,6 +51,8 @@ export default class MapRoute extends Component{
 
         this.map = null;
         this.destinationMarker = null;
+        this.from_marker = null;
+
         this.state = {
             from_location : this.props.route.params.from_location,
             destination_location :  this.props.route.params.destination_location,
@@ -57,6 +63,7 @@ export default class MapRoute extends Component{
 
 
             payment_method: "Cash",
+            confirm_location_screen_visible : false
 
         }
     }
@@ -68,7 +75,54 @@ export default class MapRoute extends Component{
         });
       };
 
-      
+      open_modal = () => {
+        this.setState({
+          confirm_location_screen_visible: true,
+        });
+      };
+
+        // close the confirm sreen modal
+  close_modal = () => {
+    // this.cancelOrder()
+    this.setState({
+        confirm_location_screen_visible: false,
+    });
+  };
+
+
+  book_ride = async ()=>{
+    this.close_modal()
+
+    var {payment_method, from_location, destination_location, price } = this.state
+
+
+    var data = {
+      from: from_location,
+      going: destination_location,
+      destinationRequested: true,
+      latitudeDelta: 0.1,
+    };
+
+    await store.dispatch({
+      type: "SELECT_DESTINATION",
+      payload: data,
+    });
+    this.props.navigation.navigate("Map",
+    
+    
+    {
+
+      payment_method : this.state.payment_method,
+      // send a request to the map screen to book a ride
+      book_ride : true,
+      destination_location : this.state.destination_location,
+      from_location : this.state.from_location,
+      price : this.state.price
+    })
+    this.props.route.params.book_ride(payment_method, from_location, destination_location, price)
+   
+  }
+
     destination_marker = () => {
         // if (this.isDay) {
 
@@ -102,19 +156,23 @@ export default class MapRoute extends Component{
                       edgePadding: {
                         right: (width / 20),
                         bottom: (height / 3),
-                        left: (width / 20),
-                        top: (height / 10),
+                        left: (width / 4),
+                        top: (height / 6),
                       }
                     });
+
+                    setTimeout(() => {
+                      this.destinationMarker.showCallout()
+                      // this.from_marker.showCallout()
+                    }, 500);
                   }}
               ></MapViewDirections>
     
               {/* the destination marker */}
               <Marker
-                title={
-         
-                     "Your Destination"
-                }
+                title=  {
+                  this.state.destination_location.name ? this.state.destination_location.name : 
+                   "Your Destination"}
                 ref={(marker) => {
                   this.destinationMarker = marker;
                 }}
@@ -137,7 +195,7 @@ export default class MapRoute extends Component{
                         padding: 10,
                       }}
                     >
-                      <Icon
+                      {/* <Icon
                         active
                         name="pin"
                         style={{
@@ -145,7 +203,31 @@ export default class MapRoute extends Component{
     
                           fontSize: 20,
                         }}
-                      />
+                      /> */}
+
+<View style={{
+  // backgroundColor : colors.safron,
+  height :hp(3),
+   width : wp(7),
+   flex : 1
+}} >
+<Text  style ={{
+  paddingLeft : -wp(0.5), 
+  alignSelf : "center",
+   left : -5,
+    fontSize : 20,
+    fontFamily : "Quicksand-Bold",
+     color : colors.safron
+}}>{Math.round(this.state.duration)}</Text>
+</View> 
+
+<View style ={{
+  width : 1,
+  borderWidth : 0.5,
+  height  : "100%", 
+  left : -5
+}}></View>
+                  
                       <Text
                         style={{
                           fontSize: 12,
@@ -153,6 +235,7 @@ export default class MapRoute extends Component{
                         }}
                       >
                         {
+                          this.state.destination_location.name ? this.state.destination_location.name : 
                            "Your Destination"}
                       </Text>
                     </Item>
@@ -164,8 +247,8 @@ export default class MapRoute extends Component{
     
               <Marker
                 title={
-                //   this.props.order.my_address
-                //     ? this.props.order.my_address
+                  this.props.order.my_address
+                    ? this.props.order.my_address :
                     "You are here"
                 }
                 ref={(marker) => {
@@ -209,6 +292,8 @@ export default class MapRoute extends Component{
                         }}
                       >
                         {
+
+                          this.props.order.my_address ? this.props.order.my_address :
                            "Your are here"}
                       </Text>
                     </Item>
@@ -303,12 +388,45 @@ export default class MapRoute extends Component{
       };
     render(){
 
-        console.log(this.state)
+        // console.log(this.props.order)
 
         return(
 
 
             <>
+
+<TouchableOpacity
+        style={{
+          height: 55,
+          width: 55,
+          backgroundColor: "white",
+          borderRadius: 50,
+          position: "absolute",
+          // display: inline-block;
+
+          marginTop: 40,
+          left: 30,
+          zIndex: 999,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onPress={() => {
+          // this.close_modal();
+          this.props.navigation.pop()
+        }}
+      >
+        <View>
+          <Icon
+            active
+            style={{
+              fontSize: 50,
+              fontWeight: "bold",
+              // color: "red",
+            }}
+            name="ios-close"
+          />
+        </View>
+      </TouchableOpacity>
         
             <MapView
             // followUserLocation={show_user_location}
@@ -475,10 +593,35 @@ export default class MapRoute extends Component{
                 //     })
                 //   }
                 //   bookRide={this.bookRide}
-                //   open_modal={this.open_modal}
+                  open_modal={this.open_modal}
                 //   cancelOrder={this.cancelOrder}
                 ></Request_ride>
               </Animatable.View>
+
+
+              
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            // transparent={true}
+            onRequestClose={() => {
+              this.close_modal();
+              // this.setState({
+              //   modal_visible : false
+              // })
+            }}
+            visible={this.state.confirm_location_screen_visible}
+            presentationStyle="fullScreen"
+          >
+            <Confirm_Location
+              state={this.state}
+              close_modal={this.close_modal}
+              price = {this.state.price}
+              book_ride={this.book_ride}
+            />
+          </Modal>
+        </View>
+      
             </>
           )}
 
@@ -486,6 +629,19 @@ export default class MapRoute extends Component{
         )
     }
 }
+
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  error: state.error,
+  order: state.order,
+  pusher: state.pusher,
+});
+
+// export default ProjectForm
+export default connect(mapStateToProps, {
+ 
+})(MapRoute);
 
 
 const styles = StyleSheet.create({

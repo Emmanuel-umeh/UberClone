@@ -73,7 +73,7 @@ class Request_ride extends Component {
   render(){
 
 
-    console.log(this.state)
+    // console.log(this.state)
     const {order} = this.props
     return (
     

@@ -63,6 +63,7 @@ class SetLogistics extends PureComponent {
       isCarSelected: null,
       isTankerSelected: null,
       logistics : "bike",
+      logistics_name : "Delivery Bike",
       data: [
         {id:0, title: "bike", name : "Delivery Bike",  image:select_bike},
         {id:1, title: "car", name : "Taxi",  image:select_car},
@@ -84,7 +85,8 @@ class SetLogistics extends PureComponent {
     console.log({item})
 
     this.setState({
-      logistics : item.title
+      logistics : item.title,
+      logistics_name : item.name
     })
   }
 
@@ -307,7 +309,7 @@ item.title == this.state.logistics &&
         fontFamily : "Quicksand-Bold",
         marginTop : -3,
         color : colors.white
-      }}>Select {this.state.logistics}</Text></Button>
+      }}>Select {this.state.logistics_name}</Text></Button>
          
          {/* </ScrollView> */}
       </SafeAreaView>

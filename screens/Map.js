@@ -1382,19 +1382,23 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     // console.log("region!!! ", this.props.order.region)
 
     // IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
-
-    return this.props.navigation.navigate("MapRoute", {
-      from_location : this.props.order.region,
-      destination_location : {
-        latitude: 9.9165,
-        longitude : 8.8903
-      }
-    })
+    store.dispatch({
+      type: "PERFORMING_TASK_ENDED",
+    });
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       this.backAction
     );
+
+
+    // console.log("poarams received!!!! ", this.props.route.params)
+
+    // var {payment_method, from_location, destination_location, price} = this.props.route.params
+
+    // if(this.props.route.params.book_ride){
+    //   return this.bookRide(payment_method, from_location, destination_location, price)
+    // }
 
     // this.pusher.connection.bind('connected', function() {
     console.log("subscribing to presence channel");
@@ -1421,9 +1425,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 //       })
     });
     // });
-    store.dispatch({
-      type: "PERFORMING_TASK_ENDED",
-    });
+   
 
     if (this.props.order.has_ride) {
       this.reconnect_client();
@@ -1598,8 +1600,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             show_user_location: true,
           });
           this.close_modal();
-          this._getLocationAsync();
-          // await this.centerCamera();
+          // this._getLocationAsync();
+           this.centerCamera();
 
           store.dispatch({
             type: "PERFORMING_TASK_ENDED",
@@ -1893,17 +1895,24 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     }
   };
 
-  bookRide = async (payment_method) => {
+  bookRide = async (payment_method, from_location, destination_location, price) => {
     try {
+
+      console.log("booking ride!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+
+      store.dispatch({
+        type : "SET_LOADING"
+      })
       const { token } = this.props.auth;
 
-      console.log("payment method!!!!!!!!!!!!!! ", payment_method);
+      console.log("payment method!!!!!!!!!!!!!! ", payment_method, from_location, destination_location);
       // connect to pushe rwhen booking ride
       await this.pusher_actions();
-      console.log("booking ride");
+      console.log("booking ride after pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
 
       let from_address;
-      let going_address = this.props.order.going.name;
+      let going_address = destination_location.name;
 
       // const from_address_full = await Location.reverseGeocodeAsync({
       //   latitude: this.props.order.region.latitude,
@@ -1920,38 +1929,42 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       //   : from_address_full[0].name;
       // going_address = going_address_full.street
 
-      from_address = this.props.order.my_address;
-
-      console.log({ from_address });
+     var from_address_geocode = await  Location.reverseGeocodeAsync({
+            latitude: from_location.latitude,
+         longitude:  from_location.longitude
+          })
+  
+from_address = from_address_geocode[0] ?  from_address_geocode[0].street ?  from_address_geocode[0].street :  from_address_geocode[0].name : this.props.order.my_address
+      console.log("from address!!!!!!!!!!!", from_address);
 
       const { user } = this.props.auth;
       let pickup_data = {
         name: user.firstName,
-        latitude: this.props.order.region.latitude,
+        latitude: from_location.latitude,
         // from_address: from_address_full[0].street
         //   ? from_address_full[0].street
         //   : from_address_full[0].name,
 
         from_address: from_address,
-        longitude: this.props.order.region.longitude,
+        longitude: from_location.longitude,
       };
 
       let dropoff_data = {
         name: "Area",
         going_address: going_address,
-        latitude: this.props.order.going.latitude,
-        longitude: this.props.order.going.longitude,
+        latitude: destination_location.latitude,
+        longitude: destination_location.longitude,
       };
 
       console.log("pickup data !!!!!!!!!!!!!!!!!!!!!!!!!!", pickup_data);
       let userID = this.props.auth.user._id;
 
       const data = {
-        startLatitude: this.props.order.region.latitude,
-        startLongitude: this.props.order.region.longitude,
-        endLatitude: this.props.order.going.latitude,
-        endLongitude: this.props.order.going.longitude,
-        price: Math.ceil(this.props.order.price / 100) * 100,
+        startLatitude: from_location.latitude,
+        startLongitude: from_location.longitude,
+        endLatitude:destination_location.latitude,
+        endLongitude:destination_location.longitude,
+        price: price,
 
         // pusher actions variables
 
@@ -1971,7 +1984,12 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       // console.log("sening redux action for book ride", data);
       this.props.makeOrder(data, tokens);
     } catch (error) {
-      console.warn(error);
+
+      store.dispatch({
+        type : "END_LOADING"
+      })
+      console.log("error!!!!!!!!!! ", error );
+      alert("Could not request your order. Please try again.")
     }
   };
 
@@ -2089,16 +2107,30 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
         await store.dispatch({
           type: "DESTINATION_CANCELLED",
         });
+        
 
         this.close_modal();
 
         this.setState({
           show_user_location: true,
         });
+
+        store.dispatch({
+          type : "END_LOADING"
+        })
         await this._getLocationAsync();
         // this.centerCamera();
+       
       }
     } catch (error) {
+      this.close_modal();
+
+      this.setState({
+        show_user_location: true,
+      });
+      store.dispatch({
+        type : "END_LOADING"
+      })
       this.centerCamera();
       console.warn(error);
     }
@@ -2403,9 +2435,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           >
             {/* show marker and destination when driver has not yet accepted. after accept hide them and relocate to the driver position */}
 
-            {this.props.order.destinationRequested && !this.props.order.driver
+            {/* {this.props.order.destinationRequested && !this.props.order.driver
               ? this.destination_marker()
-              : null}
+              : null} */}
 
             {this.props.order.driver && (
               <>
@@ -2444,7 +2476,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             />
           )}
 
-          {this.props.order.destinationRequested &&
+          {/* {this.props.order.destinationRequested &&
           !this.props.order.driver &&
           !this.props.order.is_searching ? (
             <>
@@ -2453,7 +2485,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
                 delay={1000}
                 style={styles.rect}
               >
-                {/* will be renamed to request ride  */}
+              
                 <Request_ride
                   payment_method={this.payment_method}
                   state={this.state}
@@ -2471,7 +2503,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
                 ></Request_ride>
               </Animatable.View>
             </>
-          ) : null}
+          ) : null} */}
           {/* over lay image */}
         </>
 
@@ -2491,11 +2523,13 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
               selectDestination={this.selectDestination}
               show_set_destination={this.show_set_destination}
               close_set_destination={this.close_set_destination}
+              navigate = {this.props.navigation.navigate}
+              book_ride = {this.bookRide}
             />
           </Modal>
         </View>
 
-        <View style={styles.centeredView}>
+        {/* <View style={styles.centeredView}>
           <Modal
             animationType="slide"
             // transparent={true}
@@ -2514,7 +2548,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
               book_ride={this.bookRide}
             />
           </Modal>
-        </View>
+        </View> */}
       </View>
     );
   }

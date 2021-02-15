@@ -151,7 +151,7 @@ const {state} = this.props
       cb={() => {
         this.centerCamera();
       }}
-      order = { this.props.order.driver}
+      order = {true}
       destination = {this.props.order.destinationRequested }
       onPress={() => {
         this.refs.BottomSheet.current.snapTo(9);
@@ -294,7 +294,7 @@ var {latitude, longitude} = this.props.order.region
               <Text style = {styles.bold}> Confirm Pickup Location</Text>
               <Text style = {styles.price}>Drivers are around you <Text style ={{
                 fontSize : 50
-              }}>.</Text> ₦{ Math.round(this.props.order.price / 100) * 100}</Text>
+              }}>.</Text> ₦{ Math.round(this.props.price / 100) * 100}</Text>
             </View>
 
             <Divider style ={{
@@ -434,7 +434,7 @@ var {latitude, longitude} = this.props.order.region
       fontFamily: "Quicksand-Medium",
       color: "#121212",
       fontSize: 17,
-      marginTop: -wp(10),
+      marginTop: Platform.OS == "ios" ? -wp(7) : -wp(10),
       marginLeft: wp(6),
       alignSelf: "flex-start",
     },

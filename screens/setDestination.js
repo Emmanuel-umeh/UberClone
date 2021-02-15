@@ -161,6 +161,19 @@ try {
     }
   };
 
+  navigate = async(from_location, destination_location)=>{
+
+    this.props.navigate("MapRoute", {
+      from_location : from_location,
+      destination_location : destination_location,
+      book_ride : this.props.book_ride
+    })
+
+   await this.props.close_set_destination()
+    
+ 
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -356,7 +369,10 @@ try {
   
                         const going = destination;
   
-                       await this.props.selectDestination(going, this.state.from);
+                      //  await this.props.selectDestination(going, this.state.from);
+                      var from_location = this.state.from ? this.state.from : this.props.order.region
+                      var destination_location = destination
+     this.navigate(from_location, destination_location)
                         this.setState({
                           loading: false,
                         });
@@ -366,6 +382,11 @@ try {
                         //   "lng": 7.440240199999998,
                         // }
                       } catch (error) {
+                        
+                        this.setState({
+                          loading: false,
+                        });
+                        console.log({error})
                         alert("Something went wrong. Please choose a different location and try again")
                       }
                     

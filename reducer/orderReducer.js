@@ -219,6 +219,7 @@ export default function (state = initialState, action) {
         ...state,
         is_searching: true,
         order: action.payload,
+        destinationRequested : true,
         type: "MAKE_ORDER",
       };
 
