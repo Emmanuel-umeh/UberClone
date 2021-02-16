@@ -352,8 +352,8 @@ try {
                         };
   
                         const distance = await getLatLonDiffInMeters(
-                          this.props.order.region.latitude,
-                          this.props.order.region.longitude,
+                          this.state.from ? this.state.from.latitude : this.props.order.region.latitude,
+                          this.state.from ? this.state.from.longitude : this.props.order.region.longitude,
                           json.result.geometry.location.lat,
                           json.result.geometry.location.lng
                         );
