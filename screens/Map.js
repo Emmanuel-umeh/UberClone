@@ -29,6 +29,7 @@ import MapView, {
   AnimatedRegion,
   Callout,
   Overlay,
+  PROVIDER_GOOGLE,
 } from "react-native-maps";
 import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
@@ -1971,6 +1972,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       let userID = this.props.auth.user._id;
 
       const data = {
+        
         startLatitude: from_location.latitude,
         startLongitude: from_location.longitude,
         endLatitude:destination_location.latitude,
@@ -2430,7 +2432,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
               longitudeDelta: 0.5
             }}
 
-            provider = "google"
+            // provider = "google"
+            provider={PROVIDER_GOOGLE}
             showsAnnotationCallouts={true}
             paddingAdjustmentBehavior="automatic"
             onMapReady={() => {
@@ -2598,8 +2601,9 @@ export default connect(mapStateToProps, {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: "#fff",
+    ...StyleSheet.absoluteFillObject,
     // alignItems: 'center',
     // justifyContent: 'center',
   },

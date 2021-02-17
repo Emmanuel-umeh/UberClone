@@ -4,6 +4,7 @@ import MapView, {
     AnimatedRegion,
     Callout,
     Overlay,
+    PROVIDER_GOOGLE,
   } from "react-native-maps";
 import colors from "./colors/colors"
   import google_api from "../keys/google_map";
@@ -155,9 +156,9 @@ const { width, height } = Dimensions.get('window');
                     this.map.fitToCoordinates(result.coordinates, {
                       edgePadding: {
                         right: (width / 20),
-                        bottom: (height / 3),
-                        left: (width / 4),
-                        top: (height / 6),
+                        bottom: (height / 10),
+                        left: (width / 6),
+                        top: (height / 2),
                       }
                     });
 
@@ -211,26 +212,44 @@ const { width, height } = Dimensions.get('window');
    width : wp(7),
    flex : 1
 }} >
-<Text  style ={{
-  paddingLeft : -wp(0.5), 
-  alignSelf : "center",
-   left : -5,
+
+  <View style ={{
+     marginLeft : -wp(2), 
+     alignItems : "center",
+      left : -5,
+      top : -hp(1),
+      width : wp(10)
+  }}>
+  <Text  style ={{
+  top : -hp(0.5),
     fontSize : 20,
     fontFamily : "Quicksand-Bold",
+    // alignSelf : "center",
+
      color : colors.safron
 }}>{Math.round(this.state.duration)}</Text>
+<Text style={{
+   top : -hp(1),
+  fontFamily : "Quicksand-Bold"
+}}>mins</Text>
+
+
+  </View>
+
 </View> 
 
 <View style ={{
   width : 1,
   borderWidth : 0.5,
   height  : "100%", 
-  left : -5
+  marginLeft : wp(2)
+  // left : -2
 }}></View>
                   
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
+                          marginLeft : wp(2),
                           fontFamily: "Quicksand-Medium",
                         }}
                       >
@@ -488,7 +507,8 @@ const { width, height } = Dimensions.get('window');
             // pitchEnabled = {true}
 
     
-            provider = "google"
+            // provider = "google"
+            provider={PROVIDER_GOOGLE}
             showsAnnotationCallouts={true}
             paddingAdjustmentBehavior="automatic"
             // onMapReady={() => {
@@ -513,6 +533,7 @@ const { width, height } = Dimensions.get('window');
               // flex: 1,
               ...StyleSheet.absoluteFillObject,
               // zIndex: 0,
+              height : hp(75)
             }}
             // ref={(map) => {
             //   this.map = map;
@@ -557,9 +578,9 @@ const { width, height } = Dimensions.get('window');
             this.map.fitToCoordinates(this.state.result_coordinates, {
                 edgePadding: {
                   right: (width / 20),
-                  bottom: (height / 3),
-                  left: (width / 20),
-                  top: (height / 10),
+                  bottom: (height / 10),
+                  left: (width / 6),
+                  top: (height / 2),
                 }
               });
         }}
@@ -654,7 +675,7 @@ const styles = StyleSheet.create({
     },
     rect: {
       height: hp(30),
-      marginTop: hp(70),
+      marginTop: hp(75),
       // backgroundColor: 'transparent'
   
       // backgroundColor: "transparent",

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import MapView, {Marker, Overlay} from 'react-native-maps'
+import MapView, {Marker, Overlay, PROVIDER_GOOGLE} from 'react-native-maps'
 import {day_styles, night_styles} from "./map_styles/styles"
 
 import { connect } from 'react-redux'
@@ -262,7 +262,7 @@ var {latitude, longitude} = this.props.region
             style={styles.map}
             customMapStyle = {day_styles}
             tintColor = {colors.safron}
-            provider = "google"
+            provider = {PROVIDER_GOOGLE}
             ref={(map) => {
                 this.map = map;
               }}
