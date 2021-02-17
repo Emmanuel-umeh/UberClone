@@ -9,7 +9,7 @@
     "icon": "./assets/images/icon.png",
 
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 30000
     },
     "assetBundlePatterns": [
       "assets/*"
