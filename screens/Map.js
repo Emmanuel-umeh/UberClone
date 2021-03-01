@@ -912,7 +912,7 @@ class Map extends PureComponent {
 
 console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_presence_drivers)
     const {logistic_type} = this.props.order
-    return (  this.state.available_presence_drivers.map((driver)=>
+    return (  this.state.available_presence_drivers.slice(0,20).map((driver)=>
     <Marker.Animated
     coordinate={{
       latitude:driver.info.latitude,
@@ -2081,9 +2081,28 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
                   : null;
                 const tokens = this.props.auth.token;
 
+       
+
+
+              // v
+
+
+                
+
                 if (orderID) {
                   console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
-                  this.props.cancelOrder(tokens, orderID);
+
+                  var base_fee = (getLatLonDiffInMeters(
+                    this.props.order.region.latitude,
+                    this.props.order.region.longitude,
+                    this.props.order.driver_location.latitude,
+                    this.props.order.driver_location.longitude
+                  ) < 200 )
+
+                  console.log({base_fee})
+                  this.props.cancelOrder(tokens, orderID, base_fee);
+
+
                 }
 
                 // RBSheet.close()
@@ -2377,6 +2396,20 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             showsCompass={false}
             // provider="google"
             tintColor={colors.safron}
+            initialCamera ={
+              {
+                center: {
+                  latitude: this.props.order.region.latitude? this.props.order.region.latitude : 9.0765,
+              longitude: this.props.order.region.longitude ? this.props.order.region.longitude :7.3986,
+                },
+                pitch: 20,
+                heading: 30,
+                altitude: 100,
+                zoom: 18,
+              }
+            }
+            
+            
             minZoomLevel={5} // default => 0l
             maxZoomLevel={20} // default => 20
             // onUserLocationChange = {(e)=>{
@@ -2425,12 +2458,6 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             // cacheEnabled
             // pitchEnabled = {true}
 
-            initialRegion={{
-              latitude: 9.0765,
-              longitude:7.3986,
-              latitudeDelta: 0.3,
-              longitudeDelta: 0.5
-            }}
 
             // provider = "google"
             provider={PROVIDER_GOOGLE}
@@ -2454,11 +2481,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             ref={(map) => {
               this.map = map;
             }}
-            style={{
-              // flex: 1,
-              ...StyleSheet.absoluteFillObject,
-              // zIndex: 0,
-            }}
+            style={styles.map}
             // ref={(map) => {
             //   this.map = map;
             // }}
@@ -2602,7 +2625,14 @@ export default connect(mapStateToProps, {
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
+    ...StyleSheet.absoluteFillObject,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  map: {
+    // flex: 1,
+    // backgroundColor: "#fff",
     ...StyleSheet.absoluteFillObject,
     // alignItems: 'center',
     // justifyContent: 'center',

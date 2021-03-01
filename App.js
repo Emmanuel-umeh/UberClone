@@ -366,38 +366,38 @@ await this._getLocationAsync()
     const { isAuthenticated, type, token, isLoading } = this.props.auth;
 
 
-    if (this.state.loading) {
-return(
-  <AnimatedSplash
-  translucent={true}
-  isLoaded={!this.state.loading}
-  logoImage={require("./assets/images/logo.png")}
-  backgroundColor={"#fff"}
-  logoHeight={hp(90)}
-  logoWidth={wp(90)}
-></AnimatedSplash>
-)
+//     if (this.state.loading) {
+// return(
+//   <AnimatedSplash
+//   translucent={true}
+//   isLoaded={!this.state.loading}
+//   logoImage={require("./assets/images/logo.png")}
+//   backgroundColor={"#fff"}
+//   logoHeight={hp(90)}
+//   logoWidth={wp(90)}
+// ></AnimatedSplash>
+// )
     
-    } 
+//     } 
     
-    else if (!this.connectivity){
- return(
+//     else if (!this.connectivity){
+//  return(
  
-   <NoInternetScreen loadApp = {this.loadApp}/>
+//    <NoInternetScreen loadApp = {this.loadApp}/>
  
-   // <NoInternet 
-   // heading={"Oops! There is no Internet Connection"}
-   // content={"We're having a little difficulty in connecting to the Internet. Please check your connection and try again."}
-   // buttonLabel={"Try Again"}
-   // errorText={"We still can't connect - please try again."}
-   // // MainComponent={<NoInternetScreen/>}
-   // containerStyle={{backgroundColor: "white"}}
-   // textStyle={{color: "black"}}
-   // />
- )
+//    // <NoInternet 
+//    // heading={"Oops! There is no Internet Connection"}
+//    // content={"We're having a little difficulty in connecting to the Internet. Please check your connection and try again."}
+//    // buttonLabel={"Try Again"}
+//    // errorText={"We still can't connect - please try again."}
+//    // // MainComponent={<NoInternetScreen/>}
+//    // containerStyle={{backgroundColor: "white"}}
+//    // textStyle={{color: "black"}}
+//    // />
+//  )
  
-     }
-    else {
+//      }
+    // else {
       // console.log("second!!!");
       return (
 
@@ -406,46 +406,49 @@ return(
         translucent={true}
         isLoaded={!this.state.loading}
         logoImage={require("./assets/images/logo.png")}
-        backgroundColor={"#000000"}
+        backgroundColor={"#fff"}
         logoHeight={hp(40)}
         logoWidth={wp(80)}
       >
       
-        <NotifierWrapper>
-          <NavigationContainer ref={navigationRef}>
-            {isAuthenticated ? (
-              <Drawer.Navigator
-                drawerContent={(props) => <DrawerContent {...props} />}
-                screenOptions ={{
-                  swipeEnabled : false
-                }}
-                initialRouteName="Home"
-                hideStatusBar ={Platform.OS=="ios"? true : false}
-                
+      {!this.state.loading && 
+      
+      <NotifierWrapper>
+      <NavigationContainer ref={navigationRef}>
+        {isAuthenticated ? (
+          <Drawer.Navigator
+            drawerContent={(props) => <DrawerContent {...props} />}
+            screenOptions ={{
+              swipeEnabled : false
+            }}
+            initialRouteName="Home"
+            hideStatusBar ={Platform.OS=="ios"? true : false}
+            
 drawerType ="slide"
-              >
-                <Drawer.Screen
-                  name="HomeDrawer"
-                  component={AuthenticatedStack}
-                />
-              </Drawer.Navigator>
-            ) : (
-              // <Drawer.Screen name="Home" component={RootStackScreen} />
-              <RootStackScreen />
-            )}
+          >
+            <Drawer.Screen
+              name="HomeDrawer"
+              component={AuthenticatedStack}
+            />
+          </Drawer.Navigator>
+        ) : (
+          // <Drawer.Screen name="Home" component={RootStackScreen} />
+          <RootStackScreen />
+        )}
 
-            {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-        <Drawer.Screen name="Details" component={DetailsStackScreen} /> */}
+        {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+    <Drawer.Screen name="Details" component={DetailsStackScreen} /> */}
 
-            {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
-        renderNextButton={this._renderNextButton} data={slides} onDone={this._onDone}/> */}
-            {/* <RootStackScreen /> */}
-          </NavigationContainer>
-        </NotifierWrapper>
-
+        {/* <AppIntroSlider  renderItem={this._renderItem}   renderDoneButton={this._renderDoneButton}
+    renderNextButton={this._renderNextButton} data={slides} onDone={this._onDone}/> */}
+        {/* <RootStackScreen /> */}
+      </NavigationContainer>
+    </NotifierWrapper>
+}
+  
         </AnimatedSplash>
       );
-    }
+    // }
   }
 
   // const [dataLoaded, setDataLoaded] = useState(false)
