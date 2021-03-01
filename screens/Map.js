@@ -1844,6 +1844,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
         latitudeDelta: 0.1,
       };
 
+      var {user} = this.props.auth
+
       console.log("data passed to the selet destination , ", data);
 
       // if their is a from data, the user  region will be updated to the from data
@@ -1871,9 +1873,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
       console.log({ diff_in_meter_pickup });
 
-      var price = diff_in_meter_pickup * 0.065;
+      var price =( (diff_in_meter_pickup * 0.065) + parseInt(user.debt, 10)) ;
 
-      console.log("price of transportation ", price);
+      console.log("price of transportation!!!!!!!!!!!!!!! ", price);
 
       await store.dispatch({
         type: "PRICE_UPDATED",
