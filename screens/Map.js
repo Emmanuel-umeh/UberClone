@@ -2081,28 +2081,9 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
                   : null;
                 const tokens = this.props.auth.token;
 
-       
-
-
-              // v
-
-
-                
-
                 if (orderID) {
                   console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
-
-                  var base_fee = (getLatLonDiffInMeters(
-                    this.props.order.region.latitude,
-                    this.props.order.region.longitude,
-                    this.props.order.driver_location.latitude,
-                    this.props.order.driver_location.longitude
-                  ) < 200 )
-
-                  console.log({base_fee})
-                  this.props.cancelOrder(tokens, orderID, base_fee);
-
-
+                  this.props.cancelOrder(tokens, orderID);
                 }
 
                 // RBSheet.close()

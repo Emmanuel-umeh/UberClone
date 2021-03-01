@@ -196,7 +196,7 @@ console.log("making order!!!!!!!!!!!!!!!!!!!!!")
 
 
 // cancel an order  and clkear from asyncstorage
-export const cancelOrder = (tokens,orderID,base_fee) => (dispatch) => {
+export const cancelOrder = (tokens,orderID) => (dispatch) => {
   
   const config = {
     headers: {
@@ -206,7 +206,7 @@ export const cancelOrder = (tokens,orderID,base_fee) => (dispatch) => {
     },
   };
 
-  const body = JSON.stringify({base_fee})
+  const body = {}
 
   dispatch({
     type : "SET_FETCHING"
@@ -217,7 +217,7 @@ export const cancelOrder = (tokens,orderID,base_fee) => (dispatch) => {
 
 
   // REQUEST BODY
-// console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", tokens)
+console.log("token linme 201!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", tokens)
   axios
     .post(`/api/order/cancel-order/${orderID}`, body, config)
     .then(
