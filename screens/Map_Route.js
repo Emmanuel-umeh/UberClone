@@ -125,6 +125,8 @@ const { width, height } = Dimensions.get('window');
   }
 
     destination_marker = () => {
+
+      var {user} = this.props.auth
         // if (this.isDay) {
 
         var {destination_location, from_location} = this.state
@@ -143,12 +145,15 @@ const { width, height } = Dimensions.get('window');
 
                 onReady={result => {
 
+                  console.log("debt!!!!!!!!!!!!!!!!!!", user.debt)
+
                     this.setState({
                         direction_ready :true,
                         distance : result.distance,
                         duration : result.duration,
                         result_coordinates : result.coordinates,
-                        price : result.distance * 67
+                        // adding user debt to the price based on base fee
+                        price : ((result.distance * 67) + parseInt(user.debt, 10))
                     })
                     console.log(`Distance: ${result.distance} km`)
                     console.log(`Duration: ${result.duration} min.`)

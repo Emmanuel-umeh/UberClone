@@ -1875,7 +1875,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
       var price =( (diff_in_meter_pickup * 0.065) + parseInt(user.debt, 10)) ;
 
-      console.log("price of transportation!!!!!!!!!!!!!!! ", price);
+      console.log("price of debt!!!!!!!!!!!!!!! ", user.debt);
 
       await store.dispatch({
         type: "PRICE_UPDATED",
