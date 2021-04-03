@@ -83,9 +83,24 @@ export const loadUser = (token) =>   async(dispatch, getState) => {
 
 
             // console.log("response from load user ", response.data)
+
+            var user = response.data
+            var recentOrders
+            if(user.orders.length> 3){
+              recentOrders = user.orders.slice(user.orders.length-4,user.orders.length)
+
+              user = {recentOrders, ...user }
+           
+            }else{
+              recentOrders = user
+            }
+
+            // console.log(user.recentOrders)
+          
  dispatch({
   type: USER_LOADED,
-  payload: response.data,
+  payload: user
+  // recentOrders
 });
 
 // return Promise.resolve(true);

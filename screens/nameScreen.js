@@ -81,7 +81,7 @@ this.submit()
       
       const isValid = EmailValidator.validate(email); // false
       if(isValid){
-        getToken()
+        // getToken()
         // console.log("token ", async () => {
         
         //     const value = await AsyncStorage.getItem('token')
@@ -95,13 +95,13 @@ this.submit()
 
         const {user} = this.props.auth
         // console.log("user id ", user._id)
-        const id = this.props.route.params.id
-        const tokens = this.props.route.params.token
+        const phone_number = this.props.route.params.phone_number
+        // const tokens = this.props.route.params.token
         // console.log("id params name screen ", id)
         // console.log("token params name screen ", tokens)
       //  await this.props.setLoading()
 
-  await this.props.registerDetails(firstName,lastName,email,id,tokens)
+  await this.props.registerDetails(firstName,lastName,email,phone_number)
   // await this.props.endLoading()
 
       }else{

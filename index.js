@@ -7,7 +7,13 @@ import { PersistGate } from "redux-persist/integration/react"
 import store, { persistedStore } from "./store";
 import NetworkChecker from 'react-native-network-checker';
 import { NoInternet } from "react-native-no-internet-screen";
- 
+// import * as firebase from 'firebase';
+
+
+
+
+
+
 class Index extends Component {
   render() {
     return (

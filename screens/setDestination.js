@@ -48,6 +48,7 @@ import { Divider } from "react-native-paper";
 import { persistStore } from "redux-persist";
 import { SafeAreaView } from "react-native";
 import { getLatLonDiffInMeters } from "../helpers/helper";
+import { ImageBackground } from "react-native";
 
 
 class SetDestination extends Component {
@@ -85,6 +86,8 @@ class SetDestination extends Component {
     //       latitude: this.props.order.region.latitude,
     //       longitude:  this.props.order.region.longitude,
     //     })
+
+    // console.log(this.props.auth.user.recentOrders)
 try {
   await this.setState({
     my_address: this.props.order.my_address,
@@ -174,7 +177,18 @@ try {
  
   }
 
+   capitalizeTheFirstLetterOfEachWord=(words)=> {
+    var separateWord = words.toLowerCase().split(' ');
+    for (var i = 0; i < separateWord.length; i++) {
+       separateWord[i] = separateWord[i].charAt(0).toUpperCase() +
+       separateWord[i].substring(1);
+    }
+    return separateWord.join(' ');
+ }
+
   render() {
+    const {recentOrders} = this.props.auth.user
+
     return (
       <SafeAreaView style={styles.container}>
         <Header
@@ -300,15 +314,90 @@ try {
           {this.state.predictions.length == 0 &&
             this.state.fromPredictions.length == 0 && (
               <>
-                <Image
-                  source={require("../assets/images/search.jpg")}
-                  style={{
-                    width: wp(80),
-                    height: hp(50),
-                    opacity: 0.3,
-                  }}
-                  resizeMode="contain"
-                ></Image>
+
+              {recentOrders ? 
+              
+              <FlatList
+              keyboardShouldPersistTaps={"handled"}
+              data={recentOrders}
+              initialNumToRender={5}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                onPress = {()=>{
+                  
+                }}
+                >
+                  {/* <View style={styles.icon7Row}>
+<EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
+<Text style={styles.addHome}>{prediction.description}</Text>
+
+</View> */}
+
+                  <CardItem style={{ top: 10 }}>
+                    <EntypoIcon
+                      name="clock"
+                      style={styles.icon7}
+                    ></EntypoIcon>
+
+                    <Body
+                      style={{
+                        left: wp("10%"),
+                        width: "70%",
+                      }}
+                    >
+                      <Text
+                        style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                      >
+                        {this.capitalizeTheFirstLetterOfEachWord(item.endLocationName)}
+                      </Text>
+                      {/* <Text
+                        style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                      >
+                        {item.structured_formatting.secondary_text}
+                      </Text> */}
+                    </Body>
+
+                    <Right
+                      style={{
+                        right: wp("10%"),
+                      }}
+                    >
+                      <Icon
+                        name="arrow-forward"
+                        style={{
+                          color: "black",
+                        }}
+                      />
+                    </Right>
+                  </CardItem>
+                  <Divider
+                    style={{
+                      marginTop: 20,
+                      height: 1,
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.id}
+            /> : 
+            
+            
+            <ImageBackground
+            source={require("../assets/images/search.jpg")}
+            style={{
+              width: wp(80),
+              height: hp(50),
+              opacity: 0.3,
+            }}
+            resizeMode="contain"
+          >
+
+            {/* <Text>HEllp</Text> */}
+
+          </ImageBackground>
+            }
+
               </>
             )}
 

@@ -86,7 +86,6 @@ import SetDestination from "./SetDestination";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
 import * as IntentLauncher from "expo-intent-launcher";
-
 import Geocoder from 'react-native-geocoding';
 // Initialize the module (needs to be done only once)
 Geocoder.init(google_api); // use a valid API key
@@ -2379,18 +2378,18 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             showsCompass={false}
             // provider="google"
             tintColor={colors.safron}
-            initialCamera ={
-              {
-                center: {
-                  latitude: this.props.order.region.latitude? this.props.order.region.latitude : 9.0765,
-              longitude: this.props.order.region.longitude ? this.props.order.region.longitude :7.3986,
-                },
-                pitch: 20,
-                heading: 30,
-                altitude: 100,
-                zoom: 18,
-              }
-            }
+            // initialCamera ={
+            //   {
+            //     center: {
+            //       latitude: this.props.order.region.latitude? this.props.order.region.latitude : 9.0765,
+            //   longitude: this.props.order.region.longitude ? this.props.order.region.longitude :7.3986,
+            //     },
+            //     pitch: 20,
+            //     heading: 30,
+            //     altitude: 100,
+            //     zoom: 18,
+            //   }
+            // }
             
             
             minZoomLevel={5} // default => 0l
@@ -2478,7 +2477,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             {this.props.order.driver && (
               <>
                 {this.props.order.order &&
-                  this.props.order.order.state == "Started" &&
+                  // this.props.order.order.state == "Started" &&
                   this.map_view_directions()}
 
                 {this.show_driver_marker()}
