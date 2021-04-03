@@ -187,7 +187,9 @@ try {
  }
 
   render() {
-    const {recentOrders} = this.props.auth.user
+    var {recentOrders} = this.props.auth.user
+
+
 
     return (
       <SafeAreaView style={styles.container}>
@@ -324,8 +326,46 @@ try {
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                onPress = {()=>{
+                onPress = {async()=>{
                   
+                  // destination name converting to capital
+                  var name = this.capitalizeTheFirstLetterOfEachWord(item.endLocationName)
+                  const destination = {
+                    latitude: item.endLatitude,
+                    longitude: item.endLongitude,
+                    name 
+                  };
+
+                  const distance = await getLatLonDiffInMeters(
+                    this.state.from ? this.state.from.latitude : this.props.order.region.latitude,
+                    this.state.from ? this.state.from.longitude : this.props.order.region.longitude,
+                    item.latitude,
+                    item.longitude
+                  );
+
+                  if (distance > 200000) {
+                    this.setState({
+                      loading: false,
+                    });
+                    return alert(
+                      "Distance is too great. Please select another location"
+                    );
+                  }
+
+                  const going = destination;
+
+                //  await this.props.selectDestination(going, this.state.from);
+                var from_location = this.state.from ? this.state.from : this.props.order.region
+                var destination_location = destination
+this.navigate(from_location, destination_location)
+                  this.setState({
+                    loading: false,
+                  });
+                  // returns
+                  // Object {
+                  //   "lat": 8.969173699999999,
+                  //   "lng": 7.440240199999998,
+                  // }
                 }}
                 >
                   {/* <View style={styles.icon7Row}>

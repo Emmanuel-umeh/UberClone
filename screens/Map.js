@@ -2616,6 +2616,8 @@ const styles = StyleSheet.create({
     // flex: 1,
     // backgroundColor: "#fff",
     ...StyleSheet.absoluteFillObject,
+    height : hp(100),
+    width : wp(100)
     // alignItems: 'center',
     // justifyContent: 'center',
   },

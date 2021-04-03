@@ -19,16 +19,12 @@ import {
   SET_USER_TOKEN,
   SET_LOADING,
   END_LOADING,
-
   ADD_CARD_FAILED,
-  ADD_CARD
+  ADD_CARD,
 } from "./types";
 
-
-
-
 import * as RootNavigation from "../rootNavigation";
-import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
+import { Notifier, Easing, NotifierComponents } from "react-native-notifier";
 // import AWN from "awesome-notifications"
 
 // https://elesarrdevelopment.herokuapp.com/api/signupuser/all
@@ -48,99 +44,85 @@ axios.defaults.baseURL = "https://whiteaxisapi.herokuapp.com";
 //
 
 // authenticate a user on load of app
-export const loadUser = (token) =>   async(dispatch, getState) => {
-
-
+export const loadUser = (token) => async (dispatch, getState) => {
   try {
-  
     // user loading
     dispatch({ type: USER_LOADING }); // dispatch user loading
-  
 
-  
-     const response = await axios
-        .get(`/api/auth/oneUser`, tokenConfig(getState))
-        // .then((res) => {
-          
-        // })
-// console.log(response.data)
+    const response = await axios.get(
+      `/api/auth/oneUser`,
+      tokenConfig(getState)
+    );
+    // .then((res) => {
 
-        if(response){
-          // console.log("response ", res.data);
-          if (response.data.message === "error") {
-            // AsyncStorage.removeItem("token");
-            // return dispatch({
-            //   type: AUTH_ERROR,
-            // });
-            console.warn("error occured ", response.data.message);
-           return dispatch({
-              type: AUTH_ERROR,
-            });
-    
+    // })
+    // console.log(response.data)
 
-           
-          }else{
+    if (response) {
+      // console.log("response ", res.data);
+      if (response.data.message === "error") {
+        // AsyncStorage.removeItem("token");
+        // return dispatch({
+        //   type: AUTH_ERROR,
+        // });
+        console.warn("error occured ", response.data.message);
+        return dispatch({
+          type: AUTH_ERROR,
+        });
+      } else {
+        try {
+          // console.log("response from load user ", response.data)
 
+          var user = response.data;
+      
 
-            // console.log("response from load user ", response.data)
+          // console.log({orders})
+          var orders;
+          if (user.orders.length > 3) {
+            let ids = user.orders.map((o) => o.endLocationName);
+            orders = user.orders.filter(
+              ({ endLocationName }, index) =>
+                !ids.includes(endLocationName, index + 1)
+            );
 
-            var user = response.data
-            var recentOrders
-            if(user.orders.length> 3){
-              recentOrders = user.orders.slice(user.orders.length-4,user.orders.length)
+            // console.log({orders});
+            var recentOrders = orders.slice(orders.length - 4, orders.length);
 
-              user = {recentOrders, ...user }
-           
-            }else{
-              recentOrders = user
-            }
-
-            // console.log(user.recentOrders)
-          
- dispatch({
-  type: USER_LOADED,
-  payload: user
-  // recentOrders
-});
-
-// return Promise.resolve(true);
-//  console
+            user = { recentOrders, ...user };
           }
-         
-        }
-  
-   
 
-       
-  
-  } catch (error) {
-      dispatch({
-            type: AUTH_ERROR,
+          // console.log({recentOrders});
+
+          dispatch({
+            type: USER_LOADED,
+            payload: user,
+            // recentOrders
           });
-          console.log("error occured, couldnt authenticate user ", error);
-     
+
+          // return Promise.resolve(true);
+          //  console
+        } catch (error) {
+          console.log({ error });
+        }
+      }
+    }
+  } catch (error) {
+    dispatch({
+      type: AUTH_ERROR,
+    });
+    console.log("error occured, couldnt authenticate user ", error);
   }
- 
-  
 };
 
 // BEGIN LOADING ANIMATON
 export const setLoading = () => (dispatch, getState) => {
- 
   dispatch({ type: SET_LOADING }); // dispatch user loading
-
-
 };
 
 // END LOADING ANIMATION
 export const endLoading = () => (dispatch, getState) => {
- 
   dispatch({ type: END_LOADING }); // dispatch user loading
-
-
 };
-
-
 
 // send OTP code to the user
 export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
@@ -160,21 +142,22 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
     .post(`/api/users/phone`, body, config)
     .then(
       (res) => {
-        // 
+        //
         // endLoading()
         // dispatch({
         //   type : END_LOADING
         // })
 
-        console.log(res.data)
+        console.log(res.data);
 
-        if(res.data.error_text){
-          hideLoader()
-        
+        if (res.data.error_text) {
+          hideLoader();
+
           return Notifier.showNotification({
             title: "Signup Error",
-         
-            description:'Something went wrong. Please use a different number or check your internet connection and try again',
+
+            description:
+              "Something went wrong. Please use a different number or check your internet connection and try again",
             duration: 5000,
             showAnimationDuration: 800,
             showEasing: Easing.bounce,
@@ -183,12 +166,11 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
             hideOnPress: true,
           });
         }
-     
-        
+
         // status code 10 means otp has already been sent
         // status code 6 means the otp has timed out or more of it has been completed
-        hideLoader()
-        
+        hideLoader();
+
         return RootNavigation.navigate("otp", {
           request_id: res.data.request_id,
           status: res.data.status,
@@ -200,12 +182,13 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
       // console.log("this is the res ", res)
     )
     .catch((err) => {
-
-      console.log(err.response.data)
+      console.log(err.response.data);
       Notifier.showNotification({
         title: "Signup Error",
-     
-        description: err.response.data ? err.response.data.msg : 'Something went wrong. Please check your internet connection and try again',
+
+        description: err.response.data
+          ? err.response.data.msg
+          : "Something went wrong. Please check your internet connection and try again",
         duration: 5000,
         showAnimationDuration: 800,
         showEasing: Easing.bounce,
@@ -216,14 +199,16 @@ export const textMessageAuth = (phoneNumber, hideLoader) => (dispatch) => {
       console.log("error ", err);
 
       return dispatch(
-        returnErrors(err.response.data, err.response.status, "AUTH_MESSAGE_FAILED"),
+        returnErrors(
+          err.response.data,
+          err.response.status,
+          "AUTH_MESSAGE_FAILED"
+        ),
         {
           type: AUTH_MESSAGE_FAILED,
         }
       );
     });
-
-  
 };
 
 // Verify the OTP
@@ -244,44 +229,39 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
     .post(`/api/users/phone/verify`, body, config)
     .then(
       (res) => {
-
         try {
-                  // dispatch({
-        //   type: REGISTER_SUCCESS,
-        //   payload: res.data,
-        // });
+          // dispatch({
+          //   type: REGISTER_SUCCESS,
+          //   payload: res.data,
+          // });
 
-      
+          if (res.data.exists) {
+            dispatch({
+              type: USER_LOADED,
+              payload: res.data,
+            });
+            return dispatch({
+              type: "IS_AUTHENTICATED",
+            });
+          }
+          // endLoading()
+          // dispatch({
+          //   type : END_LOADING
+          // })
 
+          return RootNavigation.navigate("nameScreen", {
+            token: res.data.token,
+            id: res.data.user._id,
+          });
 
-        if(res.data.exists){
+          // status code 10 means otp has already been sent
+          // status code 6 means the otp has timed out or more of it has been completed
+          // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });
 
-          
-    dispatch({
-      type: USER_LOADED,
-      payload: res.data
-    });
-          return  dispatch({
-            type : "IS_AUTHENTICATED"
-          })
-        }
-        // endLoading()
-        // dispatch({
-        //   type : END_LOADING
-        // })
-
-        return RootNavigation.navigate("nameScreen", { token: res.data.token, id : res.data.user._id });
-
-        // status code 10 means otp has already been sent
-        // status code 6 means the otp has timed out or more of it has been completed
-        // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });
-
-        // console.log("MESSAGE res ", res)
+          // console.log("MESSAGE res ", res)
         } catch (error) {
-          console.warn(error)
+          console.warn(error);
         }
-        
-
       }
       // console.log("this is the res ", res)
     )
@@ -298,16 +278,17 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
 
       // );
 
-    
       Notifier.showNotification({
-        title: 'The request was failed',
-        description: err.response ? err.response.data.msg : 'Something went wrong. Please check your internet connection and try again',
+        title: "The request was failed",
+        description: err.response
+          ? err.response.data.msg
+          : "Something went wrong. Please check your internet connection and try again",
         Component: NotifierComponents.Alert,
         componentProps: {
-          alertType: 'error',
+          alertType: "error",
         },
       });
-      console.warn("error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", err.response );
+      console.warn("error !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", err.response);
 
       return dispatch(
         returnErrors(err.response, err.response.status, "AUTH_MESSAGE_FAILED"),
@@ -318,51 +299,48 @@ export const textMessageVerify = (request_id, code, phoneNumber) => (
     });
 };
 
-
-
-
-export const registerDetails = (firstName, lastName, email, id,tokens) => (
-  dispatch, getState
+export const registerDetails = (firstName, lastName, email, id, tokens) => (
+  dispatch,
+  getState
 ) => {
-  console.log("toekn received in register details ", tokens)
+  console.log("toekn received in register details ", tokens);
   const config = {
     headers: {
-  // 'Accept': 'application/json',
-  "x-auth-token" : tokens,
-  'Content-Type': 'application/json'
-},
-};
+      // 'Accept': 'application/json',
+      "x-auth-token": tokens,
+      "Content-Type": "application/json",
+    },
+  };
 
   // REQUEST BODY
-  const body = JSON.stringify({ firstName, lastName, email,id });
+  const body = JSON.stringify({ firstName, lastName, email, id });
 
   // console.log("body recieved registered details ", body)
 
   // setLoading()
   axios
-    .post(`/api/users/updateDetails/${id}`,body,config)
+    .post(`/api/users/updateDetails/${id}`, body, config)
     .then(
       (res) => {
         console.log("data from u[pdation gdetails", res.data);
 
-        var payload  =  {
-          user : res.data,
-          token : tokens
-        }
-    // endLoading()
+        var payload = {
+          user: res.data,
+          token: tokens,
+        };
+        // endLoading()
 
-    // dispatch({
-    //   type : END_LOADING
-    // })
-    RootNavigation.navigate("TermsAndCondition", { token: tokens });
+        // dispatch({
+        //   type : END_LOADING
+        // })
+        RootNavigation.navigate("TermsAndCondition", { token: tokens });
 
+        dispatch({
+          type: USER_LOADED,
+          payload: payload,
+        });
 
-    dispatch({
-      type: USER_LOADED,
-      payload: payload,
-    });
-
-        // return 
+        // return
         // status code 10 means otp has already been sent
         // status code 6 means the otp has timed out or more of it has been completed
         // return RootNavigation.navigate('otp', { request_id: res.data.request_id,status : res.data.status, phoneNumber : phoneNumber  });
@@ -393,61 +371,51 @@ export const clearType = () => (dispatch) => {
   });
 };
 
-
-
 // Verify the OTP
-export const add_card = ({number, expiry,type , tokens}) => (
-  dispatch
-) => {
+export const add_card = ({ number, expiry, type, tokens }) => (dispatch) => {
   // console.log("data received ", email, password)
 
   dispatch({
-    type : "SET_FETCHING"
-  })
+    type: "SET_FETCHING",
+  });
   const config = {
     headers: {
       "Content-Type": "application/json",
-      "x-auth-token" : tokens
+      "x-auth-token": tokens,
     },
   };
 
   // REQUEST BODY
-  const body = JSON.stringify({ number, expiry,type });
-  console.log({body})
+  const body = JSON.stringify({ number, expiry, type });
+  console.log({ body });
 
   axios
     .post(`/api/users/add_card`, body, config)
-    .then(
-      (res) => {
-        
-
-        dispatch({
-          type : "END_FETCHING"
-        })
-   dispatch({
-     type : ADD_CARD,
-     payload : res.data
-   })
-
-         RootNavigation.navigate("add_card");
-        return         Notifier.showNotification({
-          title: "Updated Successfully",
-          description: `Your ATM card details were stored successfully. You can now make orders with your card. `,
-          duration: 5000,
-          showAnimationDuration: 800,
-          showEasing: Easing.bounce,
-          onHidden: () => console.log("Hidden"),
-          onPress: () => console.log("Press"),
-          hideOnPress: true,
-        });
-      }
-     
-    )
-    .catch((err) => {
-
+    .then((res) => {
       dispatch({
-        type : "END_FETCHING"
-      })
+        type: "END_FETCHING",
+      });
+      dispatch({
+        type: ADD_CARD,
+        payload: res.data,
+      });
+
+      RootNavigation.navigate("add_card");
+      return Notifier.showNotification({
+        title: "Updated Successfully",
+        description: `Your ATM card details were stored successfully. You can now make orders with your card. `,
+        duration: 5000,
+        showAnimationDuration: 800,
+        showEasing: Easing.bounce,
+        onHidden: () => console.log("Hidden"),
+        onPress: () => console.log("Press"),
+        hideOnPress: true,
+      });
+    })
+    .catch((err) => {
+      dispatch({
+        type: "END_FETCHING",
+      });
       // return dispatch(
       //  returnErrors(
       //     err.response.data,
@@ -460,13 +428,12 @@ export const add_card = ({number, expiry,type , tokens}) => (
 
       // );
 
-    
       Notifier.showNotification({
-        title: 'The request was failed',
-        description: 'Check your internet connection, please',
+        title: "The request was failed",
+        description: "Check your internet connection, please",
         Component: NotifierComponents.Alert,
         componentProps: {
-          alertType: 'error',
+          alertType: "error",
         },
       });
       console.log("error ", err);
@@ -480,42 +447,34 @@ export const add_card = ({number, expiry,type , tokens}) => (
     });
 };
 
-
-
 // logout
-export const logout = () =>(dispatch)=> {
+export const logout = () => (dispatch) => {
   // AsyncStorage.removeItem('referral')
   // setLoading()
 
-  
-    // setTimeout(() => {
+  // setTimeout(() => {
 
-      dispatch({
-        type : "SET_FETCHING"
-      })
-      
-      dispatch({
-        type: LOGOUT_SUCCESS
-      })
+  dispatch({
+    type: "SET_FETCHING",
+  });
 
+  dispatch({
+    type: LOGOUT_SUCCESS,
+  });
 
-      dispatch({
-        type : "END_FETCHING"
-      })
-      // RootNavigation.reset({
-      //   key: null,
-      //   index: 0,
-      //   actions: [RootNavigation.navigate({ routeName: 'getStarted' })],
-      // })
-      // dispatch({
-      //   type : END_LOADING
-      // })
-  
-  
-    // }, 1000);
-   
-  
- 
+  dispatch({
+    type: "END_FETCHING",
+  });
+  // RootNavigation.reset({
+  //   key: null,
+  //   index: 0,
+  //   actions: [RootNavigation.navigate({ routeName: 'getStarted' })],
+  // })
+  // dispatch({
+  //   type : END_LOADING
+  // })
+
+  // }, 1000);
 };
 
 // Setup config/headers and token
