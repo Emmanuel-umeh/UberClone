@@ -9,7 +9,7 @@ import { TouchableOpacity } from "react-native";
 import { connect } from 'react-redux'
 
 import { LinearGradient } from 'expo-linear-gradient';
-import store from "../../store"
+import store from "../../redux/store"
 import { Divider } from "react-native-paper";
 
 

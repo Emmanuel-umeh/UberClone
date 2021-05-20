@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text,Image, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Animatable from "react-native-animatable";
-import { loadUser } from "../action/authAction";
 import {connect} from "react-redux"
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
@@ -19,21 +18,6 @@ function getStarted({navigation}) {
       <ScrollView>
 
 
-  
-{/* 
-<Image
-          style={{width: 50, height: 50}}
-          source={{uri: 'https://reactjs.org/logo-og.png'}}
-        /> */}
-
-      
-{/* <View style={styles.line}> */}
-        {/* <Animatable.Image
-          source={require("../../assets/carVector.png")}
-             resizeMode="center"
-          animation = {"bounceIn"}
-        /> */}
-
       
         <View style = {styles.line}>
             <LottieView
@@ -41,7 +25,7 @@ function getStarted({navigation}) {
             height : 200,
             width : 200
           }}
-           source={require("../assets/lottie/test9.json")}
+           source={require("../assets/lottie/get_started.json")}
          
           autoPlay
 
@@ -61,7 +45,7 @@ function getStarted({navigation}) {
 
       
       <TouchableOpacity  onPress ={()=>{
-            navigation.navigate("phoneNumberScreen")
+            navigation.navigate("nameScreen")
           }}>
 
       <View style={styles.rect}>
@@ -72,7 +56,7 @@ function getStarted({navigation}) {
         style={styles.getStartedRow}>
           <Text style={styles.getStarted}>Get Started</Text>
           <Icon onPress ={()=>{
-            navigation.navigate("phoneNumberScreen")
+            navigation.navigate("nameScreen")
           }} name="md-arrow-forward" style={styles.icon}></Icon>
         </Animatable.View>
      
@@ -94,7 +78,7 @@ const styles = StyleSheet.create({
    fontFamily : "Quicksand-Bold",
     color: "#121212",
     fontSize: 40,
-    marginTop: "100%",
+    marginTop: hp(55),
     alignSelf: "center"
   },
   rect: {
@@ -128,10 +112,10 @@ const styles = StyleSheet.create({
   },
   line: {
     position: "absolute",
-    left: "25.77%",
-    right: "13.54%",
-    top: "25.51%",
-    bottom: " 58.17%",
+    // left: wp(10),
+    // right: "13.54%",
+    top: hp(20),
+    // bottom: " 58.17%",
   },
 
 });
@@ -143,4 +127,4 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { loadUser })(getStarted);
+export default connect(mapStateToProps, { })(getStarted);

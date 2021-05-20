@@ -4,7 +4,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 
 import { PersistGate } from "redux-persist/integration/react"
-import store, { persistedStore } from "./store";
+import store, { persistedStore } from "./redux/store";
 import NetworkChecker from 'react-native-network-checker';
 import { NoInternet } from "react-native-no-internet-screen";
  
@@ -12,10 +12,10 @@ class Index extends Component {
   render() {
     return (
       <Provider store={store}>
-        <PersistGate loading={
+        {/* <PersistGate loading={
         <AppLoading />
         // console.log
-        } persistor={persistedStore}>
+        } persistor={persistedStore}> */}
 
 <NetworkChecker
       position="bottom"
@@ -31,7 +31,7 @@ class Index extends Component {
         
     </NetworkChecker>
       
-        </PersistGate>
+        {/* </PersistGate> */}
       </Provider>
     );
   }

@@ -29,7 +29,7 @@ import {
 } from "react-native-responsive-screen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
-import { loadUser } from "../action/authAction";
+import { loadUser } from "../redux/action/authAction";
 import { Divider } from "react-native-paper";
 class Add_Card extends Component {
   // componentDidMount(){

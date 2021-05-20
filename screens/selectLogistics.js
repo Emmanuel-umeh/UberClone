@@ -31,7 +31,7 @@ import Tanker from "./material/Tanker";
 import SearchInput from "../components/SearchInput";
 import Geocoder from "react-native-geocoding";
 
-import store from "../store"
+import store from "../redux/store"
 import google_api from "../keys/google_map";
 import { connect } from 'react-redux'
 
@@ -154,7 +154,7 @@ class SetLogistics extends PureComponent {
     return (
       <SafeAreaView style={styles.container}>
 
-<Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Service</Text>
+{/* <Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Service</Text> */}
         {/* <View style={styles.container}> */}
 
         {/* <ScrollView> */}
@@ -233,7 +233,7 @@ item.title == this.state.logistics &&
 const styles = StyleSheet.create({
   container:{
     flex:1,
-    marginTop:40,
+    marginTop:9,
     backgroundColor:'#f6f6f6',
   },
   selectAVechicle :{

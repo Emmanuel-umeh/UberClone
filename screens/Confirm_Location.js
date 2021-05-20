@@ -16,7 +16,7 @@ import { CardItem, Icon, Right, Button,Spinner } from 'native-base';
 
 import { Platform } from 'react-native';
 import CurrentLocationButton from '../components/currentLocationButton'
-import store from '../store'
+import store from '../redux/store'
 
 import colors from './colors/colors'
 

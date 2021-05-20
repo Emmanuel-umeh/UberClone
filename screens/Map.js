@@ -23,7 +23,7 @@ import {
 import Pulse from "react-native-pulse";
 
 import * as Permissions from "expo-permissions";
-import store from "../store";
+import store from "../redux/store";
 import MapView, {
   Marker,
   AnimatedRegion,
@@ -71,7 +71,7 @@ import {
   cancelOrder,
   getOrder,
   test_redux_promisify,
-} from "../action/orderActions";
+} from "../redux/action/orderActions";
 import { Divider } from "react-native-paper";
 
 import { Audio } from "expo-av";
@@ -82,7 +82,7 @@ import Bike from "./material/Request_ride";
 import Request_ride from "./material/Request_ride";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Confirm_Location from "./Confirm_Location";
-import SetDestination from "./SetDestination";
+import SetDestination from "./setDestination";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
 import * as IntentLauncher from "expo-intent-launcher";
@@ -98,15 +98,7 @@ const longitudeDelta = latitudeDelta * ASPECT_RATIO;
 
 const LATITUDE_DELTA = latitudeDelta;
 const LONGITUDE_DELTA = longitudeDelta;
-YellowBox.ignoreWarnings(["Setting a timer"]);
-const _console = _.clone(console);
 
-
-// console.warn = (message) => {
-//   if (message.indexOf("Setting a timer") <= -1) {
-//     _console.warn(message);
-//   }
-// };
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -180,20 +172,6 @@ class Map extends PureComponent {
     // this.pusher = null;
 
     const { token } = this.props.auth;
-
-    // if (!this.pusher) {
-    this.pusher = new Pusher("408c824d8bed77ca6684", {
-      // authEndpoint: "http://cf70166cf633.ngrok.io/api/pusher/auth",
-      authEndpoint: "https://whiteaxisapi.herokuapp.com/api/pusher/auth",
-      cluster: "eu",
-      auth: {
-        headers: { "x-auth-token": `${token}` },
-      },
-      encrypted: true,
-    });
-
-    Pusher.logToConsole = true;
-    // }
 
     this.state = {
       available_drivers_channel: null,

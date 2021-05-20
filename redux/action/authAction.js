@@ -27,87 +27,10 @@ import {
 
 
 
-import * as RootNavigation from "../rootNavigation";
+import * as RootNavigation from "../../rootNavigation";
 import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
-// import AWN from "awesome-notifications"
-
-// https://elesarrdevelopment.herokuapp.com/api/signupuser/all
-
-// let notifier = new AWN
-// var location = window.location.href
-// if(location.slice(0,17)== 'http://localhost:' || "https://elesarr.he" || "http://elesarr.her"){
-// axios.defaults.baseURL = 'https://whiteaxisapi.herokuapp.com';
-axios.defaults.baseURL = "https://whiteaxisapi.herokuapp.com";
-// }
-// else if(location.slice(0,17)==  "http://127.0.0.1:"){
-//   axios.defaults.baseURL = 'https://elesarrdevelopment.herokuapp.com';
-// }
-// else{
-//   axios.defaults.baseURL = 'https://eles-api.herokuapp.com'
-// }
-//
-
-// authenticate a user on load of app
-export const loadUser = (token) =>   async(dispatch, getState) => {
 
 
-  try {
-  
-    // user loading
-    dispatch({ type: USER_LOADING }); // dispatch user loading
-  
-
-  
-     const response = await axios
-        .get(`/api/auth/oneUser`, tokenConfig(getState))
-        // .then((res) => {
-          
-        // })
-// console.log(response.data)
-
-        if(response){
-          // console.log("response ", res.data);
-          if (response.data.message === "error") {
-            // AsyncStorage.removeItem("token");
-            // return dispatch({
-            //   type: AUTH_ERROR,
-            // });
-            console.warn("error occured ", response.data.message);
-           return dispatch({
-              type: AUTH_ERROR,
-            });
-    
-
-           
-          }else{
-
-
-            // console.log("response from load user ", response.data)
- dispatch({
-  type: USER_LOADED,
-  payload: response.data,
-});
-
-// return Promise.resolve(true);
-//  console
-          }
-         
-        }
-  
-   
-
-       
-  
-  } catch (error) {
-      dispatch({
-            type: AUTH_ERROR,
-          });
-          console.log("error occured, couldnt authenticate user ", error);
-     
-  }
- 
-  
-};
 
 // BEGIN LOADING ANIMATON
 export const setLoading = () => (dispatch, getState) => {

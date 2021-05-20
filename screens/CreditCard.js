@@ -4,7 +4,7 @@ import {View, Text} from "native-base"
 import { CreditCardInput, LiteCreditCardInput } from "react-native-input-credit-card";
 
 import  FloatingActionButton  from "react-native-floating-action-button";
-import {add_card} from "../action/authAction"
+import {add_card} from "../redux/action/authAction"
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,

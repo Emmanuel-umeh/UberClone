@@ -1,36 +1,46 @@
 import React, { Component } from "react";
-import { StyleSheet, View, TextInput, Platform } from "react-native";
+import { StyleSheet, View, TextInput, Text } from "react-native";
 import * as Animatable from "react-native-animatable";
 import {connect} from "react-redux"
-import {textMessageAuth, setLoading} from "../action/authAction"
+import {textMessageAuth, setLoading} from "../redux/action/authAction"
 import AnimateLoadingButton from 'react-native-animate-loading-button';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import {
 
-  Header,
-
-  Text,
-  Icon,
-
-  Left,
-  Body,
-  Title,
-  Right,
-  Button,
-
-} from "native-base";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { StatusBar } from 'expo-status-bar';
+import {firebase} from "../firebase/firebase"
+import Otp from "./Otp";
+import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
+import { Notifier, Easing,NotifierComponents  } from 'react-native-notifier';
+import ErrorModal from "./components/ErrorModal";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWKTvm6h-saC3837h8yTif-XO_wJlO-9Y",
+  authDomain: "whiteaxis.firebaseapp.com",
+  databaseURL: "https://whiteaxis-default-rtdb.firebaseio.com",
+  projectId: "whiteaxis",
+  storageBucket: "whiteaxis.appspot.com",
+  messagingSenderId: "619115521529",
+  appId: "1:619115521529:web:01fdcf04955967383bc928",
+  measurementId: "G-39MZDRL8G6"
+};
+let rootRef = firebase.database().ref();
+
 class PhoneNumber extends Component {
   constructor(props) {
     super(props);
+
+    this.recaptchaVerifier = React.createRef(null);
   }
 
   state = {
     number: null,
+    confirmation : null,
+    modal_visible: false,
+    error_msg : null
   };
 
 // componentDidMount() {
@@ -38,7 +48,7 @@ class PhoneNumber extends Component {
 // }
 
   _onPressHandler() {
-    this.loadingButton.showLoading(true);
+    this.loadingButton && this.loadingButton.showLoading(true);
 
     // mock
     // setTimeout(() => {
@@ -47,8 +57,9 @@ class PhoneNumber extends Component {
     this.mobileNumber()
   }
 
+
   hideLoader =()=>{
-     this.loadingButton.showLoading(false);
+    this.loadingButton && this.loadingButton.showLoading(false);
   }
 
   concatNumber= (phoneNumber)=>{
@@ -58,16 +69,69 @@ class PhoneNumber extends Component {
 
     var edited_number = phoneNumber.replace(phoneNumber[0], '');
 
-    number = "234" + edited_number
+    number = "+234" + edited_number
 
   }else{
-    number = "234" + phoneNumber
+    number = "+234" + phoneNumber
   }
 
      
     console.log("concat number ", number)
     // this.props.setLoading()
-     this.props.textMessageAuth(number, this.hideLoader)
+    //  this.props.textMessageAuth(number, this.hideLoader)
+    try {
+      
+    rootRef
+    .child("users")
+    .orderByChild("phone_number")
+    .equalTo(number)
+    .once("value")
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+         Notifier.showNotification({
+          title: "Signup Error",
+       
+          description:'oops!, someone already signed up with this number',
+          duration: 3000,
+          showAnimationDuration: 800,
+          showEasing: Easing.bounce,
+          componentProps: {
+            alertType: 'error',
+          },
+          // onHidden: () => console.log("Hidden"),
+          // onPress: () => console.log("Press"),
+          hideOnPress: true,
+        });
+        // alert("");
+        return this.hideLoader();
+      } else {
+        console.log("not found");
+        this.signUpFirebase(number)
+      }
+    });
+    } catch (error) {
+      console.log({error})
+      // Notifier.showNotification({
+      //   title: "Error",
+     
+      //   description:'oops!, something went wrong.',
+      //   duration: 3000,
+      //   showAnimationDuration: 800,
+      //   showEasing: Easing.bounce,
+      //   // onHidden: () => console.log("Hidden"),
+      //   // onPress: () => console.log("Press"),
+      //   hideOnPress: true,
+      //   componentProps: {
+      //     alertType: 'error',
+      //   }
+      // });
+
+      this.setState({
+        error_msg : "oops!, something went wrong"
+      })
+
+      return this.hideLoader();
+    }
 
     // console.log({result})
     // this.props.navigation.navigate("otp")
@@ -75,81 +139,157 @@ class PhoneNumber extends Component {
   }
 
 
-  componentWillUnmount(){
-    this.loadingButton.showLoading(true);
-  }
-  mobileNumber = () => {
+  signUpFirebase = async (number) => {
+    try {
+      // const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      // const verificationId = await phoneProvider.verifyPhoneNumber(
+      //   number,
+      //   this.recaptchaVerifier.current
+      // );
+  
+      // this.setState({verificationId})
+      console.log({number})
 
+      const confirmation = await firebase.auth().signInWithPhoneNumber(number, this.recaptchaVerifier.current);
+  
+      this.setState({confirmation})
+
+      this.setState({number})
+
+      Notifier.showNotification({
+        title: "Success",
+     
+        description:'Verification code has been sent to your phone.',
+        Component: NotifierComponents.Alert,
+        duration: 3000,
+        showAnimationDuration: 800,
+        showEasing: Easing.bounce,
+        // onHidden: () => console.log("Hidden"),
+        // onPress: () => console.log("Press"),
+        hideOnPress: true,
+        componentProps: {
+          alertType: 'success',
+        }
+        
+      });
+      return this.hideLoader();
+    } catch (error) {
+      console.log({error})
+      // Notifier.showNotification({
+      //   title: "Error",
+     
+      //   description:'oops!, something went wrong.',
+      //   duration: 3000,
+      //   showAnimationDuration: 800,
+      //   showEasing: Easing.bounce,
+      //   // onHidden: () => console.log("Hidden"),
+      //   // onPress: () => console.log("Press"),
+      //   hideOnPress: true,
+      //   componentProps: {
+      //     alertType: 'error',
+      //   },
+      //   componentProps: {
+      //     alertType: 'error',
+      //   }
+      // });
+
+      this.setState({
+        error_msg : "oops!, something went wrong"
+      })
+      return this.hideLoader();
+
+    }
+  
+ 
+  }
+
+  mobileNumber = () => {
+    try {
+      
     const number = this.state.number ? this.state.number.replace(/\s+/g, '') : null
 
     if(!number ||  number.length < 10||  number.length > 11){
-      this.loadingButton.showLoading(false);
-      return alert("Please enter a valid phone number")
-     
+      this.loadingButton && this.loadingButton.showLoading(false);
+
+    return  this.setState({
+        error_msg : "Please enter a valid phone number"
+      })
+    
      }
  
 
     "all zeros ? !",/^\d+$/.test(number.toString() ? 
     
     this.concatNumber(number)
-    : 
-    alert("Please Enter Just Numbers")
+    : () => {
+      // Notifier.showNotification({
+      //   title: "Error",
+     
+      //   description:'Please enter just numbers',
+      //   duration: 3000,
+      //   showAnimationDuration: 800,
+      //   showEasing: Easing.bounce,
+      //   // onHidden: () => console.log("Hidden"),
+      //   // onPress: () => console.log("Press"),
+      //   hideOnPress: true,
+      //   componentProps: {
+      //     alertType: 'error',
+      //   }
+      // })
+      this.setState({
+        error_msg : "Please enter just numbers"
+      })
+      this.hideLoader()
+    }
+ 
     ) 
+    } catch (error) {
+    
+      this.setState({
+        error_msg : "oops!, something went wrong."
+      })
+      return this.hideLoader();
+    }
+
   };
+
+  componentWillUnmount(){
+    this.loadingButton && this.loadingButton.showLoading(false);
+  }
+
+  toggleModal = () => {
+    this.setState({
+      modal_visible : false,
+      error_msg : null
+    })
+  }
 
 
   componentDidUpdate(prevProps){
 
     // console.log("error ", this.props.error.id.length)
     if(this.props.error.id.length > 0){
-      this.loadingButton.showLoading(false);
+      this.loadingButton && this.loadingButton.showLoading(false);
     }
   }
   render() {
     // console.log("number", this.state.number);
     // console.log("endpoint details ", this.props.auth)
-   
+   if(!this.state.confirmation){
     return (
+      
+
       
       
       <Animatable.View animation="slideInUp" style={styles.container}>
 
-<StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
+{this.state.error_msg && <ErrorModal modal_visible = {this.state.modal_visible} error_msg = {this.state.error_msg} toggleModal = {this.toggleModal} />}
 
-       
-<Header
-        style={{
-          backgroundColor: "whitesmoke",
-        }}
-      >
-        <Left>
-          <TouchableOpacity onPress={() => {
-                this.props.navigation.pop();
-              }}> 
-          <Button transparent>
-            <Icon
-              name="arrow-back"
-              style={{color : "black"}}
-            />
-          </Button>
-
-          </TouchableOpacity>
-         
-        </Left>
-        <Body>
-                    <Title style ={{
-                      fontWeight : "bold",
-                      color : "black",
-                      fontFamily : "Quicksand-Bold"
-                      // marginLeft : wp("4%")
-                    }}>Phone Number</Title>
-                  </Body>
-
-                  <Right></Right>
-                
-      </Header>
-
-
+<FirebaseRecaptchaVerifierModal
+        ref={this.recaptchaVerifier}
+        firebaseConfig={firebaseConfig}
+        attemptInvisibleVerification={true}
+      />
       <ScrollView>
       <Text style={styles.loremIpsum}>Enter your mobile number</Text>
         <View style={styles.rect}></View>
@@ -220,6 +360,11 @@ class PhoneNumber extends Component {
        
       </Animatable.View>
     );
+   }
+   else {
+     return <Otp user = {this.props.route.params} state = {this.state} setState = {this.setState} toggleModal = {this.toggleModal} />
+   }
+   
   }
 }
 

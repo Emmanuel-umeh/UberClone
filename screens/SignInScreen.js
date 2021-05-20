@@ -16,7 +16,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextInput } from "react-native-gesture-handler";
 
-import { loadUser } from "../action/authAction";
+import { loadUser } from "../redux/action/authAction";
 class SignInScreen extends Component {
   componentDidMount() {
     this.props.loadUser();

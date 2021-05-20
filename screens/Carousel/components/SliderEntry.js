@@ -3,8 +3,8 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import PropTypes from "prop-types";
 import { ParallaxImage } from "react-native-snap-carousel";
 import styles from "../styles/SliderEntry.style";
-import store from "../../../store";
-import { selectLogistic } from "../../../action/authAction";
+import store from "../../../redux/store";
+import { selectLogistic } from "../../../redux/action/authAction";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,

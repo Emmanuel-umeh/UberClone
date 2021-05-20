@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
-import {logout} from "../../action/authAction"
+import {logout} from "../../redux/action/authAction"
 import {connect} from "react-redux"
 function CupertinoButtonWarning6(props) {
   return (

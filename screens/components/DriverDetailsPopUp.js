@@ -24,7 +24,7 @@ import { Divider } from "react-native-paper";
 
 import LottieView from 'lottie-react-native';
 import { connect } from "react-redux";
-import { cashless_payment } from "../../action/orderActions";
+import { cashless_payment } from "../../redux/action/orderActions";
 const TouchableOpacity =
   Platform.OS === "ios"
     ? require("react-native").TouchableOpacity

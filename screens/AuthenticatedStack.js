@@ -2,11 +2,7 @@ import React from "react";
 
 import { createStackNavigator } from "@react-navigation/stack";
 import Map from "./Map";
-import { loadUser } from "../action/authAction";
 import { connect } from "react-redux";
-import AuthSplashScreen from "./AuthSplashScreen";
-import setDestination from "./SetDestination";
-import MapDestination from "./MapDestination";
 import ProfileScreen from "./ProfileScreen";
 import SetLogistics from "./selectLogistics";
 import CreditCard from "./CreditCard";
@@ -21,18 +17,30 @@ const AuthStack = createStackNavigator();
 
 const AuthenticatedStack = ({ navigation }) => (
   <AuthStack.Navigator
-    headerMode="none"
-    screenOptions={{
-      headerShown: false,
-    }}
+
+  
     mode= "modal"
   >
 
 
 
-    <AuthStack.Screen name="setLogisticsScreen" component={SetLogistics} />
+    <AuthStack.Screen name="setLogisticsScreen" options ={{
+            headerStyle : {
+              backgroundColor : "black"
+              
+            },
+            title : "Select Your Vehicle",
+            headerTitleAlign : "center",
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }} component={SetLogistics} />
 
-    <AuthStack.Screen  name="Map" component={Map} />
+    <AuthStack.Screen  name="Map" options ={{
+      headerShown : false
+    }} component={Map} />
 
     <AuthStack.Screen  name="MapRoute" component={MapRoute} />
     {/* <AuthStack.Screen name="SplashScreen" component={AuthSplashScreen}/> */}
@@ -68,4 +76,4 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { loadUser })(AuthenticatedStack);
+export default connect(mapStateToProps, {  })(AuthenticatedStack);

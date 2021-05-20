@@ -6,7 +6,7 @@ import * as Animatable from "react-native-animatable"
 // import { NavigationContainer } from "@react-navigation/native";
 import { CommonActions } from '@react-navigation/native';
 import { ScrollView } from "react-native-gesture-handler";
-import store from "../store";
+import store from "../redux/store";
 function TermsAndCondition({navigation}) {
     // console.log(navigation)
   return (

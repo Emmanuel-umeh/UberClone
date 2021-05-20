@@ -9,7 +9,7 @@ import MapView, {
 import colors from "./colors/colors"
   import google_api from "../keys/google_map";
   import * as Animatable from "react-native-animatable";
-import store from "../store"
+import store from "../redux/store"
   import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,

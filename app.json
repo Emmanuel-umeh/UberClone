@@ -10,6 +10,11 @@
     "notification":{
 "icon" : "./assets/images/icon.png"
     },
+    "splash": {
+      "image": "./assets/images/user.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
 
     "updates": {
       "fallbackToCacheTimeout": 30000

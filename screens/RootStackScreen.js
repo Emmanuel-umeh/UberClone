@@ -9,27 +9,65 @@ import PhoneNumber from './phoneNumber';
 import Splash1 from './Intro/Intro1';
 import Map from './Map';
 // import MainTabScreen from './MainTabScreen';
-import { loadUser } from "../action/authAction";
 import {connect} from "react-redux"
 import getStarted from './getStarted';
 import NameScreen from './nameScreen';
 import TermsAndCondition from './termsAndCondition';
 import Otp from './Otp';
-import setDestination from './SetDestination';
+import setDestination from './setDestination';
 import MapDestination from './MapDestination';
 const RootStack = createStackNavigator();
 
 
 
 const RootStackScreen = ({navigation}) => (
-    <RootStack.Navigator   screenOptions={{
-        headerShown: false
-      }}>
+    <RootStack.Navigator >
         {/* <RootStack.Screen name="SplashScreen" component={SplashScreen}/> */}
-         <RootStack.Screen name="getStarted" component={getStarted}/>
-        <RootStack.Screen name="phoneNumberScreen" component={PhoneNumber}/>
-        <RootStack.Screen name="otp" component={Otp}/>
-        <RootStack.Screen name="nameScreen" component={NameScreen}/>
+         <RootStack.Screen name="getStarted" options ={{
+           headerShown  : false
+         }} component={getStarted}/>
+
+<RootStack.Screen name="nameScreen"options ={{
+            headerStyle : {
+              backgroundColor : "black",
+              
+            },
+            title : "Your Details",
+            headerTitleAlign : "left",
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }} component={NameScreen}/>
+        <RootStack.Screen name="phoneNumberScreen" options ={{
+           headerStyle : {
+            backgroundColor : "black",
+            
+          },
+          title : "Phone number",
+          headerTitleAlign : "left",
+          headerTintColor: '#fff',
+          headerTitleStyle : {
+            color : "#fff",
+            fontFamily : "Quicksand-Bold"
+          }
+         }}
+          component={PhoneNumber}/>
+        <RootStack.Screen name="otp" options ={{
+            headerStyle : {
+              backgroundColor : "black",
+              
+            },
+            title : "OTP",
+            headerTitleAlign : "left",
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }} component={Otp}/>
+      
         <RootStack.Screen name="TermsAndCondition" component={TermsAndCondition}/>
         <RootStack.Screen name="SignInScreen" component={SignInScreen}/>
         <RootStack.Screen name="SignUpScreen" component={SignUpScreen}/> 
@@ -49,5 +87,5 @@ const mapStateToProps = (state) => ({
   });
   
   // export default ProjectForm
-  export default connect(mapStateToProps, { loadUser })(RootStackScreen);
+  export default connect(mapStateToProps, { })(RootStackScreen);
   

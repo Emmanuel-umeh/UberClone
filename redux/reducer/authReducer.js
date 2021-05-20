@@ -15,7 +15,6 @@ import {
   AUTH_MESSAGE_SENT,
   PROFILE_LOADED,
   CLEAR_TYPE,
-  SET_USER_TOKEN,
   IS_AUTHENTICATED,
   SET_LOADING,
   END_LOADING,
@@ -24,45 +23,9 @@ import {
 } from "../action/types";
 import AsyncStorage from "@react-native-community/async-storage";
 import { isLoaded, isLoading } from "expo-font";
-var token 
 
-
-
-getToken = async () =>{
-    var value = await AsyncStorage.getItem('token')
-    console.log("test value  !!!!!!!!!! ", value)
-    token = value
-    return value
-};
-
-const saveToken = async (token) => {
-  try {
-    await AsyncStorage.setItem("token", token);
-    //   token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    //   console.log(token)
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e);
-  }
-};
-
-const removeToken = async (token) => {
-  try {
-    await AsyncStorage.removeItem("token", token);
-    //   token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    //   console.log(token)
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e);
-  }
-};
-
-// getToken();
 
 const initialState = {
-  token: token,
   isAuthenticated: false,
   isLoading: false,
   user: null,
@@ -76,12 +39,6 @@ export default function (state = initialState, action) {
 
     
 
-    case SET_USER_TOKEN: {
-        return {
-            ...state,
-            token : action.payload
-        };
-      }
 
       
     case SET_LOADING: {
@@ -115,8 +72,8 @@ export default function (state = initialState, action) {
         ...state,
         isAuthenticated: true,
         isLoading: false,
-        user: action.payload.user? action.payload.user : action.payload,
-        token :action.payload.token? action.payload.token : state.token,
+        user: action.payload,
+      
         type: action.type,
       };
 
@@ -147,8 +104,7 @@ export default function (state = initialState, action) {
 
     case LOGIN_SUCCESS:
     case REGISTER_SUCCESS:
-      // AsyncStorage.setItem("token", action.payload.token)
-      saveToken(action.payload.token);
+  
       console.log("logged in successfully");
 
       return {
@@ -160,12 +116,10 @@ export default function (state = initialState, action) {
       };
 
     case LOGOUT_SUCCESS:
-      // AsyncStorage.removeItem("token")
-      removeToken()
+   
       console.log("logged OUT successfully");
       return {
         ...state,
-        token: null,
         user: null,
         isAuthenticated: false,
         isLoading: false,
@@ -175,11 +129,9 @@ export default function (state = initialState, action) {
     case REGISTER_FAIL:
     case LOGOUT_SUCCESS:
     case LOGIN_FAIL:
-      // AsyncStorage.removeItem("token")
-      removeToken()
+    
       return {
         ...state,
-        token: token,
         user: null,
         isAuthenticated: false,
         isLoading: false,
@@ -218,7 +170,6 @@ export default function (state = initialState, action) {
 
     case AUTH_ERROR:
       return {
-        token: token,
         isAuthenticated: null,
         isLoading: false,
         user: null,

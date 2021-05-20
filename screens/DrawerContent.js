@@ -23,7 +23,6 @@ import colors from "./colors/colors"
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from "react-native-animatable"
-import {logout, setLoading} from "../action/authAction"
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Linking } from 'react-native';
 import {
@@ -62,7 +61,7 @@ import {
                                     size={60}
                                 />
                                 <View style={{marginLeft:15, flexDirection:'column'}}>
-                                    <Title style={styles.title}>{user ? user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) : "John"} </Title>
+                                    <Title style={styles.title}>{user ? user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1) : "John"} </Title>
                                     <Caption style={styles.caption}>View Profile</Caption>
                                 </View>
                             </View>
@@ -270,7 +269,7 @@ const mapStateToProps = (state) => ({
   });
   
   // export default ProjectForm
-  export default connect(mapStateToProps, { logout,setLoading })(DrawerContent);
+  export default connect(mapStateToProps, { })(DrawerContent);
 const styles = StyleSheet.create({
     drawerContent: {
       flex: 1,

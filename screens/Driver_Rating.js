@@ -5,7 +5,7 @@ import { Rating, AirbnbRating } from 'react-native-ratings';
  import { connect } from 'react-redux'
  import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Textarea } from 'native-base';
-import {rate_driver} from "../action/orderActions"
+import {rate_driver} from "../redux/action/orderActions"
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import colors from "./colors/colors"
 

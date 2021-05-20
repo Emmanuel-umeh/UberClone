@@ -7,13 +7,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import { NotifierWrapper } from "react-native-notifier";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import AnimatedSplash from "react-native-animated-splash-screen";
-import store from "./store"
+import store from "./redux/store"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
 import _ from "lodash";
+
+import {firebase} from "./firebase/firebase"
 
 import * as Location from "expo-location"
 
@@ -26,7 +28,7 @@ import { navigationRef } from "./rootNavigation";
 import * as Font from "expo-font";
 
 import { connect } from "react-redux";
-import { loadUser, setUserToken } from "./action/authAction";
+
 
 import AuthenticatedStack from "./screens/AuthenticatedStack";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -40,24 +42,29 @@ import Config from "react-native-config";
 import { Platform } from "react-native";
 
 import google_api from "./keys/google_map";
-
+import { LogBox  } from "react-native";
 import Geocoder from 'react-native-geocoding';
 // Initialize the module (needs to be done only once)
 Geocoder.init(google_api); // use a valid API key
 const Drawer = createDrawerNavigator();
 
-YellowBox.ignoreWarnings(["Setting a timer"]);
+// LogBox.ignoreLogs(["Setting a timer"]);
+// LogBox.ignoreLogs(["Animated: `useNativeDriver` was not specified"]);
 // const _console = _.clone(console);
 // console.warn = (message) => {
 //   if (message.indexOf("Setting a timer") <= -1) {
 //     _console.warn(message);
 //   }
 // };
+
+
+
+const rootRef = firebase.database().ref()
+
+ SplashScreen.preventAutoHideAsync().catch(error => {}) ;
 class App extends React.Component {
   constructor(props) {
     super(props);
-    console.ignoredYellowBox = ["Setting a timer"];
-    console.ignoredYellowBox = ['Animated: `useNativeDriver`'];
     this.unsubscribe = null
 
     // user location constuructor 
@@ -84,7 +91,7 @@ this.loadApp()
   loadApp = async()=>{
   
     try {
-      // await SplashScreen.preventAutoHideAsync();
+   
 
       this.prepareResources()
     } catch (e) {
@@ -97,12 +104,6 @@ this.loadApp()
   prepareResources = async()=>{
 try {
 
-
-  const {token} = this.props.auth
-  
-    
-    // await AsyncStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYTg1NzI1MGM4NjNjM2E3Y2ZiMWI1NiIsImlhdCI6MTYwNDg3MDI0MywiZXhwIjoxMDAwMDAxNjA0ODcwMjQyfQ.1yMf5nhSj3U4rrOHGyw8yEJ138sFp7c60zp2qOBEBPI")
-// await AsyncStorage.removeItem("token")
 
 await Font.loadAsync({
   "charm-bold": require("./assets/fonts/Charm-Bold.ttf"),
@@ -128,12 +129,114 @@ await Font.loadAsync({
   Roboto: require("native-base/Fonts/Roboto.ttf"),
   Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
   // ...Ionicons.font,
-}); await Permissions.askAsync(Permissions.LOCATION);
+}); 
+
+
+
+
+firebase.auth().onAuthStateChanged(async (user)=>{
+  if(!user && !firebase.auth().currentUser){
+    
+    console.log("user isnt logged in")
+    
+     await store.dispatch({
+      type : "AUTH_ERROR"
+    })
+   
+  }else{
+
+      try {
+        store.dispatch({ type: "USER_LOADING" }); // dispatch user loading
+
+         // Assuming user is logged in
+    const userId = firebase.auth().currentUser.uid;
+
+    const reference = firebase.database().ref(`users/${userId}`);
+        
+    
+        reference.once('value', function(snapshot){
+          if (snapshot.exists()) {
+            let user = snapshot.val();
+
+          // let user = firebase.database().ref("drivers/"+firebase.auth().currentUser.uid)
+          if (
+            (!user.first_name || !user.last_name || !user.email) 
+          ) {
+
+            console.log("some user properties are missing!!!!!!!!!!!!!!!!!!!!!")
+        
+                store.dispatch({
+                  type: "AUTH_ERROR",
+                });
+             
+
+                
+                 
+          } else {
+          
+  
+         
+              store.dispatch({
+                type: "USER_LOADED",
+                payload: user,
+              });
+             
+           
+             
+          }
+  
+          }
+          
+          else {
+            console.log('not found');
+            
+          }
+         })
+        
+         reference.on('value', function(snapshot){
+          if (snapshot.exists()) {
+            let user = snapshot.val();
+            console.log("user location updated", user)
+
+          // let user = firebase.database().ref("users/"+firebase.auth().currentUser.uid)
+       
+          
+              store.dispatch({
+                type: "UPDATED_USER",
+                payload: user,
+              });
+            
+   
+  
+          }
+
+
+         })
+
+      } catch (e) {
+        if (e) {
+          // console.clear()
+          store.dispatch({
+            type : "AUTH_ERROR"
+          })
+          console.log("error in app.js", e);
+        
+
+          alert("Something went wrong. Please restart")
+        }
+      }
+  
+
+  }
+})
+
+
+await Permissions.askAsync(Permissions.LOCATION);
 
 // await this.getToken();
 
 
-await this.props.loadUser(token);
+
 
   
 console.log("preparing resources!!!!!!!!!!!!!,... ", )
@@ -145,18 +248,18 @@ this.unsubscribe = NetInfo.addEventListener(state => {
 
 await this._getLocationAsync()
 
+setTimeout(async() => {
+      
+  await this.setState({ loading: false });
+  await SplashScreen.hideAsync()
+    }, 100);
+
+    
+ 
+
 // console.log("Redux props ", this.props)
 } catch (error) {
   console.log({error})
-}finally{
-
-    setTimeout(async() => {
-      
-  this.setState({ loading: false });
-    }, 2000);
-   
-
-
 }
   }
 
@@ -363,7 +466,7 @@ await this._getLocationAsync()
   };
 
   render() {
-    const { isAuthenticated, type, token, isLoading } = this.props.auth;
+    const { isAuthenticated, type, isLoading } = this.props.auth;
 
 
 //     if (this.state.loading) {
@@ -399,19 +502,23 @@ await this._getLocationAsync()
 //      }
     // else {
       // console.log("second!!!");
+
+      if(this.state.loading){
+        return null
+      }
       return (
 
 
-        <AnimatedSplash
-        translucent={true}
-        isLoaded={!this.state.loading}
-        logoImage={require("./assets/images/logo.png")}
-        backgroundColor={"#fff"}
-        logoHeight={hp(40)}
-        logoWidth={wp(80)}
-      >
+      //   <AnimatedSplash
+      //   translucent={true}
+      //   isLoaded={true}
+      //   logoImage={require("./assets/images/logo.png")}
+      //   backgroundColor={"#fff"}
+      //   logoHeight={hp(40)}
+      //   logoWidth={wp(80)}
+      // >
       
-      {!this.state.loading && 
+  
       
       <NotifierWrapper>
       <NavigationContainer ref={navigationRef}>
@@ -444,9 +551,9 @@ drawerType ="slide"
         {/* <RootStackScreen /> */}
       </NavigationContainer>
     </NotifierWrapper>
-}
+
   
-        </AnimatedSplash>
+        // </AnimatedSplash>
       );
     // }
   }
@@ -461,7 +568,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { loadUser, setUserToken })(App);
+export default connect(mapStateToProps, { })(App);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
