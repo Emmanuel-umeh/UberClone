@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import {StyleSheet, View, Image} from "react-native"
-import {Container,  Text, Icon,  Picker, Button } from "native-base";
+import {Container,  Text, Icon, Button, Picker } from "native-base";
 import LottieView from 'lottie-react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { ScrollView } from "react-native";
@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 import { LinearGradient } from 'expo-linear-gradient';
 import store from "../../redux/store"
 import { Divider } from "react-native-paper";
+
 
 
 class Request_ride extends Component {
@@ -152,6 +153,7 @@ class Request_ride extends Component {
           
                 {/* <Picker.Item label="#c9c7c7" value="Gray" /> */}
               </Picker>
+
 
 
 

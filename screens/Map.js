@@ -42,7 +42,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 import google_api from "../keys/google_map";
 import { connect } from "react-redux";
-import Pusher from "pusher-js/react-native";
 import {
   regionFrom,
   getLatLonDiffInMeters,
@@ -163,21 +162,14 @@ class Map extends PureComponent {
     this.destinationMarker = React.createRef();
     this.from_marker = React.createRef();
     this.driver_marker = React.createRef();
-    // this.props.auth.user.phoneNumber = null;
-    // this.client_driver_paid = null;
-    this.available_drivers_channel = null;
     this.bookRide = this.bookRide.bind(this);
-    this.user_ride_channel = null;
-
-    // this.pusher = null;
-
+ 
     const { token } = this.props.auth;
 
     this.state = {
       available_drivers_channel: null,
       user_ride_channel: null,
       map_is_ready: false,
-      pusher: null,
       follow_user_location: true,
       show_user_location: true,
 
@@ -781,11 +773,7 @@ class Map extends PureComponent {
       );
 
       schedulePushNotification(data.title, data.msg, null);
-      // this.setState({
-      //   pusher : this.pusher,
-      //   available_drivers_channel : this.available_drivers_channel,
-      //   user_ride_channel : this.user_ride_channel
-      // })
+  
     } catch (error) {
       console.log("error in line 791!!!!!! ", error);
     }
@@ -1291,64 +1279,47 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
     this.chech_ride_state();
 
-    this.available_drivers_channel = this.pusher.subscribe(
-      `private-available-drivers-${
-        this.props.order.logistic_type
-          ? this.props.order.logistic_type.toLowerCase()
-          : "car"
-      }`,
-      (data) => {
-        console.log(data);
-      }
-    );
 
-    this.user_ride_channel = this.pusher.subscribe(
-      "private-ride-" + this.props.auth.user._id
-    );
 
-    this.user_ride_channel.bind("client-driver-available", (data) => {
-      console.log("clients driver response!!!!!");
-      console.log("driver has ride  ??? ", this.props.order.has_ride);
-      let passenger_response = "no";
-      if (!this.props.order.has_ride) {
-        passenger_response = "yes";
-      }
+    // this.user_ride_channel.bind("client-driver-available", (data) => {
+    //   console.log("clients driver response!!!!!");
+    //   console.log("driver has ride  ??? ", this.props.order.has_ride);
+    //   let passenger_response = "no";
+    //   if (!this.props.order.has_ride) {
+    //     passenger_response = "yes";
+    //   }
 
-      // passenger responds to driver's response
-      this.user_ride_channel.trigger("client-driver-response", {
-        response: passenger_response,
-      });
-    });
-
-    this.user_ride_channel.bind("client-found-driver", (data) => {
-      this.client_found_driver(data);
-    });
-
-    this.user_ride_channel.bind("client-driver-location", (data) => {
-      // console.log("Reveiced location on the reconnect client channel!!!!!!!!!!!!!!!!!!!!!")
-      this.client_driver_location(data);
-    });
-
-    // get the heading for the driver
-    // this.user_ride_channel.bind("client-driver-heading", (data) => {
-    //  store.dispatch({
-    //    type : "DRIVER_HEADING",
-    //    payload : data.trigger_heading ? data.trigger_heading : 0
-    //  })
-
+    //   // passenger responds to driver's response
+    //   this.user_ride_channel.trigger("client-driver-response", {
+    //     response: passenger_response,
+    //   });
     // });
 
-    this.user_ride_channel.bind("client-driver-message", (data) => {
-      this.client_driver_message(data);
-    });
+    // this.user_ride_channel.bind("client-found-driver", (data) => {
+    //   this.client_found_driver(data);
+    // });
+
+    // this.user_ride_channel.bind("client-driver-location", (data) => {
+    //   // console.log("Reveiced location on the reconnect client channel!!!!!!!!!!!!!!!!!!!!!")
+    //   this.client_driver_location(data);
+    // });
+
+    // // get the heading for the driver
+    // // this.user_ride_channel.bind("client-driver-heading", (data) => {
+    // //  store.dispatch({
+    // //    type : "DRIVER_HEADING",
+    // //    payload : data.trigger_heading ? data.trigger_heading : 0
+    // //  })
+
+    // // });
+
+    // this.user_ride_channel.bind("client-driver-message", (data) => {
+    //   this.client_driver_message(data);
+    // });
 
     // }
 
-    this.setState({
-      pusher: this.pusher,
-      available_drivers_channel: this.available_drivers_channel,
-      user_ride_channel: this.user_ride_channel,
-    });
+
   };
 
   componentDidCatch(error, errorInfo) {
@@ -1377,44 +1348,35 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     );
 
 
-    // console.log("poarams received!!!! ", this.props.route.params)
-
-    // var {payment_method, from_location, destination_location, price} = this.props.route.params
-
-    // if(this.props.route.params.book_ride){
-    //   return this.bookRide(payment_method, from_location, destination_location, price)
-    // }
-
-    // this.pusher.connection.bind('connected', function() {
     console.log("subscribing to presence channel");
 
     var drivers_array = [];
-    var presenceChannel = this.pusher.subscribe("presence-available-drivers");
-    presenceChannel.bind("pusher:subscription_succeeded",  ()=> {
-      // var presence = presenceChannel.members;
+//     var presenceChannel = this.pusher.subscribe("presence-available-drivers");
+//     presenceChannel.bind("pusher:subscription_succeeded",  ()=> {
+//       // var presence = presenceChannel.members;
 
-      presenceChannel.members.each((element) => {
-        if (element.info.type == "Driver") {
-          drivers_array.push(element);
-        }
-      });
-      console.log({ drivers_array });
+//       presenceChannel.members.each((element) => {
+//         if (element.info.type == "Driver") {
+//           drivers_array.push(element);
+//         }
+//       });
+//       console.log({ drivers_array });
 
-      this.setState({
-        available_presence_drivers: drivers_array,
-      });
+//       this.setState({
+//         available_presence_drivers: drivers_array,
+//       });
 
-//       presenceChannel.bind("driver-location-updated", (data)=>{
-// console.log("triggered by driver-location-updatred",data)
-// alert("triggered by driver-location-updatred",data)
-//       })
-    });
+// //       presenceChannel.bind("driver-location-updated", (data)=>{
+// // console.log("triggered by driver-location-updatred",data)
+// // alert("triggered by driver-location-updatred",data)
+// //       })
+//     });
     // });
    
 
-    if (this.props.order.has_ride) {
-      this.reconnect_client();
-    }
+    // if (this.props.order.has_ride) {
+    //   this.reconnect_client();
+    // }
   }
 
   navigate = (name) => {
@@ -1895,7 +1857,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
       // console.log("payment method!!!!!!!!!!!!!! ", payment_method, from_location, destination_location);
       // connect to pushe rwhen booking ride
-      await this.pusher_actions();
+      // await this.pusher_actions();
       console.log("booking ride after pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
 
       let from_address;
@@ -2091,7 +2053,6 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
                   type: "PERFORMING_TASK_ENDED",
                 });
 
-                // this.props.pusher&& this.props.pusher.pusher.disconnect()yyyyyy
               },
             },
             {
@@ -2572,7 +2533,6 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   error: state.error,
   order: state.order,
-  pusher: state.pusher,
 });
 
 // export default ProjectForm

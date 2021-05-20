@@ -42,7 +42,9 @@ const AuthenticatedStack = ({ navigation }) => (
       headerShown : false
     }} component={Map} />
 
-    <AuthStack.Screen  name="MapRoute" component={MapRoute} />
+    <AuthStack.Screen   options ={{
+      headerShown : false
+    }} name="MapRoute" component={MapRoute} />
     {/* <AuthStack.Screen name="SplashScreen" component={AuthSplashScreen}/> */}
 
     {/* <AuthStack.Screen name="setDestination" component={setDestination} /> */}

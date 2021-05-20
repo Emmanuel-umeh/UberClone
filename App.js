@@ -213,6 +213,13 @@ firebase.auth().onAuthStateChanged(async (user)=>{
 
          })
 
+
+         firebase.database().ref(`users/price`).on('value', function(snapshot){
+          if (snapshot.exists()) {
+           const price = snapshot.val()
+           console.log("price!!!!!!!!!!!!!!", price)
+          }
+         })
       } catch (e) {
         if (e) {
           // console.clear()
@@ -389,6 +396,16 @@ setTimeout(async() => {
                 type: "GET_LOCATION",
                 payload: data,
               });
+              
+              if(location.coords.accuracy < 100){
+                firebase.database().ref("users/"+firebase.auth().currentUser.uid).update({
+                  location : {
+                    latitude : location.coords.latitude ,longitude : location.coords.longitude
+                  }
+                })
+  
+             
+              } 
   
               if(location_accuracy < 10){
   
