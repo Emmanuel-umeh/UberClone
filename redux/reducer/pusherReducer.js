@@ -4,7 +4,6 @@ import {
     USER_RIDE_CHANNEL,
     AVAILABLE_DRIVERS
   } from "../action/types";
-  import AsyncStorage from "@react-native-community/async-storage";
   
   import { Dimensions } from "react-native";
   import { AnimatedRegion } from "react-native-maps";

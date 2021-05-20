@@ -31,7 +31,6 @@ import { connect } from "react-redux";
 
 
 import AuthenticatedStack from "./screens/AuthenticatedStack";
-import AsyncStorage from "@react-native-community/async-storage";
 import * as Permissions from "expo-permissions";
 import NetInfo from '@react-native-community/netinfo';
 import * as SplashScreen from 'expo-splash-screen';
@@ -48,14 +47,14 @@ import Geocoder from 'react-native-geocoding';
 Geocoder.init(google_api); // use a valid API key
 const Drawer = createDrawerNavigator();
 
-// LogBox.ignoreLogs(["Setting a timer"]);
-// LogBox.ignoreLogs(["Animated: `useNativeDriver` was not specified"]);
-// const _console = _.clone(console);
-// console.warn = (message) => {
-//   if (message.indexOf("Setting a timer") <= -1) {
-//     _console.warn(message);
-//   }
-// };
+LogBox.ignoreLogs(["Setting a timer"]);
+LogBox.ignoreLogs(["Animated: `useNativeDriver` was not specified"]);
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
 
 
 
@@ -131,7 +130,7 @@ await Font.loadAsync({
   // ...Ionicons.font,
 }); 
 
-
+console.log("checking somethng ", firebase.auth().currentUser)
 
 
 firebase.auth().onAuthStateChanged(async (user)=>{
@@ -218,6 +217,10 @@ firebase.auth().onAuthStateChanged(async (user)=>{
           if (snapshot.exists()) {
            const price = snapshot.val()
            console.log("price!!!!!!!!!!!!!!", price)
+           store.dispatch({
+             type : "SET_PRICE",
+             payload : price
+           })
           }
          })
       } catch (e) {
@@ -274,7 +277,7 @@ setTimeout(async() => {
 
     try {
       Location.setApiKey("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM")
-      console.log("getting location!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ")
+    
       // Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
       let { status } = await Permissions.askAsync(Permissions.LOCATION);
       if (status !== "granted") {
@@ -305,32 +308,7 @@ setTimeout(async() => {
       }
   
       var location_accuracy = 1000
-  //     let location = await Location.getCurrentPositionAsync({
-  //       accuracy: Location.Accuracy.BestForNavigation,
-  //       maximumAge: 20000,
-  //       enableHighAccuracy: true,
-  //       timeInterval: 8000,
-  //       distanceInterval: 10,
-  //       timeout: 20000
-  //     });
-  
-      
-  
-  //     console.log({location})
-  
-     
-  //     var my_location = regionFrom(
-  //       location.coords.latitude,
-  //       location.coords.longitude,
-  //       location.coords.accuracy
-  //     );
-  
-  //     location_accuracy =  location.coords.accuracy
-  
-  // console.log("locatioin accuraccy!!!!!!!!!!!!! ", location_accuracy)
-  //     while (location_accuracy > 10) {
-  
-  //       console.log("inside while loop")
+ 
         this.location = await Location.watchPositionAsync({
           accuracy: Location.Accuracy.BestForNavigation,
           maximumAge: 20000,
@@ -342,8 +320,7 @@ setTimeout(async() => {
         }, async (location) =>{
           
   
-          console.log("watch position location !!! ", location)
-    
+        
        
           var my_location = regionFrom(
             location.coords.latitude,
@@ -354,7 +331,6 @@ setTimeout(async() => {
           location_accuracy = location.coords.accuracy
   
     
-          console.log("my location!!!!!!!!!!!!", my_location)
           this.setState({
             my_location : my_location
           });

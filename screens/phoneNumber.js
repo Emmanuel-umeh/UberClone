@@ -81,34 +81,34 @@ class PhoneNumber extends Component {
     //  this.props.textMessageAuth(number, this.hideLoader)
     try {
       
-    rootRef
-    .child("users")
-    .orderByChild("phone_number")
-    .equalTo(number)
-    .once("value")
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-         Notifier.showNotification({
-          title: "Signup Error",
+    // rootRef
+    // .child("users")
+    // .orderByChild("phone_number")
+    // .equalTo(number)
+    // .once("value")
+    // .then((snapshot) => {
+    //   if (snapshot.exists()) {
+    //      Notifier.showNotification({
+    //       title: "Signup Error",
        
-          description:'oops!, someone already signed up with this number',
-          duration: 3000,
-          showAnimationDuration: 800,
-          showEasing: Easing.bounce,
-          componentProps: {
-            alertType: 'error',
-          },
-          // onHidden: () => console.log("Hidden"),
-          // onPress: () => console.log("Press"),
-          hideOnPress: true,
-        });
-        // alert("");
-        return this.hideLoader();
-      } else {
-        console.log("not found");
+    //       description:'oops!, someone already signed up with this number',
+    //       duration: 3000,
+    //       showAnimationDuration: 800,
+    //       showEasing: Easing.bounce,
+    //       componentProps: {
+    //         alertType: 'error',
+    //       },
+    //       // onHidden: () => console.log("Hidden"),
+    //       // onPress: () => console.log("Press"),
+    //       hideOnPress: true,
+    //     });
+    //     // alert("");
+    //     return this.hideLoader();
+    //   } else {
+    //     console.log("not found");
         this.signUpFirebase(number)
-      }
-    });
+      // }
+    // });
     } catch (error) {
       console.log({error})
       // Notifier.showNotification({

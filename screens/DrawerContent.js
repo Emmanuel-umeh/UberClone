@@ -29,6 +29,7 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
   } from "react-native-responsive-screen";
+  import {Settings, Home, User, UserCheck, Truck} from "react-native-feather"
 
 // import{ AuthContext } from '../components/context';
 
@@ -94,12 +95,7 @@ import {
                             animation = "slideInLeft">
                             <DrawerItem 
                                 icon={({color, size}) => (
-                                    <Icon 
-                                    name="home-outline" 
-                                 color = {colors.white}
-                                   color = {colors.white}
-                                     size={30}
-                                    />
+                                  <Home fill = {colors.black} stroke = {colors.white} height = {25} width = {25} />
                                 )}
                                 labelStyle ={{
                                   color: colors.white,
@@ -114,11 +110,7 @@ import {
                             </Animatable.View>
                             <DrawerItem 
                                 icon={({color, size}) => (
-                                    <Icon 
-                                    name="account-outline" 
-                                 color = {colors.white}
-                                     size={30}
-                                    />
+                                  <User fill = {colors.black} stroke = {colors.white} height = {25} width = {25} />
                                 )}
                                 labelStyle ={{
                                   color: colors.white,
@@ -135,11 +127,7 @@ import {
 
 <DrawerItem 
                                 icon={({color, size}) => (
-                                    <Icon 
-                                    name="car" 
-                                 color = {colors.white}
-                                     size={30}
-                                    />
+                                  <Truck fill = {colors.black} stroke = {colors.white} height = {25} width = {25} />
                                 )}
                                 labelStyle ={{
                                   color: colors.white,
@@ -188,11 +176,7 @@ import {
                             /> */}
                             <DrawerItem 
                                 icon={({color, size}) => (
-                                    <Icon 
-                                    name="settings-outline" 
-                                  color = {colors.white}
-                                    size={30}
-                                    />
+                                 <Settings fill = {colors.black} stroke = {colors.white} height = {25} width = {25} />
                                 )}
                                 labelStyle ={{
                                   color: colors.white,
@@ -207,11 +191,7 @@ import {
                             />
                             <DrawerItem 
                                 icon={({color, size}) => (
-                                    <Icon 
-                                    name="account-check-outline" 
-                                 color = {colors.white}
-                                     size={30}
-                                    />
+                                  <UserCheck fill = {colors.black} stroke = {colors.white} height = {25} width = {25} />
                                 )}
                                 labelStyle ={{
                                   color: colors.white,

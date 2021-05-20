@@ -17,7 +17,6 @@ import {
   END_FETCHING,
  
   CLEAR_TYPE,
-  SET_USER_TOKEN,
   SET_LOADING,
   END_LOADING,
   PUSHER_AUTH,
@@ -29,9 +28,10 @@ import {
   GET_ORDER,
   DRIVER_HEADING,
   CONFIRM_LOCATION,
-  PURGE
+  PURGE,
+  SET_PRICE
 } from "../action/types";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Dimensions } from "react-native";
 import { AnimatedRegion } from "react-native-maps";
@@ -42,54 +42,7 @@ const LATITUDE_DELTA =  0.005858723958820065;
 const LONGITUDE_DELTA =  0.005858723958820065;
 
 
-var token;
-
-getToken = async () => {
-  var value = await AsyncStorage.getItem("token");
-  console.log("test value  !!!!!!!!!! ", value);
-  token = value;
-  return value;
-};
-
-const saveToken = async (token) => {
-  try {
-    await AsyncStorage.setItem("token", token);
-    //   token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    //   console.log(token)
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e);
-  }
-};
-
-const removeToken = async (token) => {
-  try {
-    await AsyncStorage.removeItem("token", token);
-    //   token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    //   console.log(token)
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e);
-  }
-};
-
-const saveOrder = async (id) => {
-  try {
-    await AsyncStorage.setItem("order_id", id);
-    //   token  = await AsyncStorage.getItem("token")
-    // alert(token)
-    //   console.log(token)
-  } catch (e) {
-    // alert('Failed to save the data to the storage')
-    console.log(e);
-  }
-};
-// getToken();
-
 const initialState = {
-  token: token,
   order: null,
   type: "",
 
@@ -164,12 +117,7 @@ my_address : null
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case SET_USER_TOKEN: {
-      return {
-        ...state,
-        token: action.payload,
-      };
-    }
+    
 // when user is searching for driver loader
     case SET_LOADING: {
       return {
@@ -187,6 +135,12 @@ export default function (state = initialState, action) {
     // end
 
 
+    case SET_PRICE: {
+      return {
+        ...state,
+        price: Number(action.payload),
+      };
+    }
 
     // loader when making requuests to endpoints
     case SET_FETCHING: {
@@ -585,7 +539,6 @@ case PURGE:
 
   
   return {
-    token: token,
     order: null,
     type: "",
   

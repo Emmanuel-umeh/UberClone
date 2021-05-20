@@ -21,7 +21,6 @@ import {
   ADD_CARD,
   ADD_CARD_FAILED
 } from "../action/types";
-import AsyncStorage from "@react-native-community/async-storage";
 import { isLoaded, isLoading } from "expo-font";
 
 

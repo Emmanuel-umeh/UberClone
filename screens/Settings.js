@@ -12,7 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { Container, Header, Content, Card, CardItem, Text, Icon, Right, Left, Body, Title, Button,Picker, Switch } from 'native-base';
 import LottieLoader from "react-native-lottie-loader";
 import {notifications_allowed} from "../redux/action/authAction"
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from 'expo-status-bar';
 import colors from "./colors/colors";
 // import { nanoid } from 'nanoid'

@@ -8,6 +8,9 @@ export const CLEAR_TYPE = "CLEAR_TYPE" // clears the type
 
 
 
+export const SET_PRICE = "SET_PRICE" // sets the price 
+
+
 // PAYSTACK
 
 

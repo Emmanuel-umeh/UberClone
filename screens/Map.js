@@ -1844,107 +1844,43 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     }
   };
 
-  bookRide = async (payment_method, from_location, destination_location, price) => {
+  bookRide = async (payment_method, updated_location_from, destination_location, price) => {
     try {
 
+      const {user} = this.props.auth
       console.log("booking ride!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
-      store.dispatch({
-        type : "SET_LOADING"
-      })
-      const { token } = this.props.auth;
+      // store.dispatch({
+      //   type : "SET_LOADING"
+      // })
 
-      // console.log("payment method!!!!!!!!!!!!!! ", payment_method, from_location, destination_location);
-      // connect to pushe rwhen booking ride
-      // await this.pusher_actions();
-      console.log("booking ride after pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
-
-      let from_address;
-      let going_address = destination_location.name;
-
-      // const from_address_full = await Location.reverseGeocodeAsync({
-      //   latitude: this.props.order.region.latitude,
-      //   longitude: this.props.order.region.longitude,
-      // });
-
-      //   const going_address_full =    await  Location.reverseGeocodeAsync({
-      //     latitude: this.props.order.going.latitude,
-      //  longitude:  this.props.order.going.longitude
-      //   })
-
-      // from_address = from_address_full[0].street
-      //   ? from_address_full[0].street
-      //   : from_address_full[0].name;
-      // going_address = going_address_full.street
-
-    //  var from_address_geocode = await  Location.reverseGeocodeAsync({
-    //         latitude: from_location.latitude,
-    //      longitude:  from_location.longitude
-    //       })
-  
-
-          
-    Geocoder.from(from_location.latitude, from_location.longitude)
-    .then(json => {
-
-     var from_address_geocode = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
-
-
-      const { user } = this.props.auth;
       let pickup_data = {
-        name: user.firstName,
-        latitude: from_location.latitude,
-        // from_address: from_address_full[0].street
-        //   ? from_address_full[0].street
-        //   : from_address_full[0].name,
-
-        from_address: from_address_geocode,
-        longitude: from_location.longitude,
+        latitude: updated_location_from.region.latitude,
+        from_address: updated_location_from.address_name,
+        longitude: updated_location_from.region.longitude,
       };
 
       let dropoff_data = {
-        name: "Area",
-        going_address: going_address,
+        going_address: destination_location.name,
         latitude: destination_location.latitude,
         longitude: destination_location.longitude,
       };
 
-     
-      let userID = this.props.auth.user._id;
-
       const data = {
-        
-        startLatitude: from_location.latitude,
-        startLongitude: from_location.longitude,
-        endLatitude:destination_location.latitude,
-        endLongitude:destination_location.longitude,
         price: price,
-
-        // pusher actions variables
-
-        userID: userID,
         pickup: pickup_data,
         dropoff: dropoff_data,
-        payment_method,
-        available_drivers_channel: this.available_drivers_channel,
+        payment_method
       };
 
-      const tokens = this.props.auth.token;
+      console.log({data})
 
       this.setState({
         show_user_location: true,
       });
 
 
-      this.props.makeOrder(data, tokens);
-    }).catch(error =>{
-      store.dispatch({
-        type : "END_LOADING"
-      })
-      console.log("error!!!!!!!!!! ", error );
-      alert("Could not request your order. Please try again.")
-    })
     } catch (error) {
 
       store.dispatch({

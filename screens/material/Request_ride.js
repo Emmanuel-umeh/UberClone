@@ -11,7 +11,8 @@ import { connect } from 'react-redux'
 import { LinearGradient } from 'expo-linear-gradient';
 import store from "../../redux/store"
 import { Divider } from "react-native-paper";
-
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import colors from "../colors/colors"
 
 
 class Request_ride extends Component {
@@ -26,7 +27,7 @@ class Request_ride extends Component {
   // }
 
   payment_method=(e)=>{
-    console.log({e})
+
 
     // updates parent state in mapview with payment method
     this.props.payment_method(e)
@@ -74,93 +75,102 @@ class Request_ride extends Component {
   render(){
 
 
-    // console.log(this.state)
     const {order} = this.props
     return (
-    
-  
-      <Container>
-
-
-
-        <LinearGradient
-  // Button Linear Gradient
-
-  style ={{
-    flex : 1, flexDirection : "row"
-  }}
-  colors={["white", "#ffffff00"]}
-  >
-
-  </LinearGradient>
-   
-
-   
-  <View style= {{ top : -wp(2), alignItems : "flex-end"}}> 
-{/* 
-  <View
-        style={{
-          width: wp("10%"),
-          backgroundColor: "#515357",
-          padding: 3,
-          // left  : wp("40%"),
-          alignSelf: "center",
-          top: -hp(2),
-          // height : 2,
-          borderRadius: 50,
-
-        }}
-      ></View> */}
-
-{/* <Text>Total : </Text> */}
-<Text style = {styles.bold}> Confirm Payment Method</Text>
+    <View style ={{
+      flex : 1,
+      alignContent : "center", 
+      justifyContent : "center"
+    }}>
+ 
+ <Text style = {styles.bold}> Confirm Payment Method</Text>
 
 <Divider style ={{
               height :1,
               top : 5
-            }} />     
+            }} />   
 
 
-<View>
+
+  <View > 
+
   
-</View>
 
 <Text style = {{
   fontSize : 25,
   fontFamily : "Quicksand-Bold",
-  marginRight : wp(10),
-  top : hp(3)
+  alignSelf : "center"
 }}> ₦{Math.round((this.props.price) / 100) * 100}</Text>
           </View>
-        <View>
+     
 
 
-  
-  <Picker
+  {/* <View style ={{
+    padding : 20
+  }}> */}
+  {/* <Picker
                 mode="dropdown"
                 iosIcon={<Icon name="arrow-down" />}
-                style={{ width: wp(30), alignSelf : "flex-start", top : -hp(4), marginLeft : wp(10) }}
-                // placeholder="Cash"
-                placeholderStyle={{ color: "#bfc6ea", fontFamily : "Quicksand-Medium" }}
+                style={{ width: wp(70), alignSelf : "center", height : 40 }}
+                placeholder="Select payment method"
+                placeholderStyle={{ color: "#bfc6ea", fontFamily : "Quicksand-Medium"}}
                 placeholderIconColor="#007aff"
-                selectedValue={this.props.state.payment_method}
+                // selectedValue={this.props.state.payment_method}
             
                 onValueChange={this.payment_method}
               >
                     <Picker.Item label="Select Payment Method"  value={null} />
                 <Picker.Item label="Cash" value="Cash" />
                 <Picker.Item label="Card" value="Cashless" />
-          
-                {/* <Picker.Item label="#c9c7c7" value="Gray" /> */}
-              </Picker>
+
+              </Picker> */}
+  {/* </View> */}
+
+<View style ={{
+  padding : 10
+}}>
+<BouncyCheckbox
+  size={25}
+
+  unfillColor="#FFFFFF"
+  fillColor="green"
+  text="Pay with cash"
+  disableBuiltInState  ={true}
+  isChecked = {this.props.state.payment_method === "Cash" ? true : false}
+  iconStyle={{ borderColor: "green" }}
+  textStyle={{ fontFamily: "Quicksand-Bold" }}
+  onPress={(isChecked) => {
+    // console.log("checked", isChecked)
+    this.payment_method("Cash")
+  }}
+/>
+</View>
+ 
+<View style ={{
+  padding : 10
+}}>
+  <BouncyCheckbox
+  size={25}
+  fillColor={colors.safron}
+  unfillColor="#FFFFFF"
+  disableBuiltInState = {true}
+  text="Pay with card"
+  isChecked = {this.props.state.payment_method === "Card" ? true : false}
+  iconStyle={{ borderColor: "red" }}
+  textStyle={{ fontFamily: "Quicksand-Bold" }}
+  onPress={(isChecked) => {
+    // console.log("checked", isChecked)
+    this.payment_method("Card")
+  }}
+/>
+</View>
 
 
 
 
 <View style ={{
   alignSelf : "center",
-  alignItems  : "center",
-  top : -hp(3)
+  alignItems  : "center"
   // width : wp(80)
 }}>
 
@@ -176,10 +186,9 @@ class Request_ride extends Component {
   {/* </TouchableOpacity> */}
 </View>
         
-  </View>
 
 
-    </Container>
+    </View>
     
     );
   }
@@ -259,18 +268,13 @@ justifyContent : "center"
     opacity: 0.9,
     lineHeight: 22
   },
-  image: {
-    // top: 21,
-    // left: 217,
-    // width: 100,
-    // height: 200,
-    position: "absolute"
-  },
+
   
     bold: {
       fontFamily: "Quicksand-Bold",
       color: "#121212",
       fontSize: 20,
+      marginTop : -hp(5),
       // marginTop: hp(1),
       // marginLeft: wp(4),
       alignSelf: "center",

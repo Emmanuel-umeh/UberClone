@@ -6,7 +6,6 @@ import Modal from 'react-native-modal';
 import {connect} from "react-redux"
 import { registerDetails, setLoading,endLoading} from "../redux/action/authAction"
 import * as EmailValidator from 'email-validator';
-import AsyncStorage from "@react-native-community/async-storage";
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import { Kohana, Fumi  } from 'react-native-textinput-effects';
 import AnimateLoadingButton from 'react-native-animate-loading-button';

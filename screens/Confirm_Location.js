@@ -105,14 +105,14 @@ const {state} = this.props
         const data = {
           region, address_name
         }
-        await store.dispatch({
-          type : "CONFIRM_LOCATION",
-          payload : data
-        })
+        // await store.dispatch({
+        //   type : "CONFIRM_LOCATION",
+        //   payload : data
+        // })
         
-        const payment_method = state.payment_method
+        // const payment_method = state.payment_method
 
-        this.props.book_ride(payment_method)
+        this.props.book_ride(data)
         this.props.close_modal()
   
      

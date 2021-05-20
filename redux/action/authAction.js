@@ -1,6 +1,5 @@
 import axios from "axios";
 import { returnErrors } from "./errorActions";
-import AsyncStorage from "@react-native-community/async-storage";
 import { NavigationActions } from "react-navigation";
 import {
   USER_LOADING,
