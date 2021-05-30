@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 
-import { StatusBar } from "expo-status-bar";
 import colors from "./colors/colors";
 import {
   StyleSheet,
@@ -13,15 +12,14 @@ import {
   ImageBackground,
   TouchableOpacity,
   Linking,
-  YellowBox,
   Image,
   BackHandler,
   Modal,
   Platform,
 } from "react-native";
+import { firebase } from "../firebase/firebase";
 
-import Pulse from "react-native-pulse";
-
+import uuid from "react-native-uuid";
 import * as Permissions from "expo-permissions";
 import store from "../redux/store";
 import MapView, {
@@ -63,7 +61,7 @@ import {
 } from "react-native-responsive-screen";
 import CustomModal from "./components/Modal";
 import LottieLoader from "react-native-lottie-loader";
-
+import LottieView from "lottie-react-native";
 // redux imports
 import {
   makeOrder,
@@ -71,22 +69,13 @@ import {
   getOrder,
   test_redux_promisify,
 } from "../redux/action/orderActions";
-import { Divider } from "react-native-paper";
-
 import { Audio } from "expo-av";
-import { persistStore } from "redux-persist";
 import { day_styles, night_styles } from "./map_styles/styles";
 import { PureComponent } from "react";
-import Bike from "./material/Request_ride";
-import Request_ride from "./material/Request_ride";
-import { TouchableHighlight } from "react-native-gesture-handler";
-import Confirm_Location from "./Confirm_Location";
 import SetDestination from "./setDestination";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
-import * as IntentLauncher from "expo-intent-launcher";
-
-import Geocoder from 'react-native-geocoding';
+import Geocoder from "react-native-geocoding";
+import ErrorModal from "./components/ErrorModal";
 // Initialize the module (needs to be done only once)
 Geocoder.init(google_api); // use a valid API key
 const WIDTH = Dimensions.get("window").width;
@@ -97,7 +86,6 @@ const longitudeDelta = latitudeDelta * ASPECT_RATIO;
 
 const LATITUDE_DELTA = latitudeDelta;
 const LONGITUDE_DELTA = longitudeDelta;
-
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -155,6 +143,10 @@ class Map extends PureComponent {
   constructor(props) {
     super(props);
 
+    // tracking the current order "on" function from firebase
+    this.watching_current_order = null;
+    this.watch_driver = null;
+
     // sound object
     this.soundObject = null;
     this.map = null;
@@ -163,12 +155,10 @@ class Map extends PureComponent {
     this.from_marker = React.createRef();
     this.driver_marker = React.createRef();
     this.bookRide = this.bookRide.bind(this);
- 
+
     const { token } = this.props.auth;
 
     this.state = {
-      available_drivers_channel: null,
-      user_ride_channel: null,
       map_is_ready: false,
       follow_user_location: true,
       show_user_location: true,
@@ -187,14 +177,15 @@ class Map extends PureComponent {
 
       // driver marker coordinates
 
-      coordinate: new AnimatedRegion({
-        latitude: 8.7,
-        longitude: 9.7,
-        longitudeDelta: 0.3,
-        latitudeDelta: 0.3,
-      }),
+      coordinate: null,
       // array of available drivers
       available_presence_drivers: [],
+
+      searching_for_driver: false,
+      error_msg: null,
+      driver: null,
+
+      recent_orders : []
     };
   }
 
@@ -232,20 +223,18 @@ class Map extends PureComponent {
       })
     );
 
-    this.notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
+    this.notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
         // console.log({ notification });
         this.setState({
           notification: notification,
         });
-      }
-    );
+      });
 
-    this.responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
+    this.responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
         // console.log(response);
-      }
-    );
+      });
   };
 
   payment_method = (e) => {
@@ -346,341 +335,264 @@ class Map extends PureComponent {
   };
 
   show_driver_marker = () => {
-    const { driver, coordinate, logistic_type } = this.props.order;
+    const { logistic_type } = this.props.order;
+    const { coordinate } = this.state.coordinate ? this.state :  this.props.order;
+    const { driver } = this.state;
 
-    console.log("driver logistics!!!!!!!!!!!!!!!!!!!!!!", logistic_type);
-
-    return (
-      <Marker.Animated
-        // coordinate={{
-        //   latitude: driver ? driver.latitude : 9.0765,
-        //   longitude: driver ? driver.longitude : 7.3986,
-        // }}
-        coordinate={this.state.coordinate}
-        anchor={{ x: 0.5, y: 0.5 }}
-        centerOffset={{ x: 0.5, y: 0.5 }}
-        title="Your Ride Is Here"
-        ref={(marker) => {
-          this.driver_marker = marker;
-        }}
-        style={{ width: 50, height: 50 }}
-      >
-        {logistic_type == "bike" ? (
-          <Image
-            source={require("../assets/images/bike.png")}
-            resizeMode="contain"
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : logistic_type == "car" ? (
-          <Image
-            source={require("../assets/images/car.png")}
-            resizeMode="contain"
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : logistic_type == "truck" ? (
-          <Image
-            source={require("../assets/images/truck.png")}
-            resizeMode="contain"
-            style={{
-              width: 40,
-              height: 40,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        ) : (
-          <Image
-            source={require("../assets/images/tanker.png")}
-            resizeMode="contain"
-            style={{
-              width: 50,
-              height: 50,
-              transform: [
-                {
-                  rotate:
-                    driver.heading === undefined
-                      ? "0deg"
-                      : `${driver.heading}deg`,
-                },
-              ],
-            }}
-          />
-        )}
-      </Marker.Animated>
-    );
+    if (coordinate) {
+      return (
+        <Marker.Animated
+          // coordinate={{
+          //   latitude: driver ? driver.latitude : 9.0765,
+          //   longitude: driver ? driver.longitude : 7.3986,
+          // }}
+          coordinate={coordinate}
+          anchor={{ x: 0.5, y: 0.5 }}
+          centerOffset={{ x: 0.5, y: 0.5 }}
+          title="Your Ride Is Here"
+          ref={(marker) => {
+            this.driver_marker = marker;
+          }}
+          style={{ width: 50, height: 50 }}
+        >
+          {logistic_type == "bike" ? (
+            <Image
+              source={require("../assets/images/bike.png")}
+              resizeMode="contain"
+              style={{
+                width: 40,
+                height: 40,
+                transform: [
+                  {
+                    rotate:
+                      coordinate.heading === undefined
+                        ? "0deg"
+                        : `${coordinate.heading}deg`,
+                  },
+                ],
+              }}
+            />
+          ) : logistic_type == "car" ? (
+            <Image
+              source={require("../assets/images/car.png")}
+              resizeMode="contain"
+              style={{
+                width: 40,
+                height: 40,
+                transform: [
+                  {
+                    rotate:
+                      coordinate.heading === undefined
+                        ? "0deg"
+                        : `${coordinate.heading}deg`,
+                  },
+                ],
+              }}
+            />
+          ) : logistic_type == "truck" ? (
+            <Image
+              source={require("../assets/images/truck.png")}
+              resizeMode="contain"
+              style={{
+                width: 40,
+                height: 40,
+                transform: [
+                  {
+                    rotate:
+                      coordinate.heading === undefined
+                        ? "0deg"
+                        : `${coordinate.location.heading}deg`,
+                  },
+                ],
+              }}
+            />
+          ) : (
+            <Image
+              source={require("../assets/images/tanker.png")}
+              resizeMode="contain"
+              style={{
+                width: 50,
+                height: 50,
+                transform: [
+                  {
+                    rotate:
+                      coordinate.heading === undefined
+                        ? "0deg"
+                        : `${coordinate.heading}deg`,
+                  },
+                ],
+              }}
+            />
+          )}
+        </Marker.Animated>
+      );
+    }
   };
 
-  client_driver_location = async (data) => {
+  client_driver_location = async ({longitude, latitude, heading}) => {
     try {
-      if (data) {
-        const { longitude, latitude, accuracy, heading } = data;
+      if (longitude && latitude && heading) {
+      
 
         console.log(
           "client driver location updated!! ? ",
           latitude,
           longitude,
-          accuracy,
           heading
         );
 
-        var diff_in_meter_pickup = getTimeDiffInMinutes(
+        var diff_in_minute_pickup = getTimeDiffInMinutes(
           this.props.order.region.latitude,
           this.props.order.region.longitude,
           latitude,
           longitude
         );
 
-        // driver location received
-        let driverLocation = regionFrom(latitude, longitude, accuracy);
+    
 
-        console.log("the drivers new location ", driverLocation);
-
-        var data = {
-          location: driverLocation, //the drivers location
-          driver: {
-            latitude: latitude,
-            longitude: longitude,
-            heading: heading ? heading : 0,
-          },
-        };
-
-        console.log({ diff_in_meter_pickup });
+        console.log({ diff_in_minute_pickup });
 
         var COORDINATE_DRIVER_LOCATION = {
           coordinate: new AnimatedRegion({
             latitudeDelta: 0.3,
             longitudeDelta: 0.3,
-            longitude: driverLocation.longitude,
-            latitude: driverLocation.latitude,
+            longitude: longitude,
+            latitude: latitude,
           }),
-          driver_location: {
+       
+          diff_in_minute_pickup: diff_in_minute_pickup,
+        };
+        this.setState({
+          coordinate : new AnimatedRegion({
             latitudeDelta: 0.3,
             longitudeDelta: 0.3,
-            longitude: driverLocation.longitude,
-            latitude: driverLocation.latitude,
-          },
-          distance: diff_in_meter_pickup,
-          time_distance: diff_in_meter_pickup,
-        };
+            longitude: longitude,
+            latitude: latitude,
+          }),
+        })
 
-        // this.setState({
-        //   distance: diff_in_meter_pickup,
-        // });
 
-        await store.dispatch({
+        await this.animate(latitude, longitude);
+
+   
+
+         store.dispatch({
           type: "COORDINATE_DRIVER_LOCATION",
           payload: COORDINATE_DRIVER_LOCATION,
         });
 
-        await store.dispatch({
-          type: "DRIVER_LOCATION",
-          payload: data,
-        });
-
-        // this.setState({
-        //   distance: diff_in_meter_pickup,
-        // });
-
-        await this.animate(latitude, longitude);
-        // this.setState({
-        //   coordinate: {
-        //     ...this.state.coordinate,
-        //     longitude: longitude,
-        //     latitude: latitude,
-        //   },
-        //   driver_location: {
-        //     ...this.state.driver_location,
-        //     longitude: longitude,
-        //     latitude: latitude,
-        //   },
-        // });
-
-        // console.log("maops", this.map)
+      
+   
         console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!");
+        this.centerCamera()
 
-        if (diff_in_meter_pickup <= 100) {
-          this.map.animateCamera(
-            {
-              center: {
-                latitude,
-                longitude,
-              },
-              pitch: 20,
-              heading: 30,
-              altitude: 100,
-              zoom: 18,
-            },
-            800
-          );
-        } else {
-          this.centerCamera();
-        }
+        // if (diff_in_meter_pickup <= 100) {
+        //   this.map.animateCamera(
+        //     {
+        //       center: {
+        //         latitude,
+        //         longitude,
+        //       },
+        //       pitch: 20,
+        //       heading: 30,
+        //       altitude: 100,
+        //       zoom: 18,
+        //     },
+        //     800
+        //   );
+        // } else {
+        //   this.centerCamera();
+        // }
       }
     } catch (error) {
-      console.warn(error);
+      console.log({error});
     }
   };
 
-  client_found_driver = async (data) => {
+  client_found_driver = async () => {
     // found driver, the passenger has no say about this.
     // once a driver is found, this will be the driver that's going to drive the user
     // to their destination
     // Vibration.vibrate({pattern:500});
 
     try {
-      console.log("Found driver!!!!!!!!!!!!!!!!!!", data);
-      let driverLocation = await regionFrom(
-        data.location.latitude,
-        data.location.longitude,
-        data.location.accuracy
-      );
+      const { current_order } = this.props.order;
+      this.watch_driver = firebase
+        .database()
+        .ref("drivers/" + current_order.driver)
+        .on("value", async function (snapshot) {
+          if (snapshot.exists()) {
+            const driver = snapshot.val();
+            consle.log("driver loaction updated!!!!!!!!!!!!!!!!!")
+            //  this.setState({
+            //    driver
+            //  })
 
-      console.log("getting lat long meters");
-      var diff_in_meter_pickup = await getTimeDiffInMinutes(
-        this.props.order.region.latitude,
-        this.props.order.region.longitude,
-        data.location.latitude,
-        data.location.longitude
-      );
+            //  console.log({driver})
+            //  await this.state.coordinate.setValue({
 
-      await this.state.coordinate.setValue({
-        latitude: data.location.latitude,
-        longitude: data.location.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      });
+            //   latitude: driver.location.latitude,
+            //   longitude: driver.location.longitude,
+            //   latitudeDelta: LATITUDE_DELTA,
+            //   longitudeDelta: LONGITUDE_DELTA,
+            // });
 
-      console.log({ diff_in_meter_pickup });
-      var COORDINATE_DRIVER_LOCATION = {
-        coordinate: new AnimatedRegion({
-          latitudeDelta: 0.3,
-          longitudeDelta: 0.3,
-          longitude: driverLocation.longitude,
-          latitude: driverLocation.latitude,
-        }),
-        driver_location: {
-          latitudeDelta: 0.3,
-          longitudeDelta: 0.3,
-          longitude: driverLocation.longitude,
-          latitude: driverLocation.latitude,
-        },
-        distance: diff_in_meter_pickup,
-      };
+            const diff_in_minute_pickup = current_order.diff_in_minute_pickup;
 
-      console.log({ COORDINATE_DRIVER_LOCATION });
+            console.log({ diff_in_minute_pickup });
+            var COORDINATE_DRIVER_LOCATION = {
+              coordinate: new AnimatedRegion({
+                latitudeDelta: 0.3,
+                longitudeDelta: 0.3,
+                latitude: driver.location.latitude,
+                longitude: driver.location.longitude,
+                heading: driver.location.heading,
+              }),
+              diff_in_minute_pickup: diff_in_minute_pickup,
+            };
 
-      // this.setState({
-      //   distance: diff_in_meter_pickup,
-      // });
+            console.log({ COORDINATE_DRIVER_LOCATION });
+            this.setState({
+              coordinate : new AnimatedRegion({
+                latitudeDelta: 0.3,
+                longitudeDelta: 0.3,
+                longitude:driver.location.longitude,
+                latitude: driver.location.latitude,
+              }),
+            })
 
-      await store.dispatch({
-        type: "COORDINATE_DRIVER_LOCATION",
-        payload: COORDINATE_DRIVER_LOCATION,
-      });
+            await store.dispatch({
+              type: "COORDINATE_DRIVER_LOCATION",
+              payload: COORDINATE_DRIVER_LOCATION,
+            });
 
-      // update coordinate and drivers location in redux
+            // this.setState({
+            //   coordinate: new AnimatedRegion({
+            //     latitudeDelta: 0.3,
+            //     longitudeDelta: 0.3,
+            //     latitude: driver.location.latitude,
+            //   longitude: driver.location.longitude,
+            //   heading : driver.location.heading
+            //   })
+            // })
+            await store.dispatch({
+              type: "FOUND_DRIVER",
+            });
 
-      const found_driver = {
-        has_ride: true,
-        is_searching: false,
-        location: driverLocation,
-        driver: {
-          latitude: data.location.latitude,
-          longitude: data.location.longitude,
-          accuracy: data.location.accuracy,
-        },
-
-        driver_details: data.driver,
-      };
-
-      // console.log({found_driver})
-
-      await store.dispatch({
-        type: "FOUND_DRIVER",
-        payload: found_driver,
-      });
-
-      // GET THE DISTANCE BETWEEN THE CLIENT AND THE DRIVER
-
-      // console.log("Driver accepted and animating to driver location ", data);
-      // this.props.order.region;
-
-      // this.map &&
-      //   this.map.fitToCoordinates(
-      //     [
-      //       {
-      //         latitude: driverLocation.latitude,
-      //         longitude: driverLocation.longitude,
-      //       },
-
-      //       {
-      //         latitude: this.props.order.region.latitude,
-      //         longitude: this.props.order.region.longitude,
-      //       },
-      //     ],
-      //     {
-      //       edgePadding: {
-      //         bottom: hp("90%"),
-      //         right: wp("40%"),
-      //         top: hp("20%"),
-      //         left: wp("10%"),
-      //       },
-      //       animated: true,
-      //     }
-      //   );
-
-      this.loadSounds();
-
-      schedulePushNotification(
-        "Order Accepted",
-        "Your driver is on his way to your pickup location",
-        null
-      );
-
-      this.centerCamera();
-      // this.map.animateToRegion(
-      //   {
-      //     latitudeDelta: LATITUDE_DELTA,
-      //     longitudeDelta: LONGITUDE_DELTA,
-      //     longitude: data.location.longitude,
-      //     latitude: data.location.latitude,
-      //   },
-      //   1500
-      // );
-      // this.driver_marker && this.driver_marker.showCallout();
+            schedulePushNotification(
+              "Order Accepted",
+              `Your driver named ${driver.first_name} is on his way to your pickup location`,
+              null
+            );
+          }
+        });
     } catch (error) {
       console.log(
         "error on found driver functionality!!!!!!!!!!!!!!!!!!!!1 ",
         error
       );
+    } finally {
+      return true;
     }
   };
 
@@ -773,7 +685,6 @@ class Map extends PureComponent {
       );
 
       schedulePushNotification(data.title, data.msg, null);
-  
     } catch (error) {
       console.log("error in line 791!!!!!! ", error);
     }
@@ -785,53 +696,88 @@ class Map extends PureComponent {
   };
 
   driver_details_popup = () => {
-    return (
-      <DriverDetailsPopUp
-        driver={this.props.order.driver_details}
-        distance={this.props.order.distance}
-        user_ride_channel={this.user_ride_channel}
-      />
-    );
+    const { current_order } = this.props.order;
+    if (current_order) {
+      if (current_order.state !== "Pending" && current_order.driver) {
+        return (
+          <DriverDetailsPopUp
+            driver={
+              this.props.order.current_order
+                ? this.props.order.current_order.driver
+                : null
+            }
+            current_order={this.props.order.current_order}
+          />
+        );
+      }
+    }
   };
 
   map_view_directions = () => {
-    console.log("os day!!!!", this.isDay());
-    if (this.isDay) {
-      return (
-        <>
-          <MapViewDirections
-            origin={this.props.order.driver_location}
-            destination={this.props.order.going}
-            apikey={google_api}
-            strokeWidth={5}
-            strokeColor="#C68E17"
-            showsCompass={false}
-          ></MapViewDirections>
-          <Marker.Animated
-            title="Your Destination"
-            coordinate={this.props.order.going}
-            pinColor="#ffffff"
-          />
-        </>
-      );
-    } else {
-      return (
-        <>
-          <MapViewDirections
-            origin={this.props.order.driver}
-            destination={this.props.order.going}
-            apikey={google_api}
-            strokeWidth={5}
-            strokeColor="whitesmoke"
-            showsCompass={false}
-          ></MapViewDirections>
-          <Marker.Animated
-            title="Your Destination"
-            coordinate={this.props.order.going}
-            pinColor="#ffffff"
-          />
-        </>
-      );
+    // console.log("os day!!!!", this.isDay());
+
+    try {
+      const { current_order } = this.props.order;
+      const { coordinate } = this.props.order;
+
+      if (current_order && coordinate) {
+        if (current_order.state !== "Pending") {
+          // if (is_day) {
+
+          return (
+            <>
+              {/* <MapViewDirections
+                  origin={{
+                    latitude : coordinate.latitude,
+                    longitude : coordinate.longitude,
+                  }}
+                    strokeColor="#C68E17"
+       
+          lineDashPattern={[6, 6]}
+                  destination={current_order.dropoff}
+                  apikey={google_api}
+                  strokeWidth={5}
+                  strokeColor="#C68E17"
+                  showsCompass={false}
+                ></MapViewDirections> */}
+              <Marker
+                title="Your Destination"
+                coordinate={{
+                  latitude: current_order.dropoff.latitude,
+                  longitude: current_order.dropoff.longitude,
+                }}
+                image={require("../assets/markers/marker7.png")}
+                pinColor="#ffffff"
+              />
+            </>
+          );
+          // } else {
+          // return (
+          //   <>
+          //     <MapViewDirections
+          //         origin={{
+          //           latitude : coordinate.latitude,
+          //           longitude : coordinate.longitude,
+          //         }}
+          //        destination={current_order.dropoff}
+          //        apikey={google_api}
+          //        strokeWidth={5}
+          //        strokeColor="whitesmoke"
+          //        showsCompass={false}
+          //     ></MapViewDirections>
+          //     <MapView.Marker
+          //       title="Your Destination"
+          //       coordinate={current_order.dropoff}
+          //       pinColor="#ffffff"
+          //     />
+          //   </>
+          // );
+          // }
+        }
+      }
+    } catch (error) {
+      console.log("error from mapview directions");
+      console.log({ error });
     }
   };
 
@@ -870,122 +816,110 @@ class Map extends PureComponent {
     );
   };
 
+  // avalable presence drivers
 
+  available_presence_drivers = () => {
+    const { logistic_type } = this.props.order;
 
-  // avalable presence drivers 
+    firebase
+      .database()
+      .ref("drivers")
+      .limitToFirst(10)
+      .once("value", function (snapshot) {
+        if (snapshot.exists()) {
+          const drivers = snapshot.val();
+          if (drivers) {
+            return drivers.map((driver) => (
+              <Marker.Animated
+                coordinate={{
+                  latitude: driver.location.latitude,
+                  longitude: driver.location.longitude,
 
-  available_presence_drivers =()=>{
-
-console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_presence_drivers)
-    const {logistic_type} = this.props.order
-    return (  this.state.available_presence_drivers.slice(0,20).map((driver)=>
-    <Marker.Animated
-    coordinate={{
-      latitude:driver.info.latitude,
-    longitude:  driver.info.longitude,
-
-    // latitude : 9.8966795,
-    // longitude : 8.8993336,
- 
-    }} 
-    key ={driver.id }
-    // coordinate={this.state.available_presence_drivers[0].info}
-    anchor={{ x: 0.5, y: 0.5 }}
-    centerOffset={{ x: 0.5, y: 0.5 }}
-    title="Your Ride Is Here"
-    // ref={(marker) => {
-    //   this.driver_marker = marker;
-    // }}
-    style={{ width: 50, height: 50 }}
-  >
-    {logistic_type == "bike" ? (
-      <Image
-        source={require("../assets/images/bike.png")}
-        resizeMode="contain"
-        style={{
-
-          width: 40,
-          height: 40,
-          transform: [
-            {
-              rotate:
-                !driver.info.heading ?
-                   "0deg"
-                  : `${driver.info.heading}deg`
-            },
-          ],
-        }}
-      />
-    ) : logistic_type == "car" ? (
-      <Image
-        source={require("../assets/images/car.png")}
-        resizeMode="contain"
-        style={{
-          width: 40,
-          height: 40,
-          transform: [
-            {
-              rotate:
-              !driver.info.heading ?
-              "0deg"
-             : `${driver.info.heading}deg`
-            },
-          ],
-        }}
-      />
-    ) : logistic_type == "truck" ? (
-      <Image
-        source={require("../assets/images/truck.png")}
-        resizeMode="contain"
-        style={{
-          width: 40,
-          height: 40,
-          transform: [
-            {
-              rotate:
-              !driver.info.heading ?
-                   "0deg"
-                  : `${driver.info.heading}deg`
-            },
-          ],
-        }}
-      />
-    ) : (
-      <Image
-        source={require("../assets/images/tanker.png")}
-        resizeMode="contain"
-        style={{
-          width: 50,
-          height: 50,
-          transform: [
-            {
-              rotate:
-              !driver.info.heading ?
-              "0deg"
-             : `${driver.info.heading}deg`
-            },
-          ],
-        }}
-      />
-    )}
-  </Marker.Animated>
-    )
-)
-  }
+                  // latitude : 9.8966795,
+                  // longitude : 8.8993336,
+                }}
+                key={driver.lisence_number}
+                // coordinate={this.state.available_presence_drivers[0].info}
+                anchor={{ x: 0.5, y: 0.5 }}
+                centerOffset={{ x: 0.5, y: 0.5 }}
+                // ref={(marker) => {
+                //   this.driver_marker = marker;
+                // }}
+                style={{ width: 50, height: 50 }}
+              >
+                {logistic_type == "bike" ? (
+                  <Image
+                    source={require("../assets/images/bike.png")}
+                    resizeMode="contain"
+                    style={{
+                      width: 40,
+                      height: 40,
+                      transform: [
+                        {
+                          rotate: !driver.location.heading
+                            ? "0deg"
+                            : `${driver.location.heading}deg`,
+                        },
+                      ],
+                    }}
+                  />
+                ) : logistic_type == "car" ? (
+                  <Image
+                    source={require("../assets/images/car.png")}
+                    resizeMode="contain"
+                    style={{
+                      width: 40,
+                      height: 40,
+                      transform: [
+                        {
+                          rotate: !driver.location.heading
+                            ? "0deg"
+                            : `${driver.location.heading}deg`,
+                        },
+                      ],
+                    }}
+                  />
+                ) : logistic_type == "truck" ? (
+                  <Image
+                    source={require("../assets/images/truck.png")}
+                    resizeMode="contain"
+                    style={{
+                      width: 40,
+                      height: 40,
+                      transform: [
+                        {
+                          rotate: !driver.location.heading
+                            ? "0deg"
+                            : `${driver.location.heading}deg`,
+                        },
+                      ],
+                    }}
+                  />
+                ) : (
+                  <Image
+                    source={require("../assets/images/tanker.png")}
+                    resizeMode="contain"
+                    style={{
+                      width: 50,
+                      height: 50,
+                      transform: [
+                        {
+                          rotate: !driver.location.heading
+                            ? "0deg"
+                            : `${driver.location.heading}deg`,
+                        },
+                      ],
+                    }}
+                  />
+                )}
+              </Marker.Animated>
+            ));
+          }
+        }
+      });
+  };
 
   // this will check if the user order has started so as to hide user location
-
-  check_order_state = () => {
-    if (this.props.order.order) {
-      if (this.props.order.order.state == "Accepted") {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
-  };
 
   loadSounds = async () => {
     this.soundObject = new Audio.Sound();
@@ -1007,13 +941,18 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     }
   };
 
+  toggleModal = () => {
+    this.setState({
+      error_msg: null,
+    });
+  };
   current_location_button = () => {
     return (
       <CurrentLocationButton
         cb={() => {
           this.centerCamera();
         }}
-        order={this.props.order.driver}
+        order={this.props.order.current_order}
         destination={this.props.order.destinationRequested}
         onPress={() => {
           this.refs.BottomSheet.current.snapTo(9);
@@ -1022,241 +961,242 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     );
   };
 
-  destination_marker = () => {
-    if (this.isDay) {
-      return (
-        <>
-          <MapViewDirections
-            origin={this.props.order.region}
-            destination={this.props.order.going}
-            apikey={google_api}
-            strokeWidth={5}
-            strokeColor="#C68E17"
-            showsCompass={false}
-            onError={() => {
-              alert("Could not find a path to your destination");
-            }}
-          ></MapViewDirections>
+  // destination_marker = () => {
+  //   const {current_order} = this.props.order
+  //   if (this.isDay) {
+  //     return (
+  //       <>
+  //         <MapViewDirections
+  //           origin={this.props.order.region}
+  //           destination={current_order.dropoff}
+  //           apikey={google_api}
+  //           strokeWidth={5}
+  //           strokeColor="#C68E17"
+  //           showsCompass={false}
+  //           onError={() => {
+  //             alert("Could not find a path to your destination");
+  //           }}
+  //         ></MapViewDirections>
 
-          {/* the destination marker */}
-          <Marker
-            title={
-              this.props.order.going.name
-                ? this.props.order.going.name
-                : "Your Destination"
-            }
-            ref={(marker) => {
-              this.destinationMarker = marker;
-            }}
-            image={require("../assets/markers/marker6.png")}
-            key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
-            coordinate={{
-              latitude: this.props.order.going
-                ? this.props.order.going.latitude
-                : 9.0765,
-              longitude: this.props.order.going
-                ? this.props.order.going.longitude
-                : 7.3986,
-            }}
-            pinColor="green"
-          >
-            <Callout tooltip={false}>
-              <Content style={{ width: undefined, backgroundColor: "white" }}>
-                <Item
-                  style={{
-                    padding: 10,
-                  }}
-                >
-                  <Icon
-                    active
-                    name="pin"
-                    style={{
-                      color: "#C68E17",
+  //         {/* the destination marker */}
+  //         <Marker
+  //           title={
+  //             current_order.dropoff
+  //               ? current_order.dropoff.going_address
+  //               : "Your Destination"
+  //           }
+  //           ref={(marker) => {
+  //             this.destinationMarker = marker;
+  //           }}
+  //           image={require("../assets/markers/marker6.png")}
+  //           key={`${current_order.dropoff.latitude}_${current_order.dropoff.longitude}`}
+  //           coordinate={{
+  //             latitude: current_order.dropoff
+  //               ? current_order.dropoff.latitude
+  //               : 9.0765,
+  //             longitude: current_order.dropoff
+  //               ? current_order.dropoff.longitude
+  //               : 7.3986,
+  //           }}
+  //           pinColor="green"
+  //         >
+  //           <Callout tooltip={false}>
+  //             <Content style={{ width: undefined, backgroundColor: "white" }}>
+  //               <Item
+  //                 style={{
+  //                   padding: 10,
+  //                 }}
+  //               >
+  //                 <Icon
+  //                   active
+  //                   name="pin"
+  //                   style={{
+  //                     color: "#C68E17",
 
-                      fontSize: 20,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: "Quicksand-Medium",
-                    }}
-                  >
-                    {this.props.order.going.name
-                      ? this.props.order.going.name
-                      : "Your Destination"}
-                  </Text>
-                </Item>
-              </Content>
-            </Callout>
-          </Marker>
+  //                     fontSize: 20,
+  //                   }}
+  //                 />
+  //                 <Text
+  //                   style={{
+  //                     fontSize: 12,
+  //                     fontFamily: "Quicksand-Medium",
+  //                   }}
+  //                 >
+  //                   {this.props.order.dropoff.going_address
+  //                     ? this.props.order.dropoff.going_address
+  //                     : "Your Destination"}
+  //                 </Text>
+  //               </Item>
+  //             </Content>
+  //           </Callout>
+  //         </Marker>
 
-          {/* the user marker */}
+  //         {/* the user marker */}
 
-          <Marker
-            title={
-              this.props.order.my_address
-                ? this.props.order.my_address
-                : "You are here"
-            }
-            ref={(marker) => {
-              this.from_marker = marker;
-            }}
-            image={require("../assets/markers/marker7.png")}
-            key={`${this.props.order.region.latitude}_${this.props.order.region.longitude}`}
-            coordinate={{
-              latitude: this.props.order.region
-                ? this.props.order.region.latitude
-                : 9.0765,
-              longitude: this.props.order.region
-                ? this.props.order.region.longitude
-                : 7.3986,
-            }}
-            pinColor="green"
-          >
-            <Callout tooltip={false}>
-              <Content style={{ width: undefined, backgroundColor: "white" }}>
-                <Item
-                  style={{
-                    padding: 10,
-                  }}
-                >
-                  {/* <Pulse color='orange' numPulses={3} diameter={400} speed={20} duration={2000} > */}
-                  <Icon
-                    active
-                    name="pin"
-                    style={{
-                      color: "#C68E17",
+  //         <Marker
+  //           title={
+  //             this.props.order.my_address
+  //               ? this.props.order.my_address
+  //               : "You are here"
+  //           }
+  //           ref={(marker) => {
+  //             this.from_marker = marker;
+  //           }}
+  //           image={require("../assets/markers/marker7.png")}
+  //           key={`${this.props.order.region.latitude}_${this.props.order.region.longitude}`}
+  //           coordinate={{
+  //             latitude: this.props.order.region
+  //               ? this.props.order.region.latitude
+  //               : 9.0765,
+  //             longitude: this.props.order.region
+  //               ? this.props.order.region.longitude
+  //               : 7.3986,
+  //           }}
+  //           pinColor="green"
+  //         >
+  //           <Callout tooltip={false}>
+  //             <Content style={{ width: undefined, backgroundColor: "white" }}>
+  //               <Item
+  //                 style={{
+  //                   padding: 10,
+  //                 }}
+  //               >
+  //                 {/* <Pulse color='orange' numPulses={3} diameter={400} speed={20} duration={2000} > */}
+  //                 <Icon
+  //                   active
+  //                   name="pin"
+  //                   style={{
+  //                     color: "#C68E17",
 
-                      fontSize: 20,
-                    }}
-                  />
+  //                     fontSize: 20,
+  //                   }}
+  //                 />
 
-                  {/* </Pulse> */}
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: "Quicksand-Medium",
-                    }}
-                  >
-                    {this.props.order.my_address
-                      ? this.props.order.my_address
-                      : "Your are here"}
-                  </Text>
-                </Item>
-              </Content>
-            </Callout>
-          </Marker>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <MapViewDirections
-            origin={this.props.order.region}
-            destination={this.props.order.going}
-            apikey={google_api}
-            strokeWidth={5}
-            mode="DRIVING"
-            strokeColor="white"
-            showsCompass={false}
-            onError={() => {
-              alert("Could not find a path to your destination");
-            }}
-          ></MapViewDirections>
-          <Marker
-            title={
-              this.props.order.going.name
-                ? this.props.order.going.name
-                : "Your Destination"
-            }
-            ref={(marker) => {
-              this.destinationMarker = marker;
-            }}
-            key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
-            coordinate={{
-              latitude: this.props.order.going
-                ? this.props.order.going.latitude
-                : 9.0765,
-              longitude: this.props.order.going
-                ? this.props.order.going.longitude
-                : 7.3986,
-            }}
-            pinColor="green"
-          >
-            <Callout tooltip={false}>
-              <Content
-                style={{
-                  width: undefined,
-                  height: 20,
-                  backgroundColor: "white",
-                }}
-              >
-                <Item
-                  style={{
-                    padding: 10,
-                  }}
-                >
-                  <Icon
-                    active
-                    name="pin"
-                    style={{
-                      color: "blue",
+  //                 {/* </Pulse> */}
+  //                 <Text
+  //                   style={{
+  //                     fontSize: 12,
+  //                     fontFamily: "Quicksand-Medium",
+  //                   }}
+  //                 >
+  //                   {this.props.order.my_address
+  //                     ? this.props.order.my_address
+  //                     : "Your are here"}
+  //                 </Text>
+  //               </Item>
+  //             </Content>
+  //           </Callout>
+  //         </Marker>
+  //       </>
+  //     );
+  //   } else {
+  //     return (
+  //       <>
+  //         <MapViewDirections
+  //           origin={this.props.order.region}
+  //           destination={this.props.order.going}
+  //           apikey={google_api}
+  //           strokeWidth={5}
+  //           mode="DRIVING"
+  //           strokeColor="white"
+  //           showsCompass={false}
+  //           onError={() => {
+  //             alert("Could not find a path to your destination");
+  //           }}
+  //         ></MapViewDirections>
+  //         <Marker
+  //           title={
+  //             this.props.order.going.name
+  //               ? this.props.order.going.name
+  //               : "Your Destination"
+  //           }
+  //           ref={(marker) => {
+  //             this.destinationMarker = marker;
+  //           }}
+  //           key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
+  //           coordinate={{
+  //             latitude: this.props.order.going
+  //               ? this.props.order.going.latitude
+  //               : 9.0765,
+  //             longitude: this.props.order.going
+  //               ? this.props.order.going.longitude
+  //               : 7.3986,
+  //           }}
+  //           pinColor="green"
+  //         >
+  //           <Callout tooltip={false}>
+  //             <Content
+  //               style={{
+  //                 width: undefined,
+  //                 height: 20,
+  //                 backgroundColor: "white",
+  //               }}
+  //             >
+  //               <Item
+  //                 style={{
+  //                   padding: 10,
+  //                 }}
+  //               >
+  //                 <Icon
+  //                   active
+  //                   name="pin"
+  //                   style={{
+  //                     color: "blue",
 
-                      fontSize: 18,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      fontFamily: "Quicksand-Bold",
-                    }}
-                  >
-                    {this.props.order.going.name
-                      ? this.props.order.going.name
-                      : "Your Destination"}
-                  </Text>
-                </Item>
-              </Content>
-            </Callout>
-          </Marker>
-        </>
-      );
-    }
-  };
+  //                     fontSize: 18,
+  //                   }}
+  //                 />
+  //                 <Text
+  //                   style={{
+  //                     fontSize: 15,
+  //                     fontFamily: "Quicksand-Bold",
+  //                   }}
+  //                 >
+  //                   {this.props.order.going.name
+  //                     ? this.props.order.going.name
+  //                     : "Your Destination"}
+  //                 </Text>
+  //               </Item>
+  //             </Content>
+  //           </Callout>
+  //         </Marker>
+  //       </>
+  //     );
+  //   }
+  // };
 
-  chech_ride_state = async () => {
-    const { user, token } = this.props.auth;
+  // chech_ride_state = async () => {
+  //   const { user, token } = this.props.auth;
 
-    console.log("reconnecting me!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    if (this.props.order.order) {
-      const data = await this.props.getOrder(token, this.props.order.order._id);
-      console.log({ data });
-      if (data.state == "Completed") {
-        // return
-        this.loadSounds();
+  //   console.log("reconnecting me!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  //   if (this.props.order.order) {
+  //     const data = await this.props.getOrder(token, this.props.order.order._id);
+  //     console.log({ data });
+  //     if (data.state == "Completed") {
+  //       // return
+  //       this.loadSounds();
 
-        //  this.centerCamera();
+  //       //  this.centerCamera();
 
-        // passing the id of the driver as params to the rating page
-        this.reset_navigation("driver_rating", data.driver);
+  //       // passing the id of the driver as params to the rating page
+  //       this.reset_navigation("driver_rating", data.driver);
 
-        return await store.dispatch({
-          type: "RIDE_COMPLETED",
-        });
-      }
-      else if(data.cancelled){
-       
-    await store.dispatch({
-      type: "CANCEL_ORDER",
-    });
-      }
-    }
-  };
+  //       return await store.dispatch({
+  //         type: "RIDE_COMPLETED",
+  //       });
+  //     }
+  //     else if(data.cancelled){
+
+  //   await store.dispatch({
+  //     type: "CANCEL_ORDER",
+  //   });
+  //     }
+  //   }
+  // };
 
   // reconnect a user to previous ride
   reconnect_client = async () => {
-    const { user, token } = this.props.auth;
+    const { user } = this.props.auth;
 
     // console.log("reconnecting me!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     // if (this.props.order.order) {
@@ -1278,8 +1218,6 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     // }
 
     this.chech_ride_state();
-
-
 
     // this.user_ride_channel.bind("client-driver-available", (data) => {
     //   console.log("clients driver response!!!!!");
@@ -1318,10 +1256,89 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     // });
 
     // }
-
-
   };
 
+  driver_arrived = () => {
+    schedulePushNotification(
+      "Driver Arrived",
+      "Your driver has arrived at your location.",
+      null
+    );
+    this.loadSounds();
+    return this.centerCamera();
+  };
+  ride_started = () => {
+    schedulePushNotification(
+      "Ride Started",
+      "Your driver has started the trip.",
+      null
+    );
+    this.loadSounds();
+    return this.centerCamera();
+  };
+  ride_ended = () => {
+    schedulePushNotification(
+      "Ride Ended",
+      "Your driver has ended the trip. Please pay the driver",
+      null
+    );
+    this.loadSounds();
+    return this.centerCamera();
+  };
+  ride_completed = () => {
+    this.loadSounds();
+
+    const uid = firebase.auth().currentUser.uid;
+    //  this.centerCamera();
+
+    // passing the id of the driver as params to the rating page
+    if (this.props.order.current_order) {
+      this.reset_navigation("driver_rating", {
+        driver: this.props.order.current_order.driver,
+      });
+      // cleanup
+      firebase
+        .database()
+        .ref("orders/" + this.props.auth.user.current_order)
+        .off("value", this.watching_current_order);
+      firebase
+        .database()
+        .ref("users/" + uid)
+        .update({
+          current_order: null,
+        });
+      store.dispatch({
+        type: "RIDE_COMPLETED",
+      });
+    }
+  };
+  ride_cancelled = () => {
+    this.loadSounds();
+    schedulePushNotification("Ride Cancelled", "Your ride was cancelled", null);
+    //  this.centerCamera();
+
+    // passing the id of the driver as params to the rating page
+    if (this.props.order.current_order) {
+      firebase
+        .database()
+        .ref(
+          "orders/" +
+            this.props.auth.user.current_order
+        )
+        .off("value", this.watching_current_order);
+      firebase
+        .database()
+        .ref("users/" + firebase.auth().currentUser.uid)
+        .update({
+          current_order: null,
+        });
+      store.dispatch({
+        type: "ORDER_CANCELLED",
+      });
+
+      return this.centerCamera();
+    }
+  };
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
     // logErrorToMyService(error, errorInfo);
@@ -1329,15 +1346,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     console.log("error from component did catch ", error);
   }
   async componentDidMount() {
-    // persistStore(store).purge();
-    // persistStore(store).purge();
-    // store.dispatch({
-    //   type : "PURGE"
-    // })
 
-    // console.log("region!!! ", this.props.order.region)
-
-    // IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
     store.dispatch({
       type: "PERFORMING_TASK_ENDED",
     });
@@ -1346,38 +1355,230 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       "hardwareBackPress",
       this.backAction
     );
+  
+
+    this.fetch_recent_orders()  }
 
 
-    console.log("subscribing to presence channel");
 
-    var drivers_array = [];
-//     var presenceChannel = this.pusher.subscribe("presence-available-drivers");
-//     presenceChannel.bind("pusher:subscription_succeeded",  ()=> {
-//       // var presence = presenceChannel.members;
+    fetch_recent_orders =() => {
+      const uid = firebase.auth().currentUser.uid
+ 
+      firebase.database().ref("orders/").orderByChild("owner").equalTo(uid).limitToLast(5).once("value", (snapshot) => {
+        if(snapshot.exists()){
+          const orders = snapshot.val()
+  console.log({orders})
+          Object.entries(orders).forEach(([key, value]) =>{
+            this.setState({
+              recent_orders : [
+                ...this.state.recent_orders,
+                value
+              ]
+            })
+          });
+  
+        }
+      
+      })
+    }
 
-//       presenceChannel.members.each((element) => {
-//         if (element.info.type == "Driver") {
-//           drivers_array.push(element);
-//         }
-//       });
-//       console.log({ drivers_array });
+  async componentDidUpdate(prevProps) {
+    if (this.props.auth.user.location !== prevProps.auth.user.location) {
+      this.centerCamera();
+    }
 
-//       this.setState({
-//         available_presence_drivers: drivers_array,
-//       });
+    if (prevProps.order.current_order && prevProps.auth.user.current_order && this.props.order.current_order) {
+      if (
+        prevProps.order.current_order.state !==
+        this.props.order.current_order.state
+      ) {
+        if (this.props.order.current_order.state === "Accepted") {
+          console.log("driver accepted");
+          await this.client_found_driver();
+          this.loadSounds();
 
-// //       presenceChannel.bind("driver-location-updated", (data)=>{
-// // console.log("triggered by driver-location-updatred",data)
-// // alert("triggered by driver-location-updatred",data)
-// //       })
-//     });
-    // });
-   
+          return this.centerCamera();
+        }
+        if (this.props.order.current_order.state === "Arrived") {
+          console.log("driver arrived");
+          return this.driver_arrived();
+        }
+        if (this.props.order.current_order.state === "Started") {
+          console.log("ride started");
+          return this.ride_started();
+        }
+        if (this.props.order.current_order.state === "Ended") {
+          console.log("ride ended");
+          return this.ride_ended();
+        }
+        if (this.props.order.current_order.state === "Completed") {
+          console.log("ride completed");
+          return this.ride_completed();
+        }
 
-    // if (this.props.order.has_ride) {
-    //   this.reconnect_client();
-    // }
+        if (this.props.order.current_order.state === "Canclled") {
+          // console.log("ride completed")
+          return this.ride_cancelled();
+        }
+
+        /**
+   *     if (data.type == "ride_started") {
+          console.log("ride started by driver triggered ", data.order);
+  
+          this.loadSounds();
+          await store.dispatch({
+            type: "RIDE_UPDATED",
+            payload: data.order,
+          });
+  
+          this.centerCamera();
+  
+          schedulePushNotification(
+            "Ride Started",
+            "Your driver has started the ride",
+            null
+          );
+        }
+        if (data.type == "ride_ended") {
+          console.log("ride ended by driver triggered ", data.order);
+  
+          this.loadSounds();
+          await store.dispatch({
+            type: "RIDE_UPDATED",
+            payload: data.order,
+          });
+  
+          this.centerCamera();
+  
+          schedulePushNotification(
+            "Ride Ended",
+            "Your driver has ended the ride",
+            null
+          );
+        }
+        if (data.type == "ride_completed") {
+          console.log("ride completed by driver triggered ", data.order);
+  
+          const driver_id = data.order.driver;
+  
+          this.loadSounds();
+  
+          //  this.centerCamera();
+  
+          // passing the id of the driver as params to the rating page
+          this.reset_navigation("driver_rating", driver_id);
+  
+          return await store.dispatch({
+            type: "RIDE_COMPLETED",
+          });
+          // this.props.navigation.navigate("Driver_Rating")
+        }
+  
+   */
+      }
+    }
   }
+
+  mounting_functions = async () => {
+    try {
+      console.log("mounting function!!!!!!!!!!!!!!!!!!!");
+      if (this.props.auth.user.current_order) {
+        var updated_order;
+        this.watching_current_order = firebase
+          .database()
+          .ref(
+            "orders/" +
+              this.props.auth.user.current_order
+          )
+          .on("value", function (snapshot) {
+            updated_order = snapshot.val();
+            store.dispatch({
+              type: "ORDER_UPDATED",
+              payload: updated_order,
+            });
+          });
+
+        if (updated_order) {
+          this.watch_driver = firebase
+            .database()
+            .ref("drivers/" + updated_order.driver)
+            .on("child_changed", function (snapshot) {
+              console.log(
+                "finding driver from current_order triggered!!!!!!!!!!!!!!!!!!!!!!",
+                snapshot.val()
+              );
+              if (snapshot.exists()) {
+                const driver = snapshot.val();
+
+                const diff_in_minute_pickup =
+                  updated_order.diff_in_minute_pickup;
+
+                console.log({ diff_in_minute_pickup });
+                var COORDINATE_DRIVER_LOCATION = {
+                  coordinate: new AnimatedRegion({
+                    latitudeDelta: 0.3,
+                    longitudeDelta: 0.3,
+                    latitude: driver.location.latitude,
+                    longitude: driver.location.longitude,
+                    heading: driver.location.headingg,
+                  }),
+                  diff_in_minute_pickup: diff_in_minute_pickup,
+                };
+
+                console.log({ COORDINATE_DRIVER_LOCATION });
+
+                this.setState({
+                  coordinate : new AnimatedRegion({
+                    latitudeDelta: 0.3,
+                    longitudeDelta: 0.3,
+                    longitude: driver.location.longitude,
+                    latitude: driver.location.latitude,
+                  }),
+                })
+                store.dispatch({
+                  type: "COORDINATE_DRIVER_LOCATION",
+                  payload: COORDINATE_DRIVER_LOCATION,
+                });
+              }
+            });
+
+            return  this.setState(
+              {
+                map_is_ready: true,
+              },
+              () => {
+                this.centerCamera();
+              }
+            );
+
+          // this.centerCamera();
+        }
+      } else {
+        await store.dispatch({
+          type: "CANCEL_ORDER",
+        });
+
+       return this.setState(
+          {
+            map_is_ready: true,
+          },
+          () => {
+            this.centerCamera();
+          }
+        );
+      }
+    } catch (error) {
+      console.log("error in mounting functions ", error);
+      return  this.setState(
+        {
+          map_is_ready: true,
+        },
+        () => {
+          this.centerCamera();
+        }
+      );
+    } 
+  };
 
   navigate = (name) => {
     return this.props.navigation.navigate(name);
@@ -1441,13 +1642,50 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
   };
 
   centerCamera = () => {
-    if (this.props.order.order) {
-      if (this.props.order.order.state == "Started") {
-        var { latitude, longitude } = this.props.order.driver;
-        console.log(
-          "centering ,map Destination requested with order!!!!!!!!!!!",
-          this.props.order.order
-        );
+    if (this.props.order.current_order) {
+      if (
+        this.props.order.current_order.state === "Accepted" &&
+        this.props.order.coordinate
+      ) {
+        // var { latitude, longitude } = this.props.order.coordinate;
+        const latitude = this.props.order.coordinate.latitude;
+        const longitude = this.props.order.coordinate.longitude;
+
+        console.log("latitude and longitude from center camera ", {
+          latitude,
+          longitude,
+        });
+        this.map &&
+          this.map.fitToCoordinates(
+            [
+              {
+                latitude,
+                longitude,
+              },
+
+              {
+                latitude: this.props.order.region.latitude,
+                longitude: this.props.order.region.longitude,
+                // latitude: this.props.order.current_order.dropoff.latitude,
+                // longitude: this.props.order.current_order.dropoff.longitude,
+              },
+            ],
+            {
+              edgePadding: {
+                bottom: hp(100),
+                right: wp(40),
+                top: hp(30),
+                left: wp(20),
+              },
+              animated: true,
+            }
+          );
+      } else if (
+        this.props.order.coordinate &&
+        this.props.order.current_order.state === "Started"
+      ) {
+        var { latitude, longitude } = this.props.order.coordinate;
+
         // const latitude = this.props.order.going.latitude
         // const longitude = this.props.order.going.longitude
 
@@ -1460,8 +1698,40 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
               },
 
               {
-                latitude: this.props.order.going.latitude,
-                longitude: this.props.order.going.longitude,
+                latitude: this.props.order.current_order.dropoff.latitude,
+                longitude: this.props.order.current_order.dropoff.longitude,
+              },
+            ],
+            {
+              edgePadding: {
+                bottom: hp("60%"),
+                right: wp("40%"),
+                top: hp("20%"),
+                left: wp("10%"),
+              },
+              animated: true,
+            }
+          );
+      } else if (
+        this.props.order.coordinate &&
+        this.props.order.current_order.state === "Arrived"
+      ) {
+        var { latitude, longitude } = this.props.order.coordinate;
+
+        // const latitude = this.props.order.going.latitude
+        // const longitude = this.props.order.going.longitude
+
+        this.map &&
+          this.map.fitToCoordinates(
+            [
+              {
+                latitude,
+                longitude,
+              },
+
+              {
+                latitude: this.props.order.region.latitude,
+                longitude: this.props.order.region.longitude,
               },
             ],
             {
@@ -1475,92 +1745,30 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             }
           );
       } else {
-        if (this.props.order.driver) {
-          console.log(
-            "centering ,driver locatin and user location",
-            this.props.order.driver
+        console.log(
+          "no orders drivers location was passed....!!!!!!!!!!!!11",
+          this.props.order.coordinate
+        );
+
+        this.map &&
+          this.map.animateCamera(
+            {
+              center: {
+                latitude: this.props.order.region.latitude,
+                longitude: this.props.order.region.longitude,
+              },
+              pitch: 20,
+              heading: 30,
+              altitude: 100,
+              zoom: 16,
+            },
+            800
           );
-          var { latitude, longitude } = this.props.order.driver;
-
-          // const latitude = this.props.order.going.latitude
-          // const longitude = this.props.order.going.longitude
-
-          this.map &&
-            this.map.fitToCoordinates(
-              [
-                {
-                  latitude,
-                  longitude,
-                },
-
-                {
-                  latitude: this.props.order.region.latitude,
-                  longitude: this.props.order.region.longitude,
-                },
-              ],
-              {
-                edgePadding: {
-                  bottom: hp("60%"),
-                  right: wp("40%"),
-                  top: hp("20%"),
-                  left: wp("10%"),
-                },
-                animated: true,
-              }
-            );
-        } else {
-          console.log(
-            "no orders drivers location was passed....!!!!!!!!!!!!11",
-            this.props.order.driver
-          );
-
-          
-           store.dispatch({
-            type: "PERFORMING_TASK",
-          });
-
-          const orderID = this.props.order.order
-            ? this.props.order.order._id
-            : null;
-          const tokens = this.props.auth.token;
-
-          if (orderID) {
-            console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
-            this.props.cancelOrder(tokens, orderID);
-          }
-
-          // RBSheet.close()
-
-          this.user_ride_channel &&
-            this.user_ride_channel.trigger("client-driver-cancelled", {});
-
-           store.dispatch({
-            type: "CANCEL_ORDER",
-          });
-           store.dispatch({
-            type: "END_LOADING",
-          });
-
-          // persistStore(store).purge();
-
-          this.setState({
-            show_user_location: true,
-          });
-          this.close_modal();
-          // this._getLocationAsync();
-           this.centerCamera();
-
-          store.dispatch({
-            type: "PERFORMING_TASK_ENDED",
-          });
-
-          // this.props.pusher&& this.props.pusher.pusher.disconnect()yyyyyy
-        }
       }
-    } else if (this.props.order.destinationRequested) {
+    } else if (this.props.order.current_order) {
       console.log("centering ,map Destination requested!!!!!!!!!!!");
-      const latitude = this.props.order.going.latitude;
-      const longitude = this.props.order.going.longitude;
+      const latitude = this.props.order.current_order.dropoff.latitude;
+      const longitude = this.props.order.current_order.dropoff.longitude;
 
       this.fit_markers_to_map(latitude, longitude);
 
@@ -1589,127 +1797,6 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     }
   };
 
-  pusher_actions = async () => {
-    const { token, user } = this.props.auth;
-
-    // store.dispatch({
-    //   type: "PUSHER_AUTH",
-    //   payload: this.pusher,
-    // });<D
-
-    // this.props.auth.user.phoneNumber = this.props.auth.user.phoneNumber
-
-    //  if(!this.props.pusher.available_drivers_channel){
-    // if(!this.available_drivers_channel){
-    console.log(
-      "perfomring pusher actions!!!!!!!!!!!!!!!!!!!!!!!!!!!1, ",
-      this.props.order.logistic_type
-    );
-    this.available_drivers_channel = await this.pusher.subscribe(
-      `private-available-drivers-${
-        this.props.order.logistic_type
-          ? this.props.order.logistic_type.toLowerCase()
-          : "car"
-      }`
-    );
-
-    console.log("connected to private available drivers!!");
-    // }
-
-    // store.dispatch({
-    //   type: "AVAILABLE_DRIVERS",
-    //   payload: this.available_drivers_channel,
-    // });
-
-    // console.log("binding to available drivers channgel!!!!!!!!!!!!!!!!!!!!!! ", this.props.pusher)
-    // available_drivers_channel.bind(
-    //   "pusher:subscription_failed",
-    //   (data) => {
-    //     console.log("failed to subscribe ");
-    //   }
-    // );
-
-    await this.available_drivers_channel.bind(
-      "pusher:subscription_succeeded",
-      async (data) => {
-        console.log("Subscribed succesfully to available_drivers_cahannel ");
-
-        //  }
-
-        // available_drivers_channel.bind("Driver_Accepted", function (data) {
-        //   alert("New Driver Alerted")
-
-        //     })
-        // if (!this.props.pusher.user_ride_channel) {
-
-        // if(!this.user_ride_channel){
-
-        //   console.log("subscribing ujser ride channel!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
-        this.user_ride_channel = await this.pusher.subscribe(
-          "private-ride-" + this.props.auth.user._id
-        );
-        // this.user_ride_channel = user_ride_channel
-
-        await this.user_ride_channel.bind(
-          "pusher:subscription_succeeded",
-          (data) => {
-            console.log("Subscribed succesfully to user_ride_cahnnel ");
-
-            this.user_ride_channel.bind("client-driver-available", (data) => {
-              console.log("clients driver response!!!!!");
-              console.log("driver has ride  ??? ", this.props.order.has_ride);
-              let passenger_response = "no";
-              if (!this.props.order.has_ride) {
-                passenger_response = "yes";
-              }
-
-              // passenger responds to driver's response
-              this.user_ride_channel.trigger("client-driver-response", {
-                response: passenger_response,
-              });
-            });
-
-            this.user_ride_channel.bind("client-found-driver", async (data) => {
-              this.client_found_driver(data);
-            });
-
-            this.user_ride_channel.bind(
-              "client-driver-location",
-              async (data) => {
-                this.client_driver_location(data);
-              }
-            );
-
-            this.user_ride_channel.bind(
-              "client-driver-message",
-              async (data) => {
-                this.client_driver_message(data);
-              }
-            );
-            this.user_ride_channel.bind(
-              "client-driver-has-cancelled",
-              async (data) => {
-                this.driver_cancelled();
-              }
-            );
-
-            // this.user_ride_channel.bind("client-driver-heading", (data) => {
-            //    store.dispatch({
-            //      type : "DRIVER_HEADING",
-            //      payload : data.trigger_heading ? data.trigger_heading : 0
-            //    })
-
-            //   });
-          }
-        );
-
-        // }
-
-        // }
-      }
-    );
-  };
 
   // used to replace screens so user cant go back
   reset_navigation = (screenName, param) => {
@@ -1721,25 +1808,18 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
   animate = async (latitude, longitude) => {
     try {
-      const { latitude, longitude } = this.props.order.region;
+      
 
-      var new_coordinates = {
-        latitude: latitude,
-        longitude: longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      };
 
-      await this.state.coordinate.timing(new_coordinates, 1500).start();
+      const newCoordinate = { latitude, longitude };
 
-      await this.state.coordinate.setValue({
-        latitude: latitude,
-        longitude: longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      });
-
-      return true;
+      // if (Platform.OS == "android") {
+      //   if (this.marker.current) {
+      //     this.marker.current.animateMarkerToCoordinate(newCoordinate, 7000);
+      //   }
+      // } else {
+        this.state.coordinate.timing(newCoordinate).start();
+      // }
     } catch (error) {
       console.log({ error });
       return false;
@@ -1748,12 +1828,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
 
   centerMap = () => {
     try {
-      const {
-        latitudeDelta,
-        longitudeDelta,
-        latitude,
-        longitude,
-      } = this.props.order.region;
+      const { latitudeDelta, longitudeDelta, latitude, longitude } =
+        this.props.order.region;
 
       this.map &&
         this.map.animateCamera(
@@ -1784,7 +1860,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
         latitudeDelta: 0.1,
       };
 
-      var {user} = this.props.auth
+      var { user } = this.props.auth;
 
       console.log("data passed to the selet destination , ", data);
 
@@ -1804,6 +1880,8 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       const latitude = going.latitude;
       const longitude = going.longitude;
 
+
+      // i modified this to return km not meters
       var diff_in_meter_pickup = getLatLonDiffInMeters(
         this.props.order.region.latitude,
         this.props.order.region.longitude,
@@ -1812,15 +1890,16 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
       );
 
       console.log({ diff_in_meter_pickup });
+      // const database_price = this.props.order.price ? this.props.order.price : 67
 
-      var price =( (diff_in_meter_pickup * 0.065) + parseInt(user.debt, 10)) ;
+      // var price = diff_in_meter_pickup * database_price + parseInt(user.debt, 10);
 
-      console.log("price of debt!!!!!!!!!!!!!!! ", user.debt);
+      // console.log("price of database!!!!!!!!!!!!!!! ", this.props.order.price);
 
-      await store.dispatch({
-        type: "PRICE_UPDATED",
-        payload: price,
-      });
+      // await store.dispatch({
+      //   type: "PRICE_UPDATED",
+      //   payload: price,
+      // });
       // this.setState({
 
       // });
@@ -1844,21 +1923,47 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     }
   };
 
-  bookRide = async (payment_method, updated_location_from, destination_location, price) => {
+  bookRide = async (
+    payment_method,
+    updated_location_from,
+    destination_location,
+    price
+  ) => {
     try {
-
-      const {user} = this.props.auth
-      console.log("booking ride!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
+      console.log(
+        "props route !!!!!!!!!!!!!!!!!!!!!!!!!!!",
+        this.props.route.params.from_location
+      );
+      console.log(
+        "updated_location !!!!!!!!!!!!!!!!!!!!!!!!!!!",
+        updated_location_from
+      );
+      console.log(
+        "region !!!!!!!!!!!!!!!!!!!!!!!!!!!", this.props.order.my_address);
 
       // store.dispatch({
       //   type : "SET_LOADING"
       // })
 
       let pickup_data = {
-        latitude: updated_location_from.region.latitude,
-        from_address: updated_location_from.address_name,
-        longitude: updated_location_from.region.longitude,
+        latitude:
+          updated_location_from && updated_location_from.latitude
+            ? updated_location_from.latitude
+            : this.props.route.params.from_location
+            ? this.props.route.params.from_location.latitude
+            : this.props.order.region.latitude,
+        from_address:
+          updated_location_from && updated_location_from.address_name
+            ? updated_location_from.address_name
+            : this.props.route.params.from_location && this.props.route.params.from_location.fromName
+            ? this.props.route.params.from_location.fromName
+            : this.props.order.my_address,
+        longitude:
+          updated_location_from && updated_location_from.longitude
+            ? updated_location_from.longitude
+            : this.props.route.params.from_location
+            ? this.props.route.params.from_location.longitude
+            : this.props.order.region.longitude,
       };
 
       let dropoff_data = {
@@ -1871,23 +1976,84 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
         price: price,
         pickup: pickup_data,
         dropoff: dropoff_data,
-        payment_method
+        payment_method,
+        state: "Pending",
+        owner: firebase.auth().currentUser.uid,
+        ref: uuid.v4(),
+        logistic_type: this.props.order.logistic_type,
       };
 
-      console.log({data})
+      console.log({ data });
+
+      var new_order = firebase
+        .database()
+        .ref("orders/")
+        .push({
+          price: price,
+          pickup: pickup_data,
+          dropoff: dropoff_data,
+          payment_method,
+          state: "Pending",
+          owner: firebase.auth().currentUser.uid,
+          ref: data.ref,
+          logistic_type: this.props.order.logistic_type,
+          createdAt: Date.now(),
+        })
+        .getKey();
+
+      firebase
+        .database()
+        .ref("orders/"  + new_order)
+        .update({
+          key: new_order,
+        });
+
+      console.log("new order key!!!! ", new_order);
+
+      firebase
+        .database()
+        .ref("orders/" + new_order)
+        .once("value", function (snapshot) {
+          if (snapshot.exists()) {
+            store.dispatch({
+              type: "MAKE_ORDER",
+              payload: snapshot.val(),
+            });
+          }
+        });
+
+      this.watching_current_order = firebase
+        .database()
+        .ref("orders/" + new_order)
+        .on("value", function (snapshot) {
+          const updated_order = snapshot.val();
+          console.log({ updated_order });
+          store.dispatch({
+            type: "ORDER_UPDATED",
+            payload: updated_order,
+          });
+        });
+
+      firebase
+        .database()
+        .ref("users/" + firebase.auth().currentUser.uid)
+        .update({
+          current_order: new_order,
+        });
 
       this.setState({
         show_user_location: true,
+        searching_for_driver: true,
       });
-
-
     } catch (error) {
-
       store.dispatch({
-        type : "END_LOADING"
-      })
-      console.log("error!!!!!!!!!! ", error );
-      alert("Could not request your order. Please try again.")
+        type: "END_LOADING",
+      });
+      console.log("error!!!!!!!!!! ", error);
+      // alert("Could not request your order. Please try again.")
+      this.setState({
+        error_msg: "Could not request your order. Please try again.",
+      });
     }
   };
 
@@ -1895,19 +2061,6 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     await store.dispatch({
       type: "PERFORMING_TASK",
     });
-
-    const orderID = this.props.order.order ? this.props.order.order._id : null;
-    const tokens = this.props.auth.token;
-
-    if (orderID) {
-      console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
-      this.props.cancelOrder(tokens, orderID);
-    }
-
-    // RBSheet.close()
-
-    // this.user_ride_channel &&
-    //   this.user_ride_channel.trigger("client-driver-cancelled", {});
 
     await store.dispatch({
       type: "CANCEL_ORDER",
@@ -1936,11 +2089,15 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     // });
 
     try {
-      if (this.props.order.order) {
-        const { state } = this.props.order.order;
+      const { user } = this.props.auth;
+      if (user.current_order) {
+        const { state } = this.props.order.current_order;
         // console.log({state})
         if (state == "Ended" || state == "Completed") {
-          return alert("Please complete the payment for your current ride");
+          console.log("Please complete the payment for your current ride");
+          return this.setState({
+            error_msg: "Please complete the payment for your current ride",
+          });
         }
 
         Alert.alert(
@@ -1950,45 +2107,38 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             {
               text: "Yes",
               onPress: async () => {
-                await store.dispatch({
-                  type: "PERFORMING_TASK",
-                });
+                firebase
+                  .database()
+                  .ref(
+                    "orders/" +
+                      user.current_order
+                  )
+                  .update({
+                    state: "Cancelled",
+                  });
 
-                const orderID = this.props.order.order
-                  ? this.props.order.order._id
-                  : null;
-                const tokens = this.props.auth.token;
-
-                if (orderID) {
-                  console.log("orderID!!!!!!!!!!!!!!!!!!!!!!", orderID);
-                  this.props.cancelOrder(tokens, orderID);
-                }
-
-                // RBSheet.close()
-
-                this.user_ride_channel &&
-                  this.user_ride_channel.trigger("client-driver-cancelled", {});
+                firebase
+                  .database()
+                  .ref("users/" + firebase.auth().currentUser.uid)
+                  .update({
+                    current_order: null,
+                  });
 
                 await store.dispatch({
                   type: "CANCEL_ORDER",
                 });
-                await store.dispatch({
-                  type: "END_LOADING",
-                });
-
-                // persistStore(store).purge();
 
                 this.setState({
                   show_user_location: true,
                 });
                 this.close_modal();
                 this._getLocationAsync();
+                this.fetch_recent_orders()  
                 // await this.centerCamera();
 
-                store.dispatch({
-                  type: "PERFORMING_TASK_ENDED",
-                });
-
+                // store.dispatch({
+                //   type: "PERFORMING_TASK_ENDED",
+                // });
               },
             },
             {
@@ -2001,35 +2151,18 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           { cancelable: false }
         );
       } else {
-        await store.dispatch({
-          type: "DESTINATION_CANCELLED",
-        });
-        
-
-        this.close_modal();
-
         this.setState({
-          show_user_location: true,
+          error_msg: "Failed to cancel this order",
         });
-
-        store.dispatch({
-          type : "END_LOADING"
-        })
-        await this._getLocationAsync();
-        // this.centerCamera();
-       
       }
     } catch (error) {
-      this.close_modal();
+      // this.close_modal();
 
-      this.setState({
-        show_user_location: true,
-      });
-      store.dispatch({
-        type : "END_LOADING"
-      })
-      this.centerCamera();
-      console.warn(error);
+      // this.setState({
+      //   show_user_location: true,
+      // });
+      // this.centerCamera();
+      console.log({ error });
     }
   };
 
@@ -2104,37 +2237,39 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
     // });
 
     Geocoder.from(location.coords.latitude, location.coords.longitude)
-    .then(json => {
+      .then((json) => {
+        var address =
+          json.results[0].address_components[0].long_name +
+          " " +
+          json.results[0].address_components[1].long_name;
+        // console.log( json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name )
+        // var addressComponent = json.results[0].address_components[0];
+        // console.log({addressComponent});
 
-     var address = json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name
-      // console.log( json.results[0].address_components[0].long_name + " " + json.results[0].address_components[1].long_name )
-            // var addressComponent = json.results[0].address_components[0];
-      // console.log({addressComponent});
+        let region = {
+          latitude: my_location.latitude,
+          longitude: my_location.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.06,
+        };
 
-      let region = {
-        latitude: my_location.latitude,
-        longitude: my_location.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.06,
-      };
-  
-      var data = {
-        region: region,
-        my_address:address,
-        // addressShortName: addressComponent,
-      };
-  
-       store.dispatch({
-        type: "GET_LOCATION",
-        payload: data,
+        var data = {
+          region: region,
+          my_address: address,
+          accuracy: location.coords.accuracy,
+          // addressShortName: addressComponent,
+        };
+
+        store.dispatch({
+          type: "GET_LOCATION",
+          payload: data,
+        });
+
+        this.watchId = location;
+      })
+      .catch((error) => {
+        console.warn(error);
       });
-  
-      this.watchId = location;
-
-    }).catch(error =>{
-      console.warn(error)
-    })
-    
   };
 
   componentWillUnmount() {
@@ -2167,7 +2302,7 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
   close_modal = () => {
     // this.cancelOrder()
     this.setState({
-      modal_visible: false,
+      searching_for_driver: false,
     });
   };
   show_set_destination = () => {
@@ -2194,56 +2329,14 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
   render() {
     var show_user_location = this.state.show_user_location;
 
-
-    // console.log(this.props.order)
-    if (this.props.order.order) {
-      show_user_location = this.props.order.order.state !== "Started";
+    if (this.props.order.current_order) {
+      show_user_location = this.props.order.current_order.state !== "Started";
       // this.chech_ride_state();
     }
 
-    // console.log(this.props.order)
-
     return (
       <View style={styles.container}>
-        {/* Loading Animation */}
-
-        <LottieLoader
-          visible={this.props.order.is_fetching}
-          source={require("../assets/lottie/car.json")}
-        />
-        {/* End Loading animation */}
-
-        {this.props.order.is_searching && (
-          <CustomModal cancelOrder={this.cancelOrder} />
-        )}
-        {!this.props.order.destinationRequested && !this.props.order.has_ride
-          ? this.destination_button()
-          : null}
-
-        {/* if the user has a driver, show the driver details */}
-
-        {this.props.order.has_ride && this.driver_details_popup()}
-
-        {!this.props.order.destinationRequested
-          ? this.drawer_button()
-          : this.back_button()}
-
-        {this.current_location_button()}
-
-        <>
-          {!this.state.map_is_ready && (
-            <View
-              style={[styles.container, { position: "absolute", zIndex: 777 }]}
-            >
-              <ImageBackground
-                source={require("../assets/images/preloader.png")}
-                resizeMethod="resize"
-                style={{ width: wp(100), height: hp(140), top: -hp(18) }}
-              />
-            </View>
-          )}
-
-          <MapView
+           <MapView
             followUserLocation={show_user_location}
             initialRegion={this.props.order.region}
             rotateEnabled={false}
@@ -2254,20 +2347,20 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             showsCompass={false}
             // provider="google"
             tintColor={colors.safron}
-            initialCamera ={
-              {
-                center: {
-                  latitude: this.props.order.region.latitude? this.props.order.region.latitude : 9.0765,
-              longitude: this.props.order.region.longitude ? this.props.order.region.longitude :7.3986,
-                },
-                pitch: 20,
-                heading: 30,
-                altitude: 100,
-                zoom: 18,
-              }
-            }
-            
-            
+            initialCamera={{
+              center: {
+                latitude: this.props.order.region.latitude
+                  ? this.props.order.region.latitude
+                  : 9.0765,
+                longitude: this.props.order.region.longitude
+                  ? this.props.order.region.longitude
+                  : 7.3986,
+              },
+              pitch: 20,
+              heading: 30,
+              altitude: 100,
+              zoom: 18,
+            }}
             minZoomLevel={5} // default => 0l
             maxZoomLevel={20} // default => 20
             // onUserLocationChange = {(e)=>{
@@ -2316,21 +2409,22 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
             // cacheEnabled
             // pitchEnabled = {true}
 
-
             // provider = "google"
             provider={PROVIDER_GOOGLE}
             showsAnnotationCallouts={true}
             paddingAdjustmentBehavior="automatic"
-            onMapReady={() => {
+            onMapReady={async () => {
               // setTimeout(() => {
-              this.setState(
-                {
-                  map_is_ready: true,
-                },
-                () => {
-                  this.centerCamera();
-                }
-              );
+
+              await this.mounting_functions();
+              // this.setState(
+              //   {
+              //     map_is_ready: true,
+              //   },
+              //   () => {
+              //     this.centerCamera();
+              //   }
+              // );
 
               // this._getLocationAsync();
 
@@ -2350,39 +2444,64 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
               ? this.destination_marker()
               : null} */}
 
-            {this.props.order.driver && (
-              <>
-                {this.props.order.order &&
-                  this.props.order.order.state == "Started" &&
-                  this.map_view_directions()}
+            {this.show_driver_marker()}
+            {this.map_view_directions()}
 
-                {this.show_driver_marker()}
-              </>
-              // this.driverLocation()
-            )}
-
-
-
-
-            {!this.props.order.order  && this.state.available_presence_drivers.length >0 &&
-            // this.state.available_presence_drivers.map((driver,key)=>(
+            {/* {!this.props.order.current_order &&
+            
               this.available_presence_drivers()
 
-            // ))
-
+          
               
-            }
+            } */}
           </MapView>
 
+
+        <ErrorModal
+          modal_visible={this.state.error_msg}
+          error_msg={this.state.error_msg}
+          toggleModal={this.toggleModal}
+        />
+
+        {this.props.order.current_order &&
+          this.props.order.current_order.state === "Pending" && (
+            <CustomModal cancelOrder={this.cancelOrder} />
+          )}
+        {!this.props.order.current_order ? this.destination_button() : null}
+
+        {/* if the user has a driver, show the driver details */}
+
+        {this.driver_details_popup()}
+
+        {!this.props.order.current_order
+          ? this.drawer_button()
+          : this.back_button()}
+
+        {this.current_location_button()}
+
+        <>
+          {!this.state.map_is_ready && (
+            <View
+              style={[styles.container, { position: "absolute", zIndex: 777 }]}
+            >
+              <ImageBackground
+                source={require("../assets/images/preloader.png")}
+                resizeMethod="resize"
+                style={{ width: wp(100), height: hp(140), top: -hp(18) }}
+              />
+            </View>
+          )}
+
+     
           {/* {this.back_to_select_vehicle_button()} */}
 
           {/* back button at bottom left */}
-          {!this.props.order.destinationRequested && (
+          {!this.props.order.current_order && (
             <Back_to_select_screen_button
               cb={() => {
                 this.backAction();
               }}
-              order={this.props.order.driver}
+              order={this.props.order.current_order}
               destination={this.props.order.destinationRequested}
             />
           )}
@@ -2431,11 +2550,12 @@ console.log("presenvce!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.state.available_prese
           >
             {/* <Confirm_Location close_modal = {this.close_modal} book_ride={this.bookRide}  /> */}
             <SetDestination
-              selectDestination={this.selectDestination}
+              // selectDestination={this.selectDestination}
               show_set_destination={this.show_set_destination}
               close_set_destination={this.close_set_destination}
-              navigate = {this.props.navigation.navigate}
-              book_ride = {this.bookRide}
+              navigate={this.props.navigation.navigate}
+              book_ride={this.bookRide}
+              recent_orders = {this.state.recent_orders}
             />
           </Modal>
         </View>
@@ -2472,12 +2592,7 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, {
-  makeOrder,
-  cancelOrder,
-  getOrder,
-  test_redux_promisify,
-})(Map);
+export default connect(mapStateToProps, {})(Map);
 
 const styles = StyleSheet.create({
   container: {

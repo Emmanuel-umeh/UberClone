@@ -62,8 +62,8 @@ class SetLogistics extends PureComponent {
       isBikeSelected: null,
       isCarSelected: null,
       isTankerSelected: null,
-      logistics : "bike",
-      logistics_name : "Delivery Bike",
+      logistics : null,
+      logistics_name : null,
       data: [
         {id:0, title: "bike", name : "Delivery Bike",  image:select_bike},
         {id:1, title: "car", name : "Taxi",  image:select_car},
@@ -84,10 +84,12 @@ class SetLogistics extends PureComponent {
   clickEventListener =(item)=>{
     console.log({item})
 
-    this.setState({
-      logistics : item.title,
-      logistics_name : item.name
-    })
+
+    this._next(item.title)
+    // this.setState({
+    //   logistics : item.title,
+    //   logistics_name : item.name
+    // })
   }
 
   componentDidMount(){
@@ -100,7 +102,7 @@ class SetLogistics extends PureComponent {
 
         
 
-    if(this.props.order.has_ride){
+    if(this.props.order.current_order){
   
     
       return this.props.navigation.replace("Map")
@@ -134,17 +136,17 @@ class SetLogistics extends PureComponent {
     // );
   }
 
-  _next =()=>{
+  _next =(logistics)=>{
 
 
     store.dispatch({
       type : "LOGISTIC_TYPE",
-      payload : this.state.logistics
+      payload : logistics
     })
 
    
     this.props.navigation.navigate("Map", {
-      logistics :  this.state.logistics
+      logistics :  logistics
     })
     // this.props.route.params.selectDestination(this.props.route.params.destination)
   }
@@ -157,7 +159,7 @@ class SetLogistics extends PureComponent {
 {/* <Text animation = "bounceIn" style={styles.selectAVechicle}>Select Your Service</Text> */}
         {/* <View style={styles.container}> */}
 
-        {/* <ScrollView> */}
+ 
 
        
         <FlatList style={styles.list}
@@ -171,6 +173,7 @@ class SetLogistics extends PureComponent {
           renderItem={({item}) => {
             return (
               <Animatable.View animation = "bounceIn"  >
+                     
                 <TouchableOpacity style={[styles.card, {
 
 
@@ -204,14 +207,14 @@ item.title == this.state.logistics &&
 
                   </View>
                 </TouchableOpacity>
-
             
               </Animatable.View>
+            
             )
           }}/>
       {/* </View> */}
 
-      <Button onPress ={this._next} block style ={{
+      {/* <Button onPress ={this._next} block style ={{
         backgroundColor :colors.safron,
         borderRadius : 30,
         width : wp(80),
@@ -222,9 +225,9 @@ item.title == this.state.logistics &&
         fontFamily : "Quicksand-Bold",
         marginTop : -3,
         color : colors.white
-      }}>Select {this.state.logistics_name}</Text></Button>
+      }}>Select {this.state.logistics_name}</Text></Button> */}
          
-         {/* </ScrollView> */}
+       
       </SafeAreaView>
     );
   }
@@ -233,7 +236,7 @@ item.title == this.state.logistics &&
 const styles = StyleSheet.create({
   container:{
     flex:1,
-    marginTop:9,
+    marginTop:hp(2),
     backgroundColor:'#f6f6f6',
   },
   selectAVechicle :{

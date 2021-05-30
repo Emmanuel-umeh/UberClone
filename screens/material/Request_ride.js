@@ -64,6 +64,12 @@ class Request_ride extends Component {
     //   cancelOrder : this.props.cancelOrder
     // })
 
+    console.log("acuracry!!!!!!!!!!!! ", this.props.order.accuracy)
+    if(this.props.order.accuracy < 100){
+      console.log("request ride state ", this.props.state.from_location)
+      return this.props.book_ride(this.props.state.from_location)
+    }
+
     this.props.open_modal()
   
     }
@@ -76,6 +82,7 @@ class Request_ride extends Component {
 
 
     const {order} = this.props
+    console.log(order.accuracy)
     return (
     <View style ={{
       flex : 1,

@@ -22,8 +22,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-
-import * as Location from "expo-location";
+import {Clock, MapPin, ArrowRight} from "react-native-feather"
 
 import { connect } from "react-redux";
 import {
@@ -69,6 +68,7 @@ class SetDestination extends Component {
     visible: false,
     my_address: null,
     loading: false,
+    recent_orders : []
   };
 
   async componentDidMount() {
@@ -86,8 +86,18 @@ class SetDestination extends Component {
     //       longitude:  this.props.order.region.longitude,
     //     })
 try {
+
+  const array = this.props.recent_orders
+  // console.log("set destination props ", this.props.recent_orders)
+
+  // !TODO : remove duplicate elements from the array
+  const arrayUniqueByKey =  Array.from(new Set(array.map(a => a.dropoff.going_address)))
+  .map(going_address => {
+    return array.find(a => a.dropoff.going_address === going_address)
+  })
   await this.setState({
     my_address: this.props.order.my_address,
+    recent_orders : arrayUniqueByKey
   });
 
   
@@ -163,6 +173,7 @@ try {
 
   navigate = async(from_location, destination_location)=>{
 
+    console.log({from_location})
     this.props.navigate("MapRoute", {
       from_location : from_location,
       destination_location : destination_location,
@@ -297,9 +308,14 @@ try {
           {/* <ScrollView> */}
           {/* <ScrollView> */}
 
+
+{/* previously visited locations!!! */}
           {this.state.predictions.length == 0 &&
             this.state.fromPredictions.length == 0 && (
-              <>
+              <FlatList
+              keyboardShouldPersistTaps={"handled"}
+              ListEmptyComponent = {
+                <>
                 <Image
                   source={require("../assets/images/search.jpg")}
                   style={{
@@ -310,6 +326,109 @@ try {
                   resizeMode="contain"
                 ></Image>
               </>
+              }
+              data={this.state.recent_orders}
+              initialNumToRender={4}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                onPress={async () => {
+
+                  try {
+                    this.setState({
+                      loading: true,
+                    });
+                    
+                    // going address passed to map
+                    const destination = {
+                      latitude: item.dropoff.latitude,
+                      longitude:  item.dropoff.longitude,
+                      name:item.dropoff.going_address,
+                    };
+// this returns in kilometers now
+                    const distance = await getLatLonDiffInMeters(
+                      this.state.from ? this.state.from.latitude : this.props.order.region.latitude,
+                      this.state.from ? this.state.from.longitude : this.props.order.region.longitude,
+                      item.dropoff.latitude,
+                      item.dropoff.longitude
+                    );
+
+                    if (distance > 500) {
+                      this.setState({
+                        loading: false,
+                      });
+                      return alert(
+                        "Distance is too great. Please select another location"
+                      );
+                    }
+
+                    const going = destination;
+
+                  //  await this.props.selectDestination(going, this.state.from);
+                  
+                  var from_location = this.state.from ? this.state.from : this.props.order.region
+                  var destination_location = destination
+ this.navigate(from_location, destination_location)
+                    this.setState({
+                      loading: false,
+                    });
+                    // returns
+                    // Object {
+                    //   "lat": 8.969173699999999,
+                    //   "lng": 7.440240199999998,
+                    // }
+                  } catch (error) {
+                    
+                    this.setState({
+                      loading: false,
+                    });
+                    console.log({error})
+                    alert("Something went wrong. Please choose a different location and try again")
+                  }
+                
+                }} >
+                  {/* <View style={styles.icon7Row}>
+<EntypoIcon name="location" style={styles.icon7}></EntypoIcon>
+<Text style={styles.addHome}>{prediction.description}</Text>
+
+</View> */}
+
+                  <CardItem style={{ top: 10 }}>
+                  <Clock height = {25} width = {25} stroke = "black"  fill   = "white" />
+
+                    <Body
+                      style={{
+                        left: wp("10%"),
+                        width: "70%",
+                      }}
+                    >
+                      <Text
+                        style={{ fontFamily: "Quicksand-Bold", fontSize: 15 }}
+                      >
+                        {item.dropoff.going_address}
+                      </Text>
+                  
+                    </Body>
+
+                    <Right
+                      style={{
+                        right: wp("10%"),
+                      }}
+                    >
+                       <ArrowRight height = {20} width = {20} stroke = "black"  fill   = "white" />
+
+                    </Right>
+                  </CardItem>
+                  <Divider
+                    style={{
+                      marginTop: 20,
+                      height: 1,
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.ref}
+            />
             )}
 
           <Card
@@ -370,6 +489,7 @@ try {
                         const going = destination;
   
                       //  await this.props.selectDestination(going, this.state.from);
+                      
                       var from_location = this.state.from ? this.state.from : this.props.order.region
                       var destination_location = destination
      this.navigate(from_location, destination_location)
@@ -400,10 +520,8 @@ try {
    </View> */}
 
                     <CardItem style={{ top: 10 }}>
-                      <EntypoIcon
-                        name="location"
-                        style={styles.icon7}
-                      ></EntypoIcon>
+                    <MapPin height = {25} width = {25} stroke = "black"  fill   = "white" />
+
 
                       <Body
                         style={{
@@ -428,12 +546,8 @@ try {
                           right: wp("10%"),
                         }}
                       >
-                        <Icon
-                          name="arrow-forward"
-                          style={{
-                            color: "black",
-                          }}
-                        />
+                         <ArrowRight height = {20} width = {20} stroke = "black"  fill   = "white" />
+
                       </Right>
                     </CardItem>
                     <Divider
@@ -494,10 +608,8 @@ try {
 </View> */}
 
                     <CardItem style={{ top: 10 }}>
-                      <EntypoIcon
-                        name="location"
-                        style={styles.icon7}
-                      ></EntypoIcon>
+                    <MapPin height = {25} width = {25} stroke = "black"  fill   = "white" />
+
 
                       <Body
                         style={{
@@ -522,12 +634,8 @@ try {
                           right: wp("10%"),
                         }}
                       >
-                        <Icon
-                          name="arrow-forward"
-                          style={{
-                            color: "black",
-                          }}
-                        />
+                        <ArrowRight height = {20} width = {20} stroke = "black"  fill   = "white" />
+
                       </Right>
                     </CardItem>
                     <Divider

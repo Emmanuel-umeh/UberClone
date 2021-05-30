@@ -29,7 +29,9 @@ import {
   DRIVER_HEADING,
   CONFIRM_LOCATION,
   PURGE,
-  SET_PRICE
+  SET_PRICE,
+  ORDER_UPDATED,
+  ORDER_CANCELLED
 } from "../action/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -43,7 +45,7 @@ const LONGITUDE_DELTA =  0.005858723958820065;
 
 
 const initialState = {
-  order: null,
+  current_order: null,
   type: "",
 
   region: {
@@ -52,13 +54,6 @@ const initialState = {
     latitudeDelta: LATITUDE_DELTA,
     longitudeDelta: LONGITUDE_DELTA
   },
-
-  coming: null,
-  going: null,
-
-  // name of the destination / going
-  // determines if the user has selected the destination
-  destinationRequested: false,
   
   // destination : ""
   address: null,
@@ -71,36 +66,24 @@ const initialState = {
   origin: null,
   // loader when the user is searching for a ride
   is_searching: false,
-  has_ridden: false,
-  totalPriceVisible: false,
   is_fetching : false,
   // price of ride
-  price: 0,
+  price: 67,
 
-  // name of the accepted driver
-  driver_details: null,
   logistic_type : null,
   //  auth_msg_details : null
 
 
 // state details
 my_location: null,
-coordinate: new AnimatedRegion({
-  latitude: 9.0765,
-  longitude: 7.3986,
-  latitudeDelta: 0.3,
-  longitudeDelta: 0.3,
-}),
+// location accuracy
+accuracy : null,
+
+// drivers coordinate
+coordinate: null ,
+
 
 driver_location: null,
-distance: null,
-// difference in time
-time_distance: null,
-
-
-
-fromChanged : false,
-
 
 my_address : null
 
@@ -136,9 +119,24 @@ export default function (state = initialState, action) {
 
 
     case SET_PRICE: {
+      
+      console.log("price!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Number(action.payload));
       return {
         ...state,
         price: Number(action.payload),
+      };
+    }
+
+    case ORDER_UPDATED: {
+      return {
+        ...state,
+        current_order : action.payload,
+      };
+    }
+    case ORDER_CANCELLED: {
+      return {
+        ...state,
+        current_order : null,
       };
     }
 
@@ -167,14 +165,11 @@ export default function (state = initialState, action) {
 
     case MAKE_ORDER:
       {
-        console.log("PAYLOAD FOR ORDER MADE ", action.payload);
-        saveOrder(action.payload._id)
+      
       return {
         ...state,
-        is_searching: true,
-        order: action.payload,
-        destinationRequested : true,
-        type: "MAKE_ORDER",
+        current_order: action.payload,
+        type: action.type,
       };
 
       }
@@ -204,15 +199,7 @@ export default function (state = initialState, action) {
       {
         return {
           ...state,
-          order: null,
-      
-        
-          coming: null,
-          going: null,
-        
-          // name of the destination / going
-          // determines if the user has selected the destination
-          destinationRequested: false,
+          current_order: null,
           
           // destination : ""
           address: null,
@@ -222,35 +209,20 @@ export default function (state = initialState, action) {
           has_ride: false,
           destination: null,
           driver: null,
-     
+          origin: null,
+          // loader when the user is searching for a ride
           is_searching: false,
-          has_ridden: false,
-          totalPriceVisible: false,
           is_fetching : false,
-          // price of ride
-          price: 0,
+         
         
-          // name of the accepted driver
-          driver_details: null,
           logistic_type : null,
           //  auth_msg_details : null
         
-        
-        // state details
-        my_location: null,
-       
-        distance: null,
-        time_distance : null,
-        
-        fromChanged : false,
-            
-        // my_address : null
+        // drivers coordinate
+        coordinate: null ,
         
         
-        
-        
-        
-        
+        driver_location: null,
         
         
         
@@ -271,26 +243,8 @@ export default function (state = initialState, action) {
 
     case FOUND_DRIVER:{
 
-     
-      const {
-        has_ride,
-        is_searching,
-        location,
-        driver,
-        driver_details,
-      } = action.payload
-
-      console.log("found driver redux ",action.payload)
       return {
         ...state,
-        //   is_searching: false,
-        order : {...state.order, state :"Accepted"},
-        has_ride: has_ride,
-        is_searching: is_searching,
-        is_fetching: is_searching,
-        location: location,
-        driver: driver,
-        driver_details: driver_details,
         type: "FOUND_DRIVER",
       };
     }
@@ -312,13 +266,14 @@ export default function (state = initialState, action) {
 
     case GET_LOCATION:
       {
-        const { region, address, addressShortName,
+        const { region, address, addressShortName,accuracy,
           // this is the logged in users address gptyten with expo location
         my_address 
         } = action.payload;
 
         return {
           ...state,
+          accuracy : accuracy ? accuracy : state.accuracy,
           region: region ? region : state.region,
           address: address ? address : state.address,
           addressShortName: addressShortName ? addressShortName : state.addressShortName ,
@@ -402,7 +357,6 @@ export default function (state = initialState, action) {
           destinationRequested: false,
           fromChanged  :false,
           going : null,
-          price : null,
       
           type: "DESTINATION_CANCELLED",
         };
@@ -412,28 +366,28 @@ export default function (state = initialState, action) {
       {
         return {
           ...state,
-          order : action.payload,
+          current_order : action.payload,
       
           type: action.type,
         };
       }
     
     
-    case PRICE_UPDATED:{
-      const price = action.payload
-      console.log("redux price !!!", price)
-      return {
-        ...state,
-       price: price,
+    // case PRICE_UPDATED:{
+    //   const price = action.payload
+    //   console.log("redux price !!!", price)
+    //   return {
+    //     ...state,
+    //    price: price,
     
-        type: "PRICE_UPDATED",
-      };
-    }
+    //     type: "PRICE_UPDATED",
+    //   };
+    // }
     
     case RIDE_UPDATED:{
       return {
         ...state,
-       order: action.payload,
+        current_order: action.payload,
     
         type: action.type,
       };
@@ -456,14 +410,10 @@ export default function (state = initialState, action) {
     }
     case COORDINATE_DRIVER_LOCATION:{
 
-      console.log("driver location updated, is it animated ???? ", action.payload.coordinate)
+   
       return {
         ...state,
        coordinate: action.payload.coordinate,
-       driver_location : action.payload.driver_location,
-       distance : action.payload.distance,
-       time_distance : action.payload.time_distance,
-    
         type: action.type,
       };
     }
@@ -479,7 +429,7 @@ export default function (state = initialState, action) {
     case CANCEL_ORDER:{
       return {
         ...state,
-        order: null,
+        current_order: null,
     
       
         coming: null,
@@ -502,8 +452,7 @@ export default function (state = initialState, action) {
         has_ridden: false,
         totalPriceVisible: false,
         is_fetching : false,
-        // price of ride
-        price: 0,
+          
       
         // name of the accepted driver
         driver_details: null,
@@ -520,13 +469,7 @@ export default function (state = initialState, action) {
       fromChanged : false,
           
       // my_address : null
-      
-      
-      
-      
-      
-      
-      
+
       
       
         type: action.type,
@@ -539,7 +482,7 @@ case PURGE:
 
   
   return {
-    order: null,
+    current_order: null,
     type: "",
   
     region: state.region,
@@ -565,8 +508,7 @@ case PURGE:
     has_ridden: false,
     totalPriceVisible: false,
     is_fetching : false,
-    // price of ride
-    price: 0,
+
   
     // name of the accepted driver
     driver_details: null,
@@ -576,7 +518,6 @@ case PURGE:
   
   // state details
   my_location: null,
-  coordinate: state.coordinate,
   
   driver_location: null,
   distance: null,

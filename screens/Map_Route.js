@@ -146,23 +146,21 @@ class MapRoute extends Component {
           }}
           onReady={(result) => {
             // console.log("debt!!!!!!!!!!!!!!!!!!", user.debt)
-            const result_price =  (
-              result.distance *
-                (this.props.order.price
-                  ? Number(this.props.order.price)
-                  : 67) +
-                (user.debt ? parseInt(user.debt, 10) : 0)
-            )
+            const database_price = this.props.order.price
+              ? Number(this.props.order.price)
+              : 67;
 
-            console.log({result_price})
+              console.log(" database price is" , this.props.order.price)
+            const result_price = result.distance * database_price;
+
+            console.log({ result_price });
             this.setState({
               direction_ready: true,
               distance: result.distance,
               duration: result.duration,
               result_coordinates: result.coordinates,
-              // adding user debt to the price based on base fee 
-              price:Math.round((result_price) / 100) * 100
-                
+              // adding user debt to the price based on base fee
+              price: Math.round(result_price / 100) * 100,
             });
             console.log(`Distance: ${result.distance} km`);
             console.log(`Duration: ${result.duration} min.`);
@@ -617,7 +615,7 @@ class MapRoute extends Component {
                 //         : null,
                 //     })
                 //   }
-                //   bookRide={this.bookRide}
+                book_ride={this.book_ride}
                 open_modal={this.open_modal}
                 //   cancelOrder={this.cancelOrder}
               ></Request_ride>

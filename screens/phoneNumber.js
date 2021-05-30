@@ -126,9 +126,9 @@ class PhoneNumber extends Component {
       //   }
       // });
 
-      this.setState({
-        error_msg : "oops!, something went wrong"
-      })
+      // this.setState({
+      //   error_msg : "oops!, something went wrong"
+      // })
 
       return this.hideLoader();
     }
@@ -152,9 +152,8 @@ class PhoneNumber extends Component {
 
       const confirmation = await firebase.auth().signInWithPhoneNumber(number, this.recaptchaVerifier.current);
   
-      this.setState({confirmation})
+      this.setState({confirmation, number})
 
-      this.setState({number})
 
       Notifier.showNotification({
         title: "Success",
@@ -174,25 +173,9 @@ class PhoneNumber extends Component {
       });
       return this.hideLoader();
     } catch (error) {
+      console.log("error!!")
       console.log({error})
-      // Notifier.showNotification({
-      //   title: "Error",
      
-      //   description:'oops!, something went wrong.',
-      //   duration: 3000,
-      //   showAnimationDuration: 800,
-      //   showEasing: Easing.bounce,
-      //   // onHidden: () => console.log("Hidden"),
-      //   // onPress: () => console.log("Press"),
-      //   hideOnPress: true,
-      //   componentProps: {
-      //     alertType: 'error',
-      //   },
-      //   componentProps: {
-      //     alertType: 'error',
-      //   }
-      // });
-
       this.setState({
         error_msg : "oops!, something went wrong"
       })
@@ -244,6 +227,7 @@ class PhoneNumber extends Component {
  
     ) 
     } catch (error) {
+      console.log({error})
     
       this.setState({
         error_msg : "oops!, something went wrong."

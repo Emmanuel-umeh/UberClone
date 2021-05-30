@@ -58,6 +58,7 @@ class Confirm_Location extends Component {
           loading:true,
           region
         })
+        
   
         Geocoder.from(region.latitude, region.longitude)
         .then(json => {

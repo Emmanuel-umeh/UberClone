@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Svg, { Ellipse } from "react-native-svg";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
@@ -10,6 +10,7 @@ import {
   Card,
   CardItem,
   Text,
+  CheckBox,
   Icon,
   Right,
   Left,
@@ -20,6 +21,8 @@ import {
   Switch,
 } from "native-base";
 
+import LottieView from "lottie-react-native";
+
 import { LinearGradient } from "expo-linear-gradient";
 import LottieLoader from "react-native-lottie-loader";
 import Example from "./Carousel/index";
@@ -27,10 +30,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { loadUser } from "../redux/action/authAction";
 import { Divider } from "react-native-paper";
+
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { CreditCard, Plus } from "react-native-feather";
 class Add_Card extends Component {
   // componentDidMount(){
   //   this.props.loadUser()
@@ -38,115 +43,108 @@ class Add_Card extends Component {
   render() {
     const { user } = this.props.auth;
 
-    console.log("user", user);
     return (
       <View style={styles.container}>
-        <LottieLoader
-          visible={this.props.order.is_fetching}
-          source={require("../assets/lottie/car.json")}
-        />
-     <Header style={{
-                          backgroundColor : "black",
-                          top : hp("2%")
-                        }} 
-                        androidStatusBarColor = "black"
-                        iosBarStyle	= "dark-content"
-                        >
-          <Left>
-            <TouchableOpacity  onPress={() => {
-                  this.props.navigation.pop();
-                }}>
-              <Button
-                transparent
-               
-              >
-                <Icon name="arrow-back" />
-              </Button>
-            </TouchableOpacity>
-          </Left>
-          <Body>
-            <Title
-              style={{
-                fontWeight: "bold",
-                marginLeft: wp("1%"),
-              }}
-            >
-              Payment Method
-            </Title>
-          </Body>
-        </Header>
-        <View style={styles.rect1Stack}>
-          <View style={styles.rect2}>
-            <View style={styles.ellipseStackRow}>
-              <View style={styles.ellipseStack}>
-                <Svg viewBox="0 0 60 60" style={styles.ellipse}>
-                  <Ellipse
-                    stroke="rgba(230, 230, 230,1)"
-                    strokeWidth={0}
-                    fill="rgba(238,221,19,1)"
-                    cx={30}
-                    cy={30}
-                    rx={30}
-                    ry={30}
-                  ></Ellipse>
-                </Svg>
-                <MaterialCommunityIconsIcon
-                  name="cash-multiple"
-                  style={styles.icon}
-                ></MaterialCommunityIconsIcon>
-              </View>
-              <TouchableOpacity>
-                <View style={styles.cashColumn}>
-                  <Text style={styles.cash}>Cash</Text>
-                  <Text style={styles.cash1}>Default payment method</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
+        <View
+          style={{
+            flex: 1.5,
+            alignContent: "center",
+            justifyContent: "center",
+          }}
+        >
+          <LottieView
+            style={{
+              height: hp(40),
+              width: wp(100),
+              alignSelf: "center",
+              // marginTop : -hp(7)
+            }}
+            source={require("../assets/lottie/cards.json")}
+            autoPlay
+            loop={false}
+          />
         </View>
-        <View style={styles.rect3}>
-          {/* <Text style={styles.card}>Card</Text> */}
 
-          {user.card.length > 0 && (
-            <>
-              {user.card.length > 1 && (
-                <View style={{ alignSelf: "center", top :hp("0.3%") }}>
-                  <Text style ={{
-                    fontWeight : "700"
-                  }}>Swipe To Select Card</Text>
-                </View>
-              )}
-
-              <Example navigation={this.props.navigation} cards={user.card} />
-            </>
-          )}
-
-          <TouchableOpacity
-            onPress={() => {
-              this.props.navigation.navigate("creditCardScreen", {
-                from: "add_card",
-              });
+        <View
+          style={{
+            flex: 2.5,
+          }}
+        >
+          <Text
+            style={{
+              alignSelf: "center",
+              fontFamily: "Quicksand-Bold",
             }}
           >
-            <Card>
-              <CardItem>
-                {/* <View style={styles.icon2Row}> */}
+            Payment Methods
+          </Text>
+          <Card
+            style={{
+              flex: 1,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingTop: 20,
+              }}
+            >
+              <View
+                style={{
+                  paddingLeft: 30,
+                }}
+              >
+                <CreditCard height={25} width={25} stroke="black" />
+              </View>
+              <Text
+                style={{ marginLeft: -wp(50), fontFamily: "Quicksand-Medium" }}
+              >
+                Cash
+              </Text>
+              <BouncyCheckbox
+                size={25}
+                unfillColor="#FFFFFF"
+                fillColor="green"
+                disableBuiltInState={true}
+                isChecked={true}
+                iconStyle={{ borderColor: "green" }}
+                textStyle={{ fontFamily: "Quicksand-Bold" }}
+              />
+            </View>
 
-                <Left>
-                  <IoniconsIcon
-                    name="ios-add"
-                    style={styles.icon2}
-                  ></IoniconsIcon>
-                </Left>
+            <Divider
+              style={{
+                height: 1,
+                color: "gray",
+                marginTop: 15,
+              }}
+            />
 
-                <Body>
-                  <Text style={styles.addCard}>Add card</Text>
-                </Body>
-
-                {/* </View> */}
-              </CardItem>
-            </Card>
-          </TouchableOpacity>
+<TouchableOpacity onPress ={()=>{
+  this.props.navigation.navigate("creditCardScreen")
+}}>
+<View
+              style={{
+                flexDirection: "row",
+                // justifyContent : "space-around",
+                paddingTop: 20,
+              }}
+            >
+              <View
+                style={{
+                  paddingLeft: 30,
+                }}
+              >
+                <Plus height={25} width={25} stroke="black" />
+              </View>
+              <Text style={{ paddingLeft: 22, fontFamily: "Quicksand-Bold" }}>
+                Add payment card
+              </Text>
+            </View>
+</TouchableOpacity>
+          
+          </Card>
         </View>
       </View>
     );
@@ -156,7 +154,7 @@ class Add_Card extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(243,240,240,1)",
+    // backgroundColor: "white",
   },
   rect1: {
     top: 0,
@@ -167,14 +165,14 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   paymentMethod: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "rgba(255,255,255,1)",
     fontSize: 26,
     marginTop: hp("1%"),
     marginLeft: 28,
   },
   done: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "rgba(255,255,255,1)",
     fontSize: 18,
     marginTop: -88,
@@ -210,12 +208,12 @@ const styles = StyleSheet.create({
     height: 60,
   },
   cash: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
   },
   cash1: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "#121212",
     fontSize: 14,
     opacity: 0.44,
@@ -248,7 +246,7 @@ const styles = StyleSheet.create({
     marginLeft: wp("5%"),
   },
   card: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "#121212",
     fontSize: 18,
     marginTop: 27,
@@ -261,7 +259,7 @@ const styles = StyleSheet.create({
     width: 16,
   },
   addCard: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "#121212",
     fontSize: 17,
     marginLeft: -wp("10%"),
@@ -292,7 +290,7 @@ const styles = StyleSheet.create({
     marginLeft: 24,
   },
   currentAccount: {
-                 fontFamily : "Righteous-Regular",
+    fontFamily: "Righteous-Regular",
     color: "rgba(255,255,255,1)",
     marginTop: 28,
     fontSize: 20,

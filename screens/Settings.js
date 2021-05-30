@@ -15,6 +15,8 @@ import {notifications_allowed} from "../redux/action/authAction"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from 'expo-status-bar';
 import colors from "./colors/colors";
+import {firebase} from "../firebase/firebase"
+import {HelpCircle, Bell, DollarSign, Monitor, Briefcase, BookOpen, Book} from "react-native-feather"
 // import { nanoid } from 'nanoid'
 class  Settings extends Component{
 
@@ -57,43 +59,7 @@ class  Settings extends Component{
             <SafeAreaView style={styles.container}> 
  
 <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
-
-      
-<Header style={{
-                          backgroundColor : "black",
-                          // top : hp("2%")
-                        }} 
-                        androidStatusBarColor = "black"
-                        iosBarStyle	= "dark-content"
-                        >
-                    <Left>
-                  {/* <TouchableOpacity  >  */}
-                  <Button onPress={() => {
-                        this.props.navigation.pop();
-                      }} transparent > 
-                    <Icon
-                      name="arrow-back"
-                   style ={{
-                     color : colors.white
-                   }}
-                    />
-                  </Button>
-        
-                  {/* </TouchableOpacity> */}
-                 
-                </Left>
-
-                  <Body>
-                    <Title style ={{
-                        fontFamily : "Quicksand-Bold",
-                      marginLeft : wp("10%")
-                    }}>Settings</Title>
-                  </Body>
-                
-                  <Right></Right>
-                
-                </Header>  
-           
+       
                 <ScrollView>
              
 
@@ -119,7 +85,7 @@ class  Settings extends Component{
                     <View style={styles.chineduChideraRow}>
 
                            
-                      <Text style={styles.chineduChidera}>{user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)} {user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)}</Text>
+                      <Text style={styles.chineduChidera}>{user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1)} {user.last_name.charAt(0).toUpperCase() + user.last_name.slice(1)}</Text>
                       <FontAwesomeIcon
                         name="chevron-right"
                         style={styles.icon5}
@@ -140,14 +106,17 @@ class  Settings extends Component{
                
         {/* <Header /> */}
         <Content>
-          <Card>
+          <Card >
          
 
       
-            <CardItem>
-              <Icon active name="ios-notifications" />
+            <CardItem style ={{
+            backgroundColor : "#ebebeb"
+          }}>
+            <Bell fill = "white" stroke = "black" width = {30} height = {30} />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
+                 paddingLeft : 10
               }}>Notifications</Text>
               <Right style={{
                   left : 20
@@ -155,19 +124,19 @@ class  Settings extends Component{
                 {/* <Icon name="arrow-forward" /> */}
                 <Switch style = {{
                   color : "red"
-                }}  value={this.state.notification ? true : false} onValueChange ={async()=>{
+                }}  value={user.allow_notifications ? true : false} onValueChange ={async()=>{
                   // const {token} = this.props.auth
-                  if(this.state.notification){
-                    await AsyncStorage.removeItem("notification")
-                    this.setState({
-                      notification: false
-                    })
+                  if(user.allow_notifications){
+                   
                     
+                    firebase.database().ref("users/"+firebase.auth().currentUser.uid).update({
+                      notifications_allowed : false
+                    })
                   }else{
-                    await AsyncStorage.setItem("notification", "yes")
-this.setState({
-  notification: true
-})
+                    
+                    firebase.database().ref("users/"+firebase.auth().currentUser.uid).update({
+                      notifications_allowed : true
+                    })
 
                   }
 
@@ -181,10 +150,13 @@ this.setState({
              <TouchableOpacity onPress ={()=>{
                this.props.navigation.navigate("add_card")
              }} >
-            <CardItem>
-              <Icon active name="ios-cash" />
+            <CardItem style ={{
+            backgroundColor : "#ebebeb"
+          }}> 
+            <DollarSign fill = "white" stroke = "black" width = {30} height = {30} />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
+                 paddingLeft : 10
               }}>Payment Method</Text>
               <Right style={{
                   left : -6
@@ -204,10 +176,13 @@ this.setState({
             <TouchableOpacity  onPress ={()=>{
                alert("Coming Soon!!")
              }}>
-            <CardItem>
-              <Icon active name="md-trash" />
+            <CardItem style ={{
+            backgroundColor : "#ebebeb"
+          }}>
+            <Monitor fill = "white" stroke = "black" width = {30} height = {30} />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
+                 paddingLeft : 10
               }}>Clear Cache</Text>
               <Right style={{
                   left : 0
@@ -221,10 +196,13 @@ this.setState({
              <TouchableOpacity onPress ={()=>{
                alert("Coming Soon!!")
              }}>
-            <CardItem>
-              <Icon active name="ios-briefcase" />
+            <CardItem style ={{
+            backgroundColor : "#ebebeb"
+          }}>
+            <Briefcase fill = "white" stroke = "black" width = {30} height = {30} />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
+                 paddingLeft : 10
               }}>Terms & Agreement</Text>
               <Right
               style={{
@@ -239,10 +217,13 @@ this.setState({
              <TouchableOpacity onPress ={()=>{
                alert("Coming Soon!!")
              }}>
-            <CardItem>
-              <Icon active name="ios-briefcase" />
+            <CardItem style ={{
+            backgroundColor : "#ebebeb"
+          }}>
+            <BookOpen fill = "white" stroke = "black" width = {30} height = {30} />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
+                 paddingLeft : 10
               }}>Privacy Policy</Text>
               <Right
               style={{
@@ -259,10 +240,13 @@ this.setState({
              }}>
 
            
-            <CardItem>
-              <Icon active name="md-contact" />
+            <CardItem style ={{
+            backgroundColor : "#ebebeb"
+          }}>
+              <HelpCircle fill = "white" stroke = "black" width = {30} height = {30} />
               <Text style ={{
                  fontFamily : "Quicksand-Bold",
+                 paddingLeft : 10
               }}>Contact Us</Text>
               <Right style={{
                   left : 1
@@ -299,8 +283,9 @@ const styles = StyleSheet.create({
   image: {
     marginTop: 5,
     left: 0,
-    width: wp("30%"),
-    height: wp("20%"),
+    width: wp(30),
+    borderRadius : 100,
+    height: wp(20),
     position: "absolute"
   },
 
@@ -348,7 +333,10 @@ const styles = StyleSheet.create({
     width: wp("100%"),
     height: 89,
     position: "relative",
-    backgroundColor: "rgba(255,255,255,0.25)",
+    
+      backgroundColor : "#ebebeb",
+   
+    // backgroundColor: "rgba(255,255,255,0.25)",
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.25)",
     flexDirection: "row"
@@ -378,7 +366,8 @@ const styles = StyleSheet.create({
   },
   materialCardWithImageAndTitle8StackStack: {
     width: wp("100%"),
-    height: hp("40%")
+    height: hp("40%"),
+    
   },
   settings1: {
     fontFamily : "Quicksand-Bold",

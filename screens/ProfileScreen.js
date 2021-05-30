@@ -22,49 +22,8 @@ class ProfileScreen extends Component{
             <SafeAreaView  style={styles.container}>
              
 
-             <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
-<Header style={{
-                          backgroundColor : "black",
-                          // top : hp("2%")
-                        }} 
-                        androidStatusBarColor = "black"
-                        iosBarStyle	= "dark-content"
-                        >
-                    <Left>
-                  <TouchableOpacity  onPress={() => {
-                        this.props.navigation.pop();
-                      }}> 
-                  <Button transparent > 
-                  <Icon
-                      name="arrow-back"
-                   style ={{
-                     color : colors.white
-                   }}
-                    />
-                  </Button>
-        
-                  </TouchableOpacity>
-                 
-                </Left>
+             {/* <StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : false} /> */}
 
-                  <Body>
-                    <Title style ={{
-                        fontFamily : "Quicksand-Bold",
-                      marginLeft : wp("10%")
-                    }}>Profile</Title>
-                  </Body>
-                
-                  <Right></Right>
-                
-                </Header>  
-              {/* <View style={styles.icon4Row}>
-                <MaterialCommunityIconsIcon
-                  name="arrow-left"
-                  style={styles.icon4}
-                ></MaterialCommunityIconsIcon>
-                <Text style={styles.profile}>Profile</Text>
-                <Text style={styles.logOut}>Log out</Text>
-              </View> */}
               
 <ScrollView >
 
@@ -86,7 +45,7 @@ class ProfileScreen extends Component{
                 fontSize : 18,
                 fontFamily : "Quicksand-Bold",
                  paddingLeft :wp("25%")
-              }}>{user && user.phoneNumber}</Text>
+              }}>{user && user.phone_number}</Text>
             </ListItem>
             <ListItem style ={{
               flex : 1,
@@ -94,7 +53,7 @@ class ProfileScreen extends Component{
               height : hp("8%"),
               justifyContent:'flex-start'
             }}>
-               <Input disabled placeholder="First name" value = {user && user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)} style={{
+               <Input disabled placeholder="First name" value = {user && user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1)} style={{
                  borderColor : "green",
                  fontSize : 18,
                  
@@ -107,7 +66,7 @@ class ProfileScreen extends Component{
           backgroundColor: '#cccccc'
         }}
       />
-               <Input style ={{fontFamily : "Quicksand-Bold",}} disabled placeholder="Last name" value = { user && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} />
+               <Input style ={{fontFamily : "Quicksand-Bold",}} disabled placeholder="Last name" value = { user && user.last_name.charAt(0).toUpperCase() + user.last_name.slice(1)} />
             </ListItem>
           
 

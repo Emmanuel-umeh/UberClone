@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -25,37 +25,59 @@ import { Divider } from "react-native-paper";
 import LottieView from 'lottie-react-native';
 import { connect } from "react-redux";
 import { cashless_payment } from "../../redux/action/orderActions";
+import uuid from 'react-native-uuid';
+import {firebase} from "../../firebase/firebase"
+import { useSelector} from "react-redux" 
 const TouchableOpacity =
   Platform.OS === "ios"
     ? require("react-native").TouchableOpacity
     : require("react-native-gesture-handler").TouchableOpacity;
-class DriverDetailsPopUp extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modalVisible: false,
-      payment_successful : false
-    };
-    this.sheetRef = React.createRef();
-    this.paystackbutton = React.createRef(null);
-  }
 
-  makeCall = () => {
-    const { driver, distance } = this.props;
+    
+   const DriverDetailsPopUp = (props) => {
 
-    console.log("making call function!!!!!!!!!!!!!!", driver);
-    let phoneNumber = "";
+      const sheetRef = useRef();
+      const paystackbutton = useRef();
 
-    if (Platform.OS === "android") {
-      phoneNumber = `tel:${driver.phoneNumber}`;
-    } else {
-      phoneNumber = `telprompt:${driver.phoneNumber}`;
-    }
-    console.log({ phoneNumber });
-    Linking.openURL(phoneNumber);
-  };
+      const {user} = useSelector(state => state.auth)
+      
 
-  getRandomString = (length) => {
+      // details of the driver
+      const [driver_details, set_driver_driver_details] = useState(null)
+      const [payment_successful, setpayment_successful] = useState(false)
+      useEffect(() => {
+        firebase.database().ref("drivers/"+props.driver).once("value", function(snapshot){
+          if(snapshot.exists()){
+
+            console.log("driver details  from popup!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", driver_details )
+
+            set_driver_driver_details(snapshot.val())
+          }else{
+            console.log("snapshot did not ezist!!!!!!!!!!!!!")
+          }
+        })
+        
+     
+      }, [props.driver])
+
+      
+      const makeCall = () => {
+    
+        console.log("making call function!!!!!!!!!!!!!!", driver_details);
+        let phoneNumber = "";
+    
+        if (Platform.OS === "android") {
+          phoneNumber = `tel:${driver_details.phone_number}`;
+        } else {
+          phoneNumber = `telprompt:${driver_details.phone_number}`;
+        }
+        console.log({ phoneNumber });
+        Linking.openURL(phoneNumber);
+      };
+
+
+      
+  const getRandomString = (length) => {
     var randomChars =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     var result = "";
@@ -67,15 +89,9 @@ class DriverDetailsPopUp extends Component {
     return result;
   };
 
-  renderContent = (
+ const renderContent = (
     driver,
-    distance,
-    order,
-    makeCall,
-    user,
-    getRandomString,
-    cashless_payment,
-    user_ride_channel
+    current_order
   ) => (
     <View
       style={{
@@ -85,7 +101,7 @@ class DriverDetailsPopUp extends Component {
       }}
     >
 
-      {!this.state.payment_successful ? 
+      {current_order ? 
       <>
       <View
         style={{
@@ -99,18 +115,22 @@ class DriverDetailsPopUp extends Component {
         }}
       ></View>
 
-      {order.state == "Pending" && (
+      {current_order.state == "Pending" && (
         <Text style={styles.on_the_way}>Your Ride Is On Its Way</Text>
       )}
-      {order.state == "Accepted" && (
+  
+      {current_order.state == "Accepted" && (
         <Text style={styles.on_the_way}>Your Ride Is On Its Way</Text>
+      )}
+          {current_order.state == "Arrived" && (
+        <Text style={styles.on_the_way}>Your Ride Has Arrived</Text>
       )}
 
-      {order && order.state == "Started" && (
+      {current_order && current_order.state == "Started" && (
         <Text style={styles.on_the_way}>The Ride Has Begun</Text>
       )}
 
-      {order && order.state == "Ended" && (
+      {current_order && current_order.state == "Ended" && !payment_successful && (
         <Text style={styles.on_the_way}>This Ride Has Ended</Text>
       )}
 
@@ -119,25 +139,23 @@ class DriverDetailsPopUp extends Component {
 //  order && order.state == "Ended" ? "This Ride Has Ended" : order && order.state === "Completed" ? "Ride Has Been Completed" : null}
  */}
 
-      {order && order.state == "Ended" && (
+      {current_order && current_order.state == "Ended" && !payment_successful &&(
         <>
           <Text style={[styles.on_the_way, {color : "coral"}]}>
             Total Price : ₦
-            {order.price
-              ? Math.round(order.price / 100) * 100
-              : "Calculating..."}
+            {current_order.price ? current_order.price : 1000 }
           </Text>
 
-          {order.payment_method == "Cashless" && (
+          {current_order.payment_method === "Card" && (
             <>
               <PaystackWebView
                 buttonText="Pay With Card"
                 showPayButton={false}
                 paystackKey="pk_test_083d152747bcfd9dfebd3c284dc4d9f63e947863"
-                amount={order.price}
+                amount={current_order.price}
                 billingEmail={user.email}
-                billingMobile={user.phoneNumber}
-                billingName={user.firstName + " " + user.lastName}
+                billingMobile={user.phone_number}
+                billingName={user.first_name + " " + user.last_name}
                 ActivityIndicatorColor="yellow"
                 SafeAreaViewContainer={{ marginTop: 5 }}
                 SafeAreaViewContainerModal={{ marginTop: 5 }}
@@ -148,22 +166,21 @@ class DriverDetailsPopUp extends Component {
                   // handle response here
 
                   alert(
-                    "Payment Was Cancelled Successfully. Please Ensure to pay the driver"
+                    "Payment was cancelled. Please ensure to pay the driver"
                   );
                 }}
                 onSuccess={(res) => {
                   // handle response here
-                  const tokens = this.props.auth.token;
-    
+                  
+                  firebase.database().ref("orders/"+  current_order.key).update({
+                    payment_status : true
+                  })
+                setpayment_successful(true)
                  
-                  cashless_payment(tokens, order._id, user_ride_channel);
-                  this.setState({
-                    payment_successful : true
-                    })
                   //  console.log("success", res)
                 }}
                 autoStart={false}
-                refNumber={getRandomString(7)} // this is only for cases where you have a reference number generated
+                refNumber={uuid.v4()} // this is only for cases where you have a reference number generated
                 btnStyles={{
                   top: 500,
                   color: "black",
@@ -179,7 +196,7 @@ class DriverDetailsPopUp extends Component {
                 //   </View>
 
                 //  }}
-                ref={this.paystackbutton}
+                ref={paystackbutton}
               />
               <Button
                 block
@@ -187,7 +204,7 @@ class DriverDetailsPopUp extends Component {
                 style ={{
                   top : -hp("17%")
                 }}
-                onPress={() => this.paystackbutton.current.StartTransaction()}
+                onPress={() => paystackbutton.current.StartTransaction()}
               >
                 <Text
                   style={{
@@ -202,12 +219,38 @@ class DriverDetailsPopUp extends Component {
         </>
       )}
 
+      
+{ payment_successful &&  ( 
+  <>
+        <Text style={styles.on_the_way}>Paid Successfully!</Text>
+        <Divider />
+
+        
+  <LottieView
+          // style = {styles.image}
+          // height = {600}
+          
+        
+          // imageAssetsFolder={'lottie/animation_1'}
+          source={require("../../assets/lottie/tick.json")}
+          autoPlay 
+          loop = {false}
+        /> 
+        </>
+
+
+
+      )}
+
+        
+
+
       <Divider style ={{
         height : 1,
         top : -5
       }} />
 
-      {order && order.state != "Ended" && (
+      {current_order && current_order.state !== "Ended" && (
         <View
           style={{
             flex: 1,
@@ -219,8 +262,8 @@ class DriverDetailsPopUp extends Component {
             <Image
               style={styles.image}
               source={{
-                uri: driver
-                  ? driver.profile_picture
+                uri: driver_details
+                  ? driver_details.profile_picture
                   : "https://www.kindpng.com/picc/m/78-785975_icon-profile-bio-avatar-person-symbol-chat-icon.png",
               }}
             />
@@ -240,7 +283,7 @@ class DriverDetailsPopUp extends Component {
               <AirbnbRating
                 count={5}
                 reviews={["Terrible", "Bad", "Okay", "Good", "Awesome"]}
-                defaultRating={driver.rating ? driver.rating : 3}
+                defaultRating={driver_details.rating ? driver_details.rating : 3}
                 size={14}
                 showRating={false}
                 isDisabled={true}
@@ -251,25 +294,25 @@ class DriverDetailsPopUp extends Component {
           <View style={{ flex: 1 }}>
             <Text style={styles.plate_number}>
               {" "}
-              {driver ? driver.lisence_number.toUpperCase() : "635-2GS-RB36"}
+              {driver_details ? driver_details.lisence_number.toUpperCase() : "No Plate Number"}
             </Text>
 
 
-            {!driver.company && (
+            {!driver_details.company && (
 
             <Text style={styles.rider_name}>
-           {driver && driver.firstname.charAt(0).toUpperCase() +
-                  driver.firstname.substring(1)} Is On The Way
+           {driver_details && driver_details.firstname.charAt(0).toUpperCase() +
+                  driver_details.firstname.substring(1)} Is On The Way
             </Text>
             )}
 
-            {driver.company && driver.company.company_name &&  (
+            {driver_details.company && driver_details.company.company_name &&  (
 
               <>
             <Text style={styles.rider_name}>
-            {driver && driver.firstname.charAt(0).toUpperCase() +
-                  driver.firstname.substring(1)} from {driver.company.company_name.charAt(0).toUpperCase() +
-                  driver.company.company_name.substring(1)}
+            {driver_details && driver_details.firstname.charAt(0).toUpperCase() +
+                  driver_details.firstname.substring(1)} from {driver_details.company.company_name.charAt(0).toUpperCase() +
+                  driver_details.company.company_name.substring(1)}
           </Text>
               <Text style={styles.rider_name}>
                 Is on the way..
@@ -279,17 +322,17 @@ class DriverDetailsPopUp extends Component {
             )}
 
             <Text style={styles.car_color}>
-              {driver
-                ? driver.vehicle_color.charAt(0).toUpperCase() +
-                  driver.vehicle_color.substring(1)
+              {driver_details
+                ? driver_details.vehicle_color.charAt(0).toUpperCase() +
+                  driver_details.vehicle_color.substring(1)
                 : "Red"}{" "}
-              {driver ? driver.logistic_type : "Car"}
+              {driver_details ? driver_details.logistic_type : "Car"}
             </Text>
 
-            {(order && order.state == "Accepted") ||
-            order.state == "Pending" ? (
+            {(current_order && current_order.state === "Accepted") ||
+            current_order.state === "Pending" ? (
               <Text style={styles.meters_away}>
-                {distance>0 ? `${distance} minutes away` : "Driver is around you "} 
+                {Number(current_order.diff_in_minute_pickup)>0 ? `${current_order.diff_in_minute_pickup} minutes away` : "Driver is around you "} 
               </Text>
             ) : null}
           </View>
@@ -299,7 +342,7 @@ class DriverDetailsPopUp extends Component {
  
 
 
-{ order.state !== "Ended" &&
+{ current_order.state !== "Ended" &&
 <>
 
       <View style={{ margin: hp("4"), alignSelf: "center" }}>
@@ -321,8 +364,8 @@ class DriverDetailsPopUp extends Component {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {this.props.order.destination
-                ? this.props.order.destination
+              {current_order.dropoff
+                ? current_order.dropoff.going_address
                 : "Fetching Destination..."}
             </Text>
           </View>
@@ -375,25 +418,6 @@ class DriverDetailsPopUp extends Component {
         }}
       ></View>
 
-{order && order.state == "Ended" && (
-  <>
-        <Text style={styles.on_the_way}>Paid Successfully!</Text>
-        <Divider />
-        </>
-      )}
-
-  <LottieView
-          // style = {styles.image}
-          // height = {600}
-          
-        
-          // imageAssetsFolder={'lottie/animation_1'}
-          source={require("../../assets/lottie/tick.json")}
-          autoPlay 
-          loop
-        /> 
-        
-
 
         <View style ={{top : hp("35%")}}>
 
@@ -429,36 +453,38 @@ class DriverDetailsPopUp extends Component {
     </View>
   );
 
-  render() {
-    const { driver, distance, user_ride_channel } = this.props;
-    const { order } = this.props.order;
-    const { user } = this.props.auth;
 
-    console.log("distance recieved to driver details popup ", distance)
-    return (
-      <BottomSheet
-        ref={this.sheetRef}
+
+  const { driver, current_order } = props;
+
+
+      return (
+        <BottomSheet
+        ref={sheetRef}
         enabledContentTapInteraction={false}
         enabledBottomInitialAnimation={true}
         snapPoints={[hp("60%"), hp("20%")]}
+        initialSnap ={0}
         borderRadius={50}
-        renderContent={() =>
-          this.renderContent(
-            driver,
-            distance,
-            order,
-            this.makeCall,
-            user,
-            this.getRandomString,
-            this.props.cashless_payment,
-            user_ride_channel
-          )
+        renderContent={() =>{
+
+          if(driver_details){
+          return  renderContent(
+              driver,
+              current_order
+            )
+          }else{
+            return null
+          }
+        }
+
+       
+        
         }
       />
-    );
-  }
-}
-
+      )
+    }
+    
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -641,6 +667,4 @@ const mapStateToProps = (state) => ({
 });
 
 // export default ProjectForm
-export default connect(mapStateToProps, { cashless_payment })(
-  DriverDetailsPopUp
-);
+export default DriverDetailsPopUp

@@ -29,8 +29,9 @@ const AuthenticatedStack = ({ navigation }) => (
               backgroundColor : "black"
               
             },
-            title : "Select Your Vehicle",
             headerTitleAlign : "center",
+            title : "Select Your Vehicle",
+           
             headerTintColor: '#fff',
             headerTitleStyle : {
               color : "#fff",
@@ -49,19 +50,92 @@ const AuthenticatedStack = ({ navigation }) => (
 
     {/* <AuthStack.Screen name="setDestination" component={setDestination} /> */}
     {/* <AuthStack.Screen  name="confirm_location" component={Confirm_Location} /> */}
-    <AuthStack.Screen name="creditCardScreen" component={CreditCard} />
+    <AuthStack.Screen name="creditCardScreen" options ={{
+         headerStyle : {
+          backgroundColor : "black"
+          
+        },
+        headerTitleAlign : "center",
+        title : "Add Card",
+       
+        headerTintColor: '#fff',
+        headerTitleStyle : {
+          color : "#fff",
+          fontFamily : "Quicksand-Bold"
+        }
+    }} component={CreditCard} />
 
-    <AuthStack.Screen name="profileScreen" component={ProfileScreen} />
+    <AuthStack.Screen name="profileScreen" options ={{
+            headerStyle : {
+              backgroundColor : "black"
+              
+            },
+            title : "My Profile",
+           
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }}  component={ProfileScreen} />
 
-    <AuthStack.Screen name="settings" component={Settings} />
-    <AuthStack.Screen name="add_card" component={Add_Card} />
+    <AuthStack.Screen name="settings" options ={{
+            headerStyle : {
+              backgroundColor : "black"
+              
+            },
+            title : "Settings",
+            //
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }} component={Settings} />
+    <AuthStack.Screen name="add_card"   options ={{
+            headerStyle : {
+              backgroundColor : "black"
+              
+            },
+            title : "Add Card",
+           
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }} component={Add_Card} />
 
   
-    <AuthStack.Screen name="ride_history" component={Ride_History} />
+    <AuthStack.Screen  options ={{
+            headerStyle : {
+              backgroundColor : "black",
+              
+            },
+            title : "Ride History",
+            headerTitleAlign : "left",
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }}  name="ride_history" component={Ride_History} />
 
     {/* rating your ride */}
 
-    <AuthStack.Screen name="driver_rating" component={Driver_Rating} />
+    <AuthStack.Screen name="driver_rating" options ={{
+            headerStyle : {
+              backgroundColor : "black",
+              
+            },
+            title : "Rate Your Driver",
+            headerTitleAlign : "center",
+            headerTintColor: '#fff',
+            headerTitleStyle : {
+              color : "#fff",
+              fontFamily : "Quicksand-Bold"
+            }
+        }} component={Driver_Rating} />
 
 
     {/* 

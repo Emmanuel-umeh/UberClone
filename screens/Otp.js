@@ -98,7 +98,7 @@ class Otp extends Component {
     return (
       <View style={styles.container}>
         <ErrorModal
-          modal_visible={!this.state.error_msg}
+          modal_visible={this.state.error_msg}
           error_msg={this.state.error_msg}
           toggleModal={this.toggleModal}
         />

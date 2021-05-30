@@ -40,6 +40,10 @@ class NameScreen extends Component{
   componentDidMount(){
     this.loadingButton.showLoading(false);
   }
+
+  componentWillUnmount(){
+    this.loadingButton.showLoading(false);
+  }
   toggleModal = () => {
     this.setState({
       modal_visible : false,

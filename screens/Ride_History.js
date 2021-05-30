@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, SafeAreaView, Platform, FlatList } from "react-native";
 import {connect} from "react-redux"
 
@@ -8,25 +8,18 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { Divider } from "react-native-paper";
+import {firebase} from "../firebase/firebase"
+
+import LottieView from 'lottie-react-native';
 import {
-  Container,
-  Header,
-  Content,
-  Card,
-  CardItem,
+
   Text,
-  Icon,
-  Right,
-  Left,
-  Body,
-  Title,
-  Button,
-  Switch,
+  
 } from "native-base";
-import { TouchableOpacity } from "react-native-gesture-handler";
   import moment from "moment"
 import { ImageBackground } from "react-native";
 import colors from "./colors/colors"
+import lottie_loader from "./loaders/lottie_loader";
 function Item({ order }) {
   return (
     <>
@@ -35,11 +28,13 @@ function Item({ order }) {
     }}/>
   <View>
    
-    <Text style={styles.loremIpsum}>{order.endLocationName}</Text>
-    <Text style ={styles.price} >₦{Math.round(order.price/100)*100}</Text>
-  <Text style={styles.loremIpsum2} numberOfLines ={1} ellipsizeMode = {'tail'} >{moment(order.date_created).format(`dddd, MMMM Do YYYY, h:mm:ss a`)}</Text>
+    <Text style={styles.loremIpsum}>{order.dropoff.going_address}</Text>
+    <Text style ={styles.price} >₦{order.price}</Text>
+  <Text style={styles.loremIpsum2} numberOfLines ={1} ellipsizeMode = {'tail'} >{moment(order.createdAt).format(`dddd, MMMM Do YYYY, h:mm:ss a`)}</Text>
 
   {order.state == "Completed" &&   <Text style={styles.finished}>FINISHED</Text>
+ }
+  {order.state == "Started" &&   <Text style={styles.finished}>IN PROGRESS</Text>
  }
   {order.state == "Ended" &&   <Text style={styles.finished}>FINISHED</Text>
  }
@@ -55,50 +50,48 @@ function Item({ order }) {
 </>
   );
 }
+ const Ride_History = (props) =>{
+   const [loading, setloading] = useState(true)
+   const [history, sethistory] = useState(null)
 
-function Ride_History(props) {
+  useEffect(() => {
+    
+    try {
+      const uid = firebase.auth().currentUser.uid
+      const _orders = []
+      firebase.database().ref("orders/").orderByChild("owner").equalTo(uid).once("value", function(snapshot){
+        const orders = snapshot.val()
+
+        // console.log(orders)
+        // const sorted_orders = orders[uid]
+        // // console.log({sorted_orders})
+        if(orders){
+       
+          Object.entries(orders).forEach(([key, value]) => _orders.push(value));
+        }
+        
+
+     
+
+      
+      }).then(()=>{
+        sethistory(_orders.reverse())
+        setloading(false)
+      })
+    } catch (error) {
+      setloading(false)
+    }
+   
+ 
+  }, [firebase.auth().currentUser.uid])
 
   const {user} = props.auth
-  // console.log({user})
   return (
     <SafeAreaView style={styles.container}>
 
-      
-<StatusBar style="dark" hidden = {Platform.OS === "ios" ? false : true} />
-        <Header style={{
-                          backgroundColor : "black",
-                          // top : hp("2%")
-                        }} 
-                        androidStatusBarColor = "black"
-                        iosBarStyle	= "dark-content"
-                        >
-        <Left>
-          <TouchableOpacity onPress={() => {
-                props.navigation.pop();
-              }}> 
-          <Button transparent>
-            <Icon
-              name="arrow-back"
-              style ={{
-                color : colors.white
-              }}
-        
-            />
-          </Button>
+     {lottie_loader({loading})}
 
-          </TouchableOpacity>
-         
-        </Left>
-        <Body>
-                    <Title style ={{
-                     fontFamily : "Quicksand-Bold",
-                      
-                      marginLeft : wp("2%")
-                    }}>Ride History</Title>
-                  </Body>
-                  <Right></Right>   
-      </Header>
-    
+      
       <Text style={styles.history}>History</Text>
       {/* <ScrollView> */}
 
@@ -110,33 +103,43 @@ function Ride_History(props) {
 
 
  
-{user.orders ? 
+
 <FlatList
-data={user.orders.reverse()}
+data={history}
 renderItem={({ item }) => <Item order={item} />}
 initialNumToRender={5}
 ListEmptyComponent ={()=>{
   return <>
-  <View style ={{
-    marginTop : hp(20)
-  }}>
-    <Text style={{
-      fontFamily : "Quicksand-Bold",
-      alignSelf : "center"
-    }}> No Ride History</Text>
-  </View>
+  <View style = {{
+  flex : 1,
+  alignContent : "center",
+  alignSelf : "center",
+  justifyContent : "flex-start",
+  marginTop : hp(10)
+}}>
+  <Text  style ={{
+                     fontFamily : "Quicksand-Bold",
+                     alignSelf : "center"
+                    }} >No History To Show</Text>
+
+<LottieView
+                  style = {{
+                    height : 200,
+                    width : 200
+                  }}
+                   source={require("../assets/lottie/empty.json")}
+                 
+                  autoPlay
+        
+                  loop = {true}
+                />
+</View>
+
   </>
 }}
 keyExtractor={item => item._id}
 />
-: <View>
-  <Text  style ={{
-                     fontFamily : "Quicksand-Bold",
-                      
-                      marginLeft : wp("2%")
-                    }} >No History To Show</Text>
-</View>
-}
+
 
 
 {/* </ScrollView> */}

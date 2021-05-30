@@ -25,7 +25,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.whiteaxis.whiteaxis",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to improve app performance"
+      }
     },
     "android": {
       "package": "com.whiteaxis.whiteaxis",

@@ -5,6 +5,7 @@ import {
   Modal,
   ActivityIndicator
 } from 'react-native';
+import LottieView from 'lottie-react-native';
 
 import {Button, Text} from "native-base"
 
@@ -24,8 +25,16 @@ const CustomModal = props => {
       onRequestClose={() => {console.log('close modal')}}>
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
-        <ActivityIndicator size="large" color="#d1ab21"  animating ={loading}/>
+        {/* <ActivityIndicator size="large" color="#d1ab21"  animating ={loading}/> */}
         
+        
+        <LottieView
+          visible={loading}
+          loop
+          autoPlay
+
+          source={require("../../assets/lottie/searching.json")}
+        />
         </View>
 
         <Text style = {{fontSize  : 30, fontWeight : "bold", color : "whitesmoke"}}>Searching for a ride...</Text>
