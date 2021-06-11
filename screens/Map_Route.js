@@ -36,7 +36,7 @@ import MapViewDirections from "react-native-maps-directions";
 import Request_ride from "./material/Request_ride";
 import CurrentLocationButton from "../components/currentLocationButton";
 import Confirm_Location from "./Confirm_Location";
-
+import {firebase} from "../firebase/firebase"
 import { connect } from "react-redux";
 
 const { width, height } = Dimensions.get("window");
@@ -59,6 +59,9 @@ class MapRoute extends Component {
 
       payment_method: "Cash",
       confirm_location_screen_visible: false,
+      // the snapshot of the map
+      map_snapshot : null
+      
     };
   }
 
@@ -83,6 +86,55 @@ class MapRoute extends Component {
     });
   };
 
+  uploadImage = async (image) => {
+    const response = await fetch(image);
+    console.log({image})
+    const blob = await response.blob();
+    console.log("uploading the image!!!!!");
+    const childPath = `maps/${
+      firebase.auth().currentUser.uid
+    }/${Math.random().toString(36)}`;
+    const task = firebase.storage().ref().child(childPath).put(blob);
+
+    const taskProgress = (snapShot) => {
+      console.log(`transferred : ${snapShot.bytesTransferred}`);
+    };
+
+    const taskCompleted = () => {
+      task.snapshot.ref.getDownloadURL().then((snapshot) => {
+        console.log({ snapshot });
+        this.setState({map_snapshot : snapshot})
+
+      });
+    };
+    const taskError = (snapShot) => {
+      // snapShot.ref.getDownloadUrl().then((snapshot)=>{
+      console.log("error, ", { snapShot });
+      // })
+
+    };
+
+    task.on("state_changed", taskProgress, taskError, taskCompleted);
+  };
+
+  takeSnapshot =() => {
+    // 'takeSnapshot' takes a config object with the
+    // following options
+    const snapshot = this.map.takeSnapshot({
+      width: 300,      // optional, when omitted the view-width is used
+      height: 300,     // optional, when omitted the view-height is used
+      // region: {},    // iOS only, optional region to render
+      format: 'png',   // image formats: 'png', 'jpg' (default: 'png')
+      quality: 0.8,    // image quality: 0..1 (only relevant for jpg, default: 1)
+      result: 'file'   // result types: 'file', 'base64' (default: 'file')
+    });
+    snapshot.then((uri) => {
+      console.log({uri})
+      // this.setState({ mapSnapshot: uri });
+      this.uploadImage(uri)
+    });
+  }
+
   book_ride = async (updated_location_from) => {
     this.close_modal();
     console.log(
@@ -90,7 +142,7 @@ class MapRoute extends Component {
       updated_location_from
     );
 
-    var { payment_method, from_location, destination_location, price } =
+    var { payment_method, map_snapshot, destination_location, price } =
       this.state;
 
     // var data = {
@@ -121,7 +173,8 @@ class MapRoute extends Component {
       payment_method,
       updated_location_from,
       destination_location,
-      price
+      price,
+      // map_snapshot
     );
   };
 
@@ -137,7 +190,7 @@ class MapRoute extends Component {
           destination={destination_location}
           apikey={google_api}
           strokeWidth={6}
-          strokeColor="#C68E17"
+          strokeColor="#000"
           showsCompass={false}
           mode="DRIVING"
           lineDashPattern={[6, 6]}
@@ -164,15 +217,29 @@ class MapRoute extends Component {
             });
             console.log(`Distance: ${result.distance} km`);
             console.log(`Duration: ${result.duration} min.`);
-
-            this.map.fitToCoordinates(result.coordinates, {
-              edgePadding: {
-                right: width / 20,
-                bottom: height / 10,
-                left: width / 6,
-                top: height / 3,
-              },
-            });
+            if(Platform.OS === "android"){
+              this.map.fitToCoordinates(result.coordinates, {
+                edgePadding: {
+                  right: width / 20,
+                  bottom: height / 10,
+                  left: width / 6,
+                  top: height / 3,
+                },
+              });
+  
+            }else{
+              this.map.fitToCoordinates(result.coordinates, {
+                edgePadding: {
+                  right: width / 10,
+                  bottom: height / 10,
+                  left: width / 10,
+                  top: height / 10,
+                },
+              });
+  
+            }
+            
+            // this.takeSnapshot()
 
             setTimeout(() => {
               this.destinationMarker.showCallout();
@@ -201,7 +268,7 @@ class MapRoute extends Component {
               ? destination_location.longitude
               : 7.3986,
           }}
-          pinColor="green"
+          pinColor="black"
         >
           <Callout tooltip={false}>
             <Content style={{ width: undefined, backgroundColor: "white" }}>
@@ -340,80 +407,7 @@ class MapRoute extends Component {
         </Marker>
       </>
     );
-    // } else {
-    //   return (
-    //     <>
-    //       <MapViewDirections
-    //         origin={this.props.order.region}
-    //         destination={this.props.order.going}
-    //         apikey={google_api}
-    //         strokeWidth={5}
-    //         mode="DRIVING"
-    //         strokeColor="white"
-    //         showsCompass={false}
-    //         onError={() => {
-    //           alert("Could not find a path to your destination");
-    //         }}
-    //       ></MapViewDirections>
-    //       <Marker
-    //         title={
-    //           this.props.order.going.name
-    //             ? this.props.order.going.name
-    //             : "Your Destination"
-    //         }
-    //         ref={(marker) => {
-    //           this.destinationMarker = marker;
-    //         }}
-    //         key={`${this.props.order.going.latitude}_${this.props.order.going.longitude}`}
-    //         coordinate={{
-    //           latitude: this.props.order.going
-    //             ? this.props.order.going.latitude
-    //             : 9.0765,
-    //           longitude: this.props.order.going
-    //             ? this.props.order.going.longitude
-    //             : 7.3986,
-    //         }}
-    //         pinColor="green"
-    //       >
-    //         <Callout tooltip={false}>
-    //           <Content
-    //             style={{
-    //               width: undefined,
-    //               height: 20,
-    //               backgroundColor: "white",
-    //             }}
-    //           >
-    //             <Item
-    //               style={{
-    //                 padding: 10,
-    //               }}
-    //             >
-    //               <Icon
-    //                 active
-    //                 name="pin"
-    //                 style={{
-    //                   color: "blue",
 
-    //                   fontSize: 18,
-    //                 }}
-    //               />
-    //               <Text
-    //                 style={{
-    //                   fontSize: 15,
-    //                   fontFamily: "Quicksand-Bold",
-    //                 }}
-    //               >
-    //                 {this.props.order.going.name
-    //                   ? this.props.order.going.name
-    //                   : "Your Destination"}
-    //               </Text>
-    //             </Item>
-    //           </Content>
-    //         </Callout>
-    //       </Marker>
-    //     </>
-    //   );
-    // }
   };
 
   isDay = () => {
@@ -581,10 +575,10 @@ class MapRoute extends Component {
           cb={() => {
             this.map.fitToCoordinates(this.state.result_coordinates, {
               edgePadding: {
-                right: width / 20,
-                bottom: height / 10,
-                left: width / 6,
-                top: height / 2,
+                right: 10,
+                bottom: 10,
+                left: 10,
+                top: 10,
               },
             });
           }}

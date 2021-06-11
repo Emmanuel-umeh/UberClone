@@ -279,6 +279,7 @@ try {
                 ref={(input) => {
                   this.destinationInput = input;
                 }}
+                placeholderTextColor = "grey"
                 onChangeText={this.onChangeDestinationDebounced}
                 style={styles.textInput1}
               ></TextInput>

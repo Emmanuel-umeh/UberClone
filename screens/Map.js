@@ -177,7 +177,13 @@ class Map extends PureComponent {
 
       // driver marker coordinates
 
-      coordinate: null,
+      coordinate: new AnimatedRegion({
+        latitude: 9.8,
+        longitude: 9.6,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      }),
+      heading : 0,
       // array of available drivers
       available_presence_drivers: [],
 
@@ -336,8 +342,8 @@ class Map extends PureComponent {
 
   show_driver_marker = () => {
     const { logistic_type } = this.props.order;
-    const { coordinate } = this.state.coordinate ? this.state :  this.props.order;
-    const { driver } = this.state;
+    const { coordinate } = this.state 
+    const { driver, heading } = this.state;
 
     if (coordinate) {
       return (
@@ -365,9 +371,9 @@ class Map extends PureComponent {
                 transform: [
                   {
                     rotate:
-                      coordinate.heading === undefined
+                    heading === undefined
                         ? "0deg"
-                        : `${coordinate.heading}deg`,
+                        : `${heading}deg`,
                   },
                 ],
               }}
@@ -382,9 +388,9 @@ class Map extends PureComponent {
                 transform: [
                   {
                     rotate:
-                      coordinate.heading === undefined
+                      heading === undefined
                         ? "0deg"
-                        : `${coordinate.heading}deg`,
+                        : `${heading}deg`,
                   },
                 ],
               }}
@@ -399,9 +405,9 @@ class Map extends PureComponent {
                 transform: [
                   {
                     rotate:
-                      coordinate.heading === undefined
+                      heading === undefined
                         ? "0deg"
-                        : `${coordinate.location.heading}deg`,
+                        : `${heading}deg`,
                   },
                 ],
               }}
@@ -416,9 +422,9 @@ class Map extends PureComponent {
                 transform: [
                   {
                     rotate:
-                      coordinate.heading === undefined
+                      heading === undefined
                         ? "0deg"
-                        : `${coordinate.heading}deg`,
+                        : `${heading}deg`,
                   },
                 ],
               }}
@@ -559,6 +565,7 @@ class Map extends PureComponent {
                 longitude:driver.location.longitude,
                 latitude: driver.location.latitude,
               }),
+              heading :  driver.location.heading
             })
 
             await store.dispatch({
@@ -579,13 +586,15 @@ class Map extends PureComponent {
               type: "FOUND_DRIVER",
             });
 
-            schedulePushNotification(
-              "Order Accepted",
-              `Your driver named ${driver.first_name} is on his way to your pickup location`,
-              null
-            );
+         
           }
         });
+
+        schedulePushNotification(
+          "Order Accepted",
+          `Your driver is on his way to your pickup location`,
+          null
+        );
     } catch (error) {
       console.log(
         "error on found driver functionality!!!!!!!!!!!!!!!!!!!!1 ",
@@ -1343,7 +1352,7 @@ class Map extends PureComponent {
     // You can also log the error to an error reporting service
     // logErrorToMyService(error, errorInfo);
 
-    console.log("error from component did catch ", error);
+    console.log("error from component did catch ", {error, errorInfo});
   }
   async componentDidMount() {
 
@@ -1367,7 +1376,6 @@ class Map extends PureComponent {
       firebase.database().ref("orders/").orderByChild("owner").equalTo(uid).limitToLast(5).once("value", (snapshot) => {
         if(snapshot.exists()){
           const orders = snapshot.val()
-  console.log({orders})
           Object.entries(orders).forEach(([key, value]) =>{
             this.setState({
               recent_orders : [
@@ -1542,14 +1550,17 @@ class Map extends PureComponent {
               }
             });
 
-            return  this.setState(
-              {
-                map_is_ready: true,
-              },
-              () => {
-                this.centerCamera();
-              }
-            );
+            setTimeout(() => {
+              return  this.setState(
+                {
+                  map_is_ready: true,
+                },
+                () => {
+                  this.centerCamera();
+                }
+              );
+            }, 1000);
+           
 
           // this.centerCamera();
         }
@@ -1558,14 +1569,23 @@ class Map extends PureComponent {
           type: "CANCEL_ORDER",
         });
 
-       return this.setState(
-          {
-            map_is_ready: true,
-          },
-          () => {
-            this.centerCamera();
-          }
-        );
+        
+
+        setTimeout(() => {
+          return this.setState(
+            {
+              map_is_ready: true,
+            },
+            () => {
+           console.log("done!!!!")
+                this.centerCamera();
+            
+          
+             
+            }
+          );
+        }, 1000);
+      
       }
     } catch (error) {
       console.log("error in mounting functions ", error);
@@ -1574,18 +1594,24 @@ class Map extends PureComponent {
           map_is_ready: true,
         },
         () => {
-          this.centerCamera();
+          setTimeout(() => {
+            this.centerCamera();
+          }, 1000);
+         
         }
       );
     } 
   };
+
+  
+
 
   navigate = (name) => {
     return this.props.navigation.navigate(name);
   };
 
   fit_markers_to_map = (latitude, longitude) => {
-    if (Platform.OS == "ios") {
+    if (Platform.OS === "ios") {
       this.map &&
         this.map.fitToCoordinates(
           [
@@ -1606,10 +1632,10 @@ class Map extends PureComponent {
               // top: hp("40%"),
               // left: wp("10%"),
 
-              bottom: hp("40%"),
-              right: wp("40%"),
-              top: hp("10%"),
-              left: wp("10%"),
+              bottom: 10,
+              right: 10,
+              top: 10,
+              left: 10,
             },
             animated: true,
           }
@@ -1780,16 +1806,18 @@ class Map extends PureComponent {
     } else {
       console.log("all the above failed");
       const { latitude, longitude } = this.props.order.region;
+
+      console.log(typeof(latitude))
       this.map &&
         this.map.animateCamera(
           {
             center: {
-              latitude,
-              longitude,
+              latitude : Number(latitude),
+              longitude : Number(longitude),
             },
             pitch: 20,
             heading: 30,
-            altitude: 100,
+            altitude: 2000,
             zoom: 16,
           },
           800
@@ -1811,7 +1839,7 @@ class Map extends PureComponent {
       
 
 
-      const newCoordinate = { latitude, longitude };
+      const newCoordinate = { latitude, longitude, latitudeDelta : LATITUDE_DELTA, longitudeDelta : LONGITUDE_DELTA };
 
       // if (Platform.OS == "android") {
       //   if (this.marker.current) {
@@ -1927,7 +1955,8 @@ class Map extends PureComponent {
     payment_method,
     updated_location_from,
     destination_location,
-    price
+    price,
+    // map_snapshot
   ) => {
     try {
       console.log(
@@ -1998,6 +2027,7 @@ class Map extends PureComponent {
           ref: data.ref,
           logistic_type: this.props.order.logistic_type,
           createdAt: Date.now(),
+          // map_snapshot : map_snapshot
         })
         .getKey();
 
@@ -2022,6 +2052,13 @@ class Map extends PureComponent {
           }
         });
 
+        firebase
+        .database()
+        .ref("users/" + firebase.auth().currentUser.uid)
+        .update({
+          current_order: new_order,
+        });
+
       this.watching_current_order = firebase
         .database()
         .ref("orders/" + new_order)
@@ -2034,12 +2071,7 @@ class Map extends PureComponent {
           });
         });
 
-      firebase
-        .database()
-        .ref("users/" + firebase.auth().currentUser.uid)
-        .update({
-          current_order: new_order,
-        });
+    
 
       this.setState({
         show_user_location: true,
@@ -2151,6 +2183,7 @@ class Map extends PureComponent {
           { cancelable: false }
         );
       } else {
+        console.log("failed to cancel order")
         this.setState({
           error_msg: "Failed to cancel this order",
         });
@@ -2340,79 +2373,24 @@ class Map extends PureComponent {
             followUserLocation={show_user_location}
             initialRegion={this.props.order.region}
             rotateEnabled={false}
-            // customMapStyle={this.getMapStyles()}
+            provider  = "google"
             showsUserLocation={show_user_location}
             showsBuildings={true}
             zoomEnabled={true}
             showsCompass={false}
+            // mapPadding ={{
+            //   top :300,
+            //   left : 0, 
+            //   right : 0, 
+            //   bottom : 0
+            // }}
             // provider="google"
             tintColor={colors.safron}
-            initialCamera={{
-              center: {
-                latitude: this.props.order.region.latitude
-                  ? this.props.order.region.latitude
-                  : 9.0765,
-                longitude: this.props.order.region.longitude
-                  ? this.props.order.region.longitude
-                  : 7.3986,
-              },
-              pitch: 20,
-              heading: 30,
-              altitude: 100,
-              zoom: 18,
-            }}
+        
             minZoomLevel={5} // default => 0l
             maxZoomLevel={20} // default => 20
-            // onUserLocationChange = {(e)=>{
-            //   // console.log("user location changed !!!!!!!!!!!!!!!!!!!!!!", e.nativeEvent.coordinate)
-
-            //   var {latitude, longitude} = this.props.order.region
-            //   var latitude_changed = e.nativeEvent.coordinate.latitude
-            //   var longitude_changed = e.nativeEvent.coordinate.longitude
-            //   var distance = getLatLonDiffInMeters(latitude,longitude,latitude_changed,longitude_changed)
-
-            //   if(!this.props.order.destinationRequested || !this.props.order.driver || !this.props.order.order){
-
-            //     if(distance > 200){
-
-            //       console.log("no order or driver, safe to update state")
-
-            //     var address = Location.reverseGeocodeAsync({
-            //       latitude : latitude_changed,
-            //       longitude : longitude_changed
-            //     })
-
-            //     var region = {
-            //       latitude : latitude_changed,
-            //       longitude : longitude_changed,
-            //       latitudeDelta : LATITUDE_DELTA,
-            //       longitudeDelta : LONGITUDE_DELTA
-            //     }
-
-            //     var data = {
-            //       region: region,
-            //       my_address:address[0]?  address[0].street ? address[0].street : address[0].name : this.props.order.my_address,
-            //       // addressShortName: addressComponent,
-            //     };
-            //       store.dispatch({
-            //         type : "GET_LOCATION",
-            //         payload : data
-            //       })
-
-            //       console.log("region updated due to user location hanged", data)
-            //     }
-
-            //   }
-
-            // }}
-
-            // cacheEnabled
-            // pitchEnabled = {true}
-
-            // provider = "google"
-            provider={PROVIDER_GOOGLE}
             showsAnnotationCallouts={true}
-            paddingAdjustmentBehavior="automatic"
+            // paddingAdjustmentBehavior="automatic"
             onMapReady={async () => {
               // setTimeout(() => {
 
@@ -2434,6 +2412,7 @@ class Map extends PureComponent {
               this.map = map;
             }}
             style={styles.map}
+            
             // ref={(map) => {
             //   this.map = map;
             // }}
@@ -2482,7 +2461,7 @@ class Map extends PureComponent {
         <>
           {!this.state.map_is_ready && (
             <View
-              style={[styles.container, { position: "absolute", zIndex: 777 }]}
+              style={[styles.container, { position: "absolute", zIndex: 777,  backgroundColor: colors.white, }]}
             >
               <ImageBackground
                 source={require("../assets/images/preloader.png")}

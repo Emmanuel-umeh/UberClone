@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, ScrollView, Alert, Button } from "react-native";
 import Modal from 'react-native-modal';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import {connect} from "react-redux"
 import { registerDetails, setLoading,endLoading} from "../redux/action/authAction"
@@ -11,6 +11,7 @@ import { Kohana, Fumi  } from 'react-native-textinput-effects';
 import AnimateLoadingButton from 'react-native-animate-loading-button';
 import { Container, Header, Content, Item,
  } from 'native-base';
+ import {firebase} from "../firebase/firebase"
   
 import LottieView from 'lottie-react-native';
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -19,6 +20,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import ErrorModal from "./components/ErrorModal";
+import store from "../redux/store";
 class NameScreen extends Component{
 
   constructor(props){
@@ -80,17 +82,38 @@ this.submit()
       const isValid = EmailValidator.validate(email); // false
       if(isValid){
     
-       const  user = {
+    //    const  user = {
          
-    first_name : this.state.firstName,
-    last_name : this.state.lastName,
-    email : this.state.email
-       }
-       
+    // first_name : this.state.firstName,
+    // last_name : this.state.lastName,
+    // email : this.state.email
+    //    }
+       const {phone_number} = this.props.route.params
+       firebase.database().ref("users/" + firebase.auth().currentUser.uid).set({
+         phone_number : phone_number,
+         first_name :  this.state.firstName,
+         last_name : this.state.lastName,
+         email : this.state.email
+       })
+
+
+       firebase.database().ref("users/" + firebase.auth().currentUser.uid).once("value", (snapshot)=>{
+         if(snapshot.exists()){
+          store.dispatch({
+            type : "USER_LOADED",
+            payload : snapshot.val()
+          })
+         }else { 
+          this.loadingButton.showLoading(false);
+           alert("Something went wrong. Please try again")
+         }
+      
+       })
+      
   // await this.props.registerDetails(firstName,lastName,email,id,tokens)
-  this.props.navigation.navigate("phoneNumberScreen", {
-    user
-  })
+  // this.props.navigation.navigate("phoneNumberScreen", {
+  //   user
+  // })
   // await this.props.endLoading()
 
       }else{ 
@@ -108,7 +131,17 @@ this.submit()
   render(){
     // console.log("firstname ", this.state.email)
     return (
+      <KeyboardAwareScrollView
+      scrollEnabled={true}
+      enableAutomaticScroll={true}
+      enableOnAndroid={true}
+    style ={{
+      // flex : 1,
+      marginBottom:10
+    }}
+       >
       <Container style ={styles.container}>
+
 
 {this.state.error_msg && <ErrorModal modal_visible = {this.state.modal_visible} error_msg = {this.state.error_msg} toggleModal = {this.toggleModal} />}
 
@@ -136,7 +169,6 @@ this.submit()
 <View style = {styles.lower}>
 
 
-<ScrollView>
 <View style ={{
     alignItems : "center",
     paddingTop : 10,
@@ -251,12 +283,13 @@ this.submit()
      
       </View>
      
- </ScrollView>
 
 
 </View>
 
     </Container>
+    </KeyboardAwareScrollView>
+
    );
   }
 
@@ -265,7 +298,8 @@ this.submit()
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent : "center"
+    justifyContent : "center",
+    // marginBottom : 100
   },
 
   text: {

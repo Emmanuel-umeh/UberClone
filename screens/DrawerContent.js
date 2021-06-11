@@ -146,7 +146,7 @@ class DrawerContent extends Component {
                   fontSize: 17,
                   fontFamily: "Quicksand-Bold",
                 }}
-                label="Payment"
+                label="My Wallet"
                 onPress={() => {
                   this.props.navigation.navigate("add_card");
                 }}

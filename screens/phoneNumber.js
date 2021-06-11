@@ -346,7 +346,7 @@ class PhoneNumber extends Component {
     );
    }
    else {
-     return <Otp user = {this.props.route.params} state = {this.state} setState = {this.setState} toggleModal = {this.toggleModal} />
+     return <Otp state = {this.state} setState = {this.setState} navigation = {this.props.navigation} toggleModal = {this.toggleModal} />
    }
    
   }

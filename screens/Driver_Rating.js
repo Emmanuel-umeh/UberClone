@@ -54,20 +54,34 @@ export default function Driver_Rating(props) {
   }, [props.route.params.driver]);
 
   const submit_review = () => {
-    const uid = firebase.auth().currentUser.uid;
 
-    firebase
-      .database()
-      .ref("reviews/" + props.route.params.param.driver)
-      .push({
-        question: question,
-        review_message: review_message,
-        rating: rating,
-        owner: uid,
-      })
-      .then(() => {
+    // firebase
+    //   .database()
+    //   .ref("reviews/" + props.route.params.param.driver)
+    //   .push({
+    //     question: question,
+    //     review_message: review_message,
+    //     rating: rating,
+    //     owner: uid,
+    //   })
+      // .then(() => {
+        // reset_navigation();
+      // });
+      try {
+        const api_call =  await firebase.functions().httpsCallable('rateDriver')({
+          question: question,
+              review_message: review_message,
+              rating: rating,
+              driver_id : props.route.params.driver
+          });
+        return  reset_navigation();
+      } catch (error) {
+        console.log({error})
         reset_navigation();
-      });
+      }
+      
+    
+  
   };
 
   const display_driver_details = () => {

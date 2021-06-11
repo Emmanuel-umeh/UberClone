@@ -44,23 +44,20 @@ function getStarted({navigation}) {
       <Text style={styles.moveSafely}>The Better Way</Text>
 
       
-      <TouchableOpacity  onPress ={()=>{
-            navigation.navigate("nameScreen")
+      <TouchableOpacity style={styles.rect} onPress ={()=>{
+            navigation.navigate("phoneNumberScreen")
           }}>
 
-      <View style={styles.rect}>
- 
+      
   
         <Animatable.View 
         animation = "fadeInUp"
         style={styles.getStartedRow}>
-          <Text style={styles.getStarted}>Get Started</Text>
-          <Icon onPress ={()=>{
-            navigation.navigate("nameScreen")
-          }} name="md-arrow-forward" style={styles.icon}></Icon>
+          <Text style={styles.getStarted}>Get Started </Text>
+         
         </Animatable.View>
      
-      </View>
+      
 
                  
       </TouchableOpacity>
@@ -82,12 +79,13 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   rect: {
-    width: wp("70%"),
+    width: wp(70),
     height: 61,
     backgroundColor: "rgba(0,0,0,1)",
     flexDirection: "row",
-    marginTop: 155,
-    marginLeft: wp("15%")
+    marginTop: hp(20),
+    alignSelf : "center"
+    // marginLeft: wp("15%")
   },
   getStarted: {
    fontFamily : "Quicksand-Bold",
@@ -97,17 +95,20 @@ const styles = StyleSheet.create({
   },
   icon: {
     color: "rgba(255,255,255,1)",
-    fontSize: 50,
+    fontSize: 20,
     height: 54,
     width: 33,
-    marginLeft: 53
+   
   },
   getStartedRow: {
     height: 54,
     flexDirection: "row",
     flex: 1,
     marginRight: 19,
-    marginLeft: wp("10%"),
+
+    justifyContent : "center",
+    // marginLeft: wp("10%"),
+    // width : "100%",
     marginTop: 4
   },
   line: {

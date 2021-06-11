@@ -27,6 +27,10 @@
       "bundleIdentifier": "com.whiteaxis.whiteaxis",
       "buildNumber": "1.0.0",
       "infoPlist": {
+        "UIBackgroundModes": [
+          "location"
+        ],
+        "NSLocationAlwaysAndWhenInUseUsageDescription":"App requires location even when the App is backgrounded.",
         "NSLocationWhenInUseUsageDescription": "This app uses your location to improve app performance"
       }
     },
@@ -34,6 +38,7 @@
       "package": "com.whiteaxis.whiteaxis",
       "versionCode": 1,
       
+      "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION","ACCESS_BACKGROUND_LOCATION"],
       
       "config": {
         "googleMaps": {
@@ -46,6 +51,6 @@
     "web": {
       "favicon": "./assets/images/icon.png"
     },
-    "description": "White Axis Solution"
+    "description": "White Axis"
   }
 }

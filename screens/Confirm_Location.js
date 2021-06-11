@@ -261,7 +261,7 @@ var {latitude, longitude} = this.props.region
       </TouchableOpacity>
           <MapView
             style={styles.map}
-            customMapStyle = {day_styles}
+            // customMapStyle = {day_styles}
             tintColor = {colors.safron}
             provider = {PROVIDER_GOOGLE}
             ref={(map) => {

@@ -12,6 +12,7 @@ import Ride_History from "./Ride_History";
 import Driver_Rating from "./Driver_Rating";
 import Confirm_Location from "./Confirm_Location";
 import MapRoute from "./Map_Route";
+import { Platform } from "react-native";
 
 const AuthStack = createStackNavigator();
 
@@ -29,7 +30,7 @@ const AuthenticatedStack = ({ navigation }) => (
               backgroundColor : "black"
               
             },
-            headerTitleAlign : "center",
+             headerTitleAlign : Platform.OS === "android" ?  "left" : "center",
             title : "Select Your Vehicle",
            
             headerTintColor: '#fff',
@@ -55,7 +56,7 @@ const AuthenticatedStack = ({ navigation }) => (
           backgroundColor : "black"
           
         },
-        headerTitleAlign : "center",
+         headerTitleAlign : Platform.OS === "android" ?  "left" : "center",
         title : "Add Card",
        
         headerTintColor: '#fff',
@@ -113,7 +114,7 @@ const AuthenticatedStack = ({ navigation }) => (
               
             },
             title : "Ride History",
-            headerTitleAlign : "left",
+            headerTitleAlign : Platform.OS === "android" ?  "left" : "center",
             headerTintColor: '#fff',
             headerTitleStyle : {
               color : "#fff",
@@ -129,7 +130,7 @@ const AuthenticatedStack = ({ navigation }) => (
               
             },
             title : "Rate Your Driver",
-            headerTitleAlign : "center",
+             headerTitleAlign : Platform.OS === "android" ?  "left" : "center",
             headerTintColor: '#fff',
             headerTitleStyle : {
               color : "#fff",

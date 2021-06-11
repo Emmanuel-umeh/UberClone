@@ -6,9 +6,15 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import {firebase} from "../../firebase/firebase"
 function CupertinoButtonPurple(props) {
   return (
-    <TouchableOpacity style={[styles.container, props.style]}>
+    <TouchableOpacity style={[styles.container, props.style]} onPress = {() => {
+      firebase
+      .auth()
+      .signOut()
+      .then(() => console.log("User signed out!"));
+    }}>
       <Text style={styles.connectToFacebook}>Logout</Text>
       <Icon name="power" style={styles.icon}></Icon>
     </TouchableOpacity>

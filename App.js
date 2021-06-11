@@ -67,6 +67,7 @@ class App extends React.Component {
     // user location constuructor
     this.location = null;
     this.connectivity = true;
+    this.watch_user = null
   }
   state = {
     loading: true,
@@ -162,7 +163,9 @@ class App extends React.Component {
                   store.dispatch({
                     type: "AUTH_ERROR",
                   });
+                  // this.props.navigation.replace("nameScreen")
                 } else {
+                  console.log("user has previously logged")
                   store.dispatch({
                     type: "USER_LOADED",
                     payload: user,
@@ -173,7 +176,7 @@ class App extends React.Component {
               }
             });
 
-            reference.on("value", function (snapshot) {
+           this.watch_user =  reference.on("value", function (snapshot) {
               if (snapshot.exists()) {
                 let user = snapshot.val();
                 console.log("user location updated", user);
@@ -257,7 +260,8 @@ class App extends React.Component {
         payload: data,
       });
 
-      firebase
+      if(firebase.auth().currentUser){
+        firebase
         .database()
         .ref("users/" + firebase.auth().currentUser.uid)
         .update({
@@ -266,6 +270,8 @@ class App extends React.Component {
             longitude: initial_location.coords.longitude,
           },
         });
+      }
+     
 
       return true;
     });
@@ -276,7 +282,7 @@ class App extends React.Component {
       Location.setGoogleApiKey("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
 
       // Geocoder.init("AIzaSyA4iUtzUInPyQUDlSwkPU2EXGvbEXWbCbM");
-      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+      let { status } = await Location.getForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access denied!!!.");
         return Alert.alert(
@@ -405,7 +411,16 @@ class App extends React.Component {
   };
 
   componentWillUnmount() {
-    this.unsubscribe && this.unsubscribe();
+    if( firebase.auth().currentUser){
+      firebase
+      .database()
+      // -MaydpgjezdWCmXKpFuC
+      .ref("users/" + firebase.auth().currentUser.uid)
+      .off("value", this.watch_user);
+    }
+   
+    this.location &&  this.location.remove();
+    return this.unsubscribe && this.unsubscribe();
   }
   // _renderNextButton = () => {
   //   return (

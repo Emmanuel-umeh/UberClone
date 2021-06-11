@@ -8,6 +8,7 @@ import {
 import LottieView from 'lottie-react-native';
 
 import {Button, Text} from "native-base"
+import colors from '../colors/colors';
 
 const CustomModal = props => {
   const {
@@ -37,7 +38,7 @@ const CustomModal = props => {
         />
         </View>
 
-        <Text style = {{fontSize  : 30, fontWeight : "bold", color : "whitesmoke"}}>Searching for a ride...</Text>
+        <Text style = {{fontSize  : 30, fontWeight : "bold", color : colors.black}}>Searching for a ride...</Text>
         <Button rounded warning style ={{alignSelf : "center"}}
         
         

@@ -20,6 +20,7 @@ import {
 } from "react-native-responsive-screen";
 
 import { firebase } from "../firebase/firebase";
+import store from "../redux/store";
 
 let rootRef = firebase.database().ref();
 class Otp extends Component {
@@ -52,19 +53,33 @@ class Otp extends Component {
 
     try {
      await this.props.state.confirmation.confirm(code);
-      const {user} = this.props
+      // const {user} = this.props.auth
+
+      console.log("users UID", firebase.auth().currentUser.uid )
 
   
-
-      firebase
-      .database()
-      .ref("users/" + firebase.auth().currentUser.uid).update({
-        first_name : user.user.first_name,
-        last_name : user.user.last_name,
-        email : user.user.email,
-        isAdmin : false,
-        phone_number : this.props.state.number
-      });
+      firebase.database().ref("users/" + firebase.auth().currentUser.uid).once("value" , (snapshot)=> {
+        if(snapshot.exists()){
+          const user_data = snapshot.val()
+         return  store.dispatch({
+            type: "USER_LOADED",
+            payload: user_data,
+          });
+        }else {
+          this.props.navigation.navigate("nameScreen" , {
+            phone_number : this.props.state.number
+          })
+        }
+      })
+      // firebase
+      // .database()
+      // .ref("users/" + firebase.auth().currentUser.uid).update({
+      //   first_name : user.user.first_name,
+      //   last_name : user.user.last_name,
+      //   email : user.user.email,
+      //   isAdmin : false,
+      //   phone_number : this.props.state.number
+      // });
     
       return this.loadingButton && this.loadingButton.current.showLoading(false);
     } catch (error) {

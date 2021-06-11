@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {Platform} from "react-native"
 import { createStackNavigator } from '@react-navigation/stack';
 
 import SplashScreen from './SplashScreen';
@@ -27,7 +27,8 @@ const RootStackScreen = ({navigation}) => (
            headerShown  : false
          }} component={getStarted}/>
 
-<RootStack.Screen name="nameScreen"options ={{
+<RootStack.Screen name="nameScreen" options ={ Platform.OS = "android" ? {
+  
             headerStyle : {
               backgroundColor : "black",
               
@@ -39,8 +40,8 @@ const RootStackScreen = ({navigation}) => (
               color : "#fff",
               fontFamily : "Quicksand-Bold"
             }
-        }} component={NameScreen}/>
-        <RootStack.Screen name="phoneNumberScreen" options ={{
+         } : null} component={NameScreen}/>
+        <RootStack.Screen name="phoneNumberScreen" options ={  Platform.OS = "android" ? {
            headerStyle : {
             backgroundColor : "black",
             
@@ -52,9 +53,9 @@ const RootStackScreen = ({navigation}) => (
             color : "#fff",
             fontFamily : "Quicksand-Bold"
           }
-         }}
+         }: null}
           component={PhoneNumber}/>
-        <RootStack.Screen name="otp" options ={{
+        <RootStack.Screen name="otp" options ={  Platform.OS = "android" ? {
             headerStyle : {
               backgroundColor : "black",
               
@@ -66,7 +67,7 @@ const RootStackScreen = ({navigation}) => (
               color : "#fff",
               fontFamily : "Quicksand-Bold"
             }
-        }} component={Otp}/>
+        } : null} component={Otp}/>
       
         <RootStack.Screen name="TermsAndCondition" component={TermsAndCondition}/>
         <RootStack.Screen name="SignInScreen" component={SignInScreen}/>

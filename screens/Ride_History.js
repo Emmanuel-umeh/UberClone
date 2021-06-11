@@ -103,8 +103,7 @@ function Item({ order }) {
 
 
  
-
-<FlatList
+{!loading && <FlatList
 data={history}
 renderItem={({ item }) => <Item order={item} />}
 initialNumToRender={5}
@@ -138,7 +137,8 @@ ListEmptyComponent ={()=>{
   </>
 }}
 keyExtractor={item => item._id}
-/>
+/> }
+
 
 
 

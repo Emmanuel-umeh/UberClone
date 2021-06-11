@@ -5,7 +5,7 @@ import Modal from 'react-native-modal';
 
 export default function ErrorModal(props) {
     return (
-        <Modal isVisible={props.modal_visible ? props.modal_visible : false}>
+        <Modal isVisible={props.modal_visible === true ? props.modal_visible : false}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}> 
                   <View style ={{
                     backgroundColor : "white",
