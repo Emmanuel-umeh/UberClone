@@ -53,7 +53,7 @@ export default function Driver_Rating(props) {
     setquestion(randomItem.question);
   }, [props.route.params.driver]);
 
-  const submit_review = () => {
+  const submit_review = async() => {
 
     // firebase
     //   .database()
