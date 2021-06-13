@@ -413,7 +413,7 @@ export default function (state = initialState, action) {
    
       return {
         ...state,
-       coordinate: action.payload.coordinate,
+       coordinate: action.payload,
         type: action.type,
       };
     }

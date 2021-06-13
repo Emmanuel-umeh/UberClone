@@ -16,7 +16,9 @@ import {
   BackHandler,
   Modal,
   Platform,
-  SafeAreaView
+  SafeAreaView,
+  Animated,
+  Easing
 } from "react-native";
 import { firebase } from "../firebase/firebase";
 
@@ -156,7 +158,7 @@ class Map extends PureComponent {
     this.from_marker = React.createRef();
     this.driver_marker = React.createRef();
     this.bookRide = this.bookRide.bind(this);
-
+    this.spinValue = new Animated.Value(0);
     const { token } = this.props.auth;
 
     this.state = {
@@ -341,8 +343,9 @@ class Map extends PureComponent {
     );
   };
 
-  show_driver_marker = () => {
+  show_driver_marker = (spin) => {
     try {
+      console.log({spin})
       const { logistic_type, current_order } = this.props.order;
       const {coordinate, heading} = this.state
   
@@ -363,7 +366,7 @@ class Map extends PureComponent {
             style={{ width: 50, height: 50 }}
           >
             {logistic_type == "bike" ? (
-              <Image
+             <Animated.Image
                 source={require("../assets/images/bike.png")}
                 resizeMode="contain"
                 style={{
@@ -371,13 +374,13 @@ class Map extends PureComponent {
                   height: 60,
                   transform: [
                     {
-                      rotate: heading === undefined ? "0deg" : `${heading}deg`,
+                      rotate:spin,
                     },
                   ],
                 }}
               />
             ) : logistic_type == "car" ? (
-              <Image
+              <Animated.Image
                 source={require("../assets/images/car.png")}
                 resizeMode="contain"
                 style={{
@@ -385,13 +388,13 @@ class Map extends PureComponent {
                   height: 60,
                   transform: [
                     {
-                      rotate: heading === undefined ? "0deg" : `${heading}deg`,
+                      rotate:spin,
                     },
                   ],
                 }}
               />
             ) : logistic_type == "truck" ? (
-              <Image
+              <Animated.Image
                 source={require("../assets/images/truck.png")}
                 resizeMode="contain"
                 style={{
@@ -399,13 +402,13 @@ class Map extends PureComponent {
                   height: 60,
                   transform: [
                     {
-                      rotate: heading === undefined ? "0deg" : `${heading}deg`,
+                      rotate:spin,
                     },
                   ],
                 }}
               />
             ) : (
-              <Image
+              <Animated.Image
                 source={require("../assets/images/tanker.png")}
                 resizeMode="contain"
                 style={{
@@ -413,7 +416,7 @@ class Map extends PureComponent {
                   height: 50,
                   transform: [
                     {
-                      rotate: heading === undefined ? "0deg" : `${heading}deg`,
+                      rotate:spin,
                     },
                   ],
                 }}
@@ -447,16 +450,14 @@ class Map extends PureComponent {
 
         console.log({ diff_in_minute_pickup });
 
-        var COORDINATE_DRIVER_LOCATION = {
-          coordinate: new AnimatedRegion({
+      
+       const   driver_coordinate = {
             latitudeDelta: 0.3,
             longitudeDelta: 0.3,
             longitude: longitude,
             latitude: latitude,
-          }),
-
-          diff_in_minute_pickup: diff_in_minute_pickup,
-        };
+          }
+       
         this.setState({
           coordinate: new AnimatedRegion({
             latitudeDelta: 0.3,
@@ -470,7 +471,7 @@ class Map extends PureComponent {
 
         store.dispatch({
           type: "COORDINATE_DRIVER_LOCATION",
-          payload: COORDINATE_DRIVER_LOCATION,
+          payload: driver_coordinate,
         });
 
         console.log("should center cameraA ooooo!!!!!!!!!!!!!!!!!!!");
@@ -531,20 +532,16 @@ class Map extends PureComponent {
             // });
 
             const diff_in_minute_pickup = current_order.diff_in_minute_pickup;
-
-            console.log({ diff_in_minute_pickup });
-            var COORDINATE_DRIVER_LOCATION = {
-              coordinate: new AnimatedRegion({
+// TODO : Check if this is the cause of the IOS crash
+         
+            const driver_coordinate = {
                 latitudeDelta: 0.3,
                 longitudeDelta: 0.3,
                 latitude: driver.location.latitude,
                 longitude: driver.location.longitude,
                 heading: driver.location.heading,
-              }),
-              diff_in_minute_pickup: diff_in_minute_pickup,
-            };
-
-            console.log({ COORDINATE_DRIVER_LOCATION });
+              }
+           
             this.setState({
               coordinate: new AnimatedRegion({
                 latitudeDelta: 0.3,
@@ -557,7 +554,7 @@ class Map extends PureComponent {
 
             await store.dispatch({
               type: "COORDINATE_DRIVER_LOCATION",
-              payload: COORDINATE_DRIVER_LOCATION,
+              payload: driver_coordinate,
             });
 
             // this.setState({
@@ -1607,18 +1604,15 @@ class Map extends PureComponent {
                         updated_order.diff_in_minute_pickup || 1;
       
                       console.log({ diff_in_minute_pickup });
-                      var COORDINATE_DRIVER_LOCATION = {
-                        coordinate:{
+                  
+                     const driver_coordinate  ={
                           latitudeDelta: 0.3,
                           longitudeDelta: 0.3,
                           latitude: driver.location.latitude,
                           longitude: driver.location.longitude,
                           heading: driver.location.headingg,
-                        },
-                        diff_in_minute_pickup: diff_in_minute_pickup,
-                      };
+                        }
       
-                      console.log({ COORDINATE_DRIVER_LOCATION });
       
                       this.setState({
                         coordinate: new AnimatedRegion({
@@ -1627,15 +1621,16 @@ class Map extends PureComponent {
                           longitude: driver.location.longitude,
                           latitude: driver.location.latitude,
                         }),
+                        heading : driver.location.heading
                       });
-                      try {
+
+                  
                         store.dispatch({
                           type: "COORDINATE_DRIVER_LOCATION",
-                          payload: COORDINATE_DRIVER_LOCATION,
+                          payload: driver_coordinate,
                         });
-                      } catch (error) {
-                        console.log("dispatch error!!!", error)
-                      }
+                   
+                        this.spin()
                      
                       }
       
@@ -1661,32 +1656,29 @@ class Map extends PureComponent {
                           updated_order.diff_in_minute_pickup || 1;
       
                         console.log({ diff_in_minute_pickup });
-                        var COORDINATE_DRIVER_LOCATION = {
-                          coordinate: {
-                            latitudeDelta: 0.3,
-                            longitudeDelta: 0.3,
-                            latitude: driver.latitude,
-                            longitude: driver.longitude,
-                            heading: driver.heading,
-                          },
-                          diff_in_minute_pickup: diff_in_minute_pickup,
-                        };
-      
-                        console.log({ COORDINATE_DRIVER_LOCATION });
-      
+                      
                         this.setState({
                           heading : driver.heading ? driver.heading : this.state.heading
                         })
                         
       console.log("setstate done")
+      this.spin()
                         this.animate(driver.latitude, driver.longitude);
 
                         // !!TODO this function crashes on ios, find out why
+                        const driver_coordinate = {
+                          latitudeDelta: 0.3,
+                          longitudeDelta: 0.3,
+                          latitude: driver.latitude,
+                          longitude: driver.longitude,
+                          heading: driver.heading,
+                        }
                         store.dispatch({
                           type: "COORDINATE_DRIVER_LOCATION",
-                          payload: COORDINATE_DRIVER_LOCATION,
+                          payload: driver_coordinate,
                         });
                         setTimeout(() => {
+                          this.spin()
                           this.centerCamera()
                         }, 800);
                       
@@ -2551,6 +2543,10 @@ this.destinationMarker.current.showCallout()
   sheetRef = React.createRef(null);
 
   render() {
+    const spin = this.spinValue.interpolate({
+      inputRange: [0, 360],
+      outputRange: ["0deg", "360deg"],
+    });
     var show_user_location = this.state.show_user_location;
 
     if (this.props.order.current_order) {
@@ -2624,7 +2620,7 @@ this.destinationMarker.current.showCallout()
               ? this.destination_marker()
               : null} */}
 
-          {this.show_driver_marker()}
+          {this.show_driver_marker(spin)}
           {this.map_view_directions()}
 
           {/* {!this.props.order.current_order &&

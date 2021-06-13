@@ -144,7 +144,7 @@ const TouchableOpacity =
         <>
           <Text style={[styles.on_the_way, {color : "coral"}]}>
             Total Price : ₦
-            {current_order.price ? current_order.price : 1000 }
+            {current_order.price ? current_order.price : 0 }
           </Text>
 
           {current_order.payment_method === "Card" && (
