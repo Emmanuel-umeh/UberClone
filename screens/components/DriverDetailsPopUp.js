@@ -29,9 +29,10 @@ import uuid from 'react-native-uuid';
 import {firebase} from "../../firebase/firebase"
 import { useSelector} from "react-redux" 
 const TouchableOpacity =
-  Platform.OS === "ios"
-    ? require("react-native").TouchableOpacity
-    : require("react-native-gesture-handler").TouchableOpacity;
+  // Platform.OS === "ios"
+    // ? 
+    require("react-native").TouchableOpacity
+    // : require("react-native-gesture-handler").TouchableOpacity;
 
     
    const DriverDetailsPopUp = (props) => {
@@ -225,17 +226,23 @@ const TouchableOpacity =
         <Text style={styles.on_the_way}>Paid Successfully!</Text>
         <Divider />
 
-        
-  <LottieView
+        {/* <View style ={{
+          marginTop : 0
+        }}> */}
+        <LottieView
           // style = {styles.image}
           // height = {600}
           
-        
+        style={{
+          marginTop : 50
+        }}
           // imageAssetsFolder={'lottie/animation_1'}
           source={require("../../assets/lottie/tick.json")}
           autoPlay 
           loop = {false}
         /> 
+        {/* </View> */}
+
         </>
 
 
@@ -300,10 +307,36 @@ const TouchableOpacity =
 
             {!driver_details.company && (
 
+current_order && current_order.state === "Accepted" ? 
+<Text style={styles.rider_name}>
+{driver_details && driver_details.firstname.charAt(0).toUpperCase() +
+      driver_details.firstname.substring(1)} is on the way 
+</Text> : 
+
+              current_order && current_order.state === "Arrived" ? 
             <Text style={styles.rider_name}>
            {driver_details && driver_details.firstname.charAt(0).toUpperCase() +
-                  driver_details.firstname.substring(1)} Is On The Way
+                  driver_details.firstname.substring(1)} Has arrived 
             </Text>
+
+            : 
+            current_order && current_order.state === "Started" ? 
+            <Text style={styles.rider_name}>
+            {driver_details && driver_details.firstname.charAt(0).toUpperCase() +
+                   driver_details.firstname.substring(1)} Has started the trip 
+             </Text>
+
+             :  current_order && current_order.state === "Ended" ? 
+             <Text style={styles.rider_name}>
+             {driver_details && driver_details.firstname.charAt(0).toUpperCase() +
+                    driver_details.firstname.substring(1)} Has ended the trip 
+              </Text>
+
+:  
+<Text style={styles.rider_name}>
+{/* {driver_details && driver_details.firstname.charAt(0).toUpperCase() +
+       driver_details.firstname.substring(1)} Has ended the trip  */}
+ </Text>
             )}
 
             {driver_details.company && driver_details.company.company_name &&  (
@@ -314,10 +347,10 @@ const TouchableOpacity =
                   driver_details.firstname.substring(1)} from {driver_details.company.company_name.charAt(0).toUpperCase() +
                   driver_details.company.company_name.substring(1)}
           </Text>
-              <Text style={styles.rider_name}>
+              {/* <Text style={styles.rider_name}>
                 Is on the way..
              
-              </Text>
+              </Text> */}
               </>
             )}
 
@@ -378,7 +411,7 @@ const TouchableOpacity =
 
 
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
 
       style ={{
         marginTop : hp("4")
@@ -387,21 +420,26 @@ const TouchableOpacity =
           // alert("Making call!!!")
           makeCall();
         }}
-      >
+      > */}
         <Button
           style={{
             borderRadius: 50,
             width: wp("35%"),
             alignSelf: "center",
             alignItems: "center",
+            marginTop : hp("4")
+          }}
+          onPress={() => {
+            // alert("Making call!!!")
+            makeCall();
           }}
           iconLeft
           dark
         >
           <Icon style={{ left: -5 }} name="md-call" />
-          <Text style={{ color: "white", left: -wp("5") }}>Call Driver</Text>
+          <Text style={{ color: "white", left: -wp("5"), fontFamily : "Quicksand-Bold" }}>Call Driver</Text>
         </Button>
-      </TouchableOpacity>
+      {/* </TouchableOpacity> */}
   
   
   </> :
@@ -498,7 +536,7 @@ const styles = StyleSheet.create({
   on_the_way: {
     padding: 20,
     fontFamily: "Quicksand-Bold",
-    fontSize: 20,
+    fontSize: 25,
     alignSelf: "center",
   },
 
@@ -508,7 +546,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     top: 15,
     fontFamily: "Quicksand-Bold",
-    fontSize: 20,
+    fontSize: 30,
     alignSelf: "center",
   },
   
@@ -517,11 +555,13 @@ const styles = StyleSheet.create({
     // paddingLeft : wp("26%"),
     alignSelf: "center",
     top: 10,
+    fontFamily : "Quicksand-Medium",
+    fontSize : 20
   },
   rider_name: {
     // paddingLeft : wp("11%"),
     top: 10,
-    fontSize: 15,
+    fontSize: 20,
     alignSelf: "center",
     fontFamily: "Quicksand-Bold",
   },

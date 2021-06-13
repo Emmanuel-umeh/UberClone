@@ -15,6 +15,7 @@ import colors from "./colors/colors";
 import { firebase } from "../firebase/firebase";
 import { Users } from "react-native-feather";
 import { Avatar, Divider } from "react-native-paper";
+require("firebase/functions")
 
 export default function Driver_Rating(props) {
   const questions = [
@@ -54,6 +55,7 @@ export default function Driver_Rating(props) {
   }, [props.route.params.driver]);
 
   const submit_review = async() => {
+    const { driver } = props.route.params.param;
 
     // firebase
     //   .database()
@@ -68,12 +70,14 @@ export default function Driver_Rating(props) {
         // reset_navigation();
       // });
       try {
-        const api_call =  await firebase.functions().httpsCallable('rateDriver')({
+        console.log({question, review_message, rating},driver)
+      firebase.functions().httpsCallable('rateDriver')({
           question: question,
               review_message: review_message,
               rating: rating,
-              driver_id : props.route.params.driver
+              driver_id :driver
           });
+          // console.log({api_call})
         return  reset_navigation();
       } catch (error) {
         console.log({error})
